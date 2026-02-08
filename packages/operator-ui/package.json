@@ -1,0 +1,67 @@
+{
+  "name": "@operator/ui",
+  "version": "0.0.0",
+  "private": true,
+  "description": "React components and hooks for the operator user interface.",
+  "scripts": {
+    "\n========== DEVELOPMENT >> ==========": "",
+    "dev": "pnpm build:ts --watch",
+    "dev:ts": "pnpm build:ts --watch",
+    "dev:rollup": "rollup --watch --config ./rollup.config.js",
+    "dev:vite": "pnpm exec vite --config ./vite.config.ts",
+    "\n========== BUILD >> ==========": "",
+    "build": "pnpm build:ts && pnpm build:rollup",
+    "build:ts": "pnpm exec tsc --build",
+    "build:rollup": "rollup --config ./rollup.config.js",
+    "build:vite": "pnpm exec vite build --config ./vite.config.ts",
+    "\n========== TEST >> ==========": "",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "test:repo": "pnpm exec ls $(git rev-parse --show-toplevel)",
+    "\n========== CLEAN >> ==========": "",
+    "clean": "pnpm clean:ts && pnpm clean:build",
+    "clean:ts": "pnpm exec tsc --build --clean",
+    "clean:build": "pnpm exec rm -rf ./dist ./types",
+    "\n========== PUBLISH >> ==========": "",
+    "release": "pnpm run prerelease && pnpm changeset",
+    "prerelease": "pnpm run build && pnpm run fix && pnpm run check && pnpm test",
+    "\n========== CHECK >> ==========": "",
+    "check": "pnpm check:self",
+    "check:md": "pnpm run lint:md",
+    "check:self": "pnpm lint",
+    "\n========== FIX >> ==========": "",
+    "fix": "pnpm fix:self",
+    "fix:md": "pnpm run lint:md --fix",
+    "fix:self": "pnpm prettier --write && pnpm lint --fix",
+    "\n========== CODE STYLE >> ==========": "",
+    "prettier": "prettier --ignore-path ./.gitignore --no-error-on-unmatched-pattern .",
+    "lint": "pnpm exec eslint .",
+    "lint:md": "pnpm exec markdownlint-cli2 '{./*,./**/*}.md' '#**/node_modules/**' '#packages/test-package/**/*' "
+  },
+  "peerDependencies": {
+    "react": ">=17",
+    "react-dom": ">=17"
+  },
+  "dependencies": {
+    "@operator/core": "workspace:*",
+    "@operator/store": "workspace:*"
+  },
+  "devDependencies": {
+    "@snailicide/build-config": "^1.4.4",
+    "eslint": "^8.55.0",
+    "rollup": "^3.29.4",
+    "rollup-plugin-dts": "^5.3.0",
+    "rollup-plugin-esbuild": "^5.0.0",
+    "typescript": "^5.2.2",
+    "vitest": "^1.0.0"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  }
+}
