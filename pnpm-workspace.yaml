@@ -1,0 +1,4 @@
+# temporary workspace file (todo: cli app wont compile)
+packages:
+    - 'packages/*'
+    - 'api/*'

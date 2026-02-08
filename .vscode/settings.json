@@ -1,0 +1,11 @@
+{
+    // "editor.formatOnSave": true, // Automatically format files on save
+    "[markdown]": {
+        "editor.wordWrap": "off", // Disable word wrapping for Markdown files
+        "editor.defaultFormatter": "esbenp.prettier-vscode" // Use Prettier for Markdown formatting
+        //"editor.insertSpaces": true, // Use spaces instead of tabs for indentation
+        //"editor.detectIndentation": false // Prevent VS Code from auto-detecting indentation
+    }
+    //"prettier.proseWrap": "never", // Prevent Prettier from wrapping Markdown text
+    //"prettier.printWidth": 140, // Set a custom line length for Markdown files
+}
