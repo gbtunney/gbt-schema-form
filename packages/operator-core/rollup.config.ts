@@ -19,7 +19,7 @@ export default defineConfig([
             esbuild({
                 target: 'es2019',
                 minify: false,
-                sourcemap: true,
+               // sourcemap: true,
             }),
         ],
         external: [],

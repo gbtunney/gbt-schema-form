@@ -136,7 +136,7 @@ Concrete persistence adapter implementing `OperatorStore`.
 Responsibilities:
 
 - Drizzle schema tables (Postgres/SQLite)
-- CRUD for EquipmentRecord/EvidenceGroup/EvidenceItem/Attachments/Patches
+- CRUD for EquipmentRecord/EvidenceGroup//Attachments/Patches
 - transactions for applying patches and saving form data
 - optionally: minimal indexing/projection table for grid view
 
@@ -169,7 +169,7 @@ Suggested tech:
 Responsibilities:
 
 - endpoints:
-  - POST `/proposals/run` (evidenceItemId + schemaId → proposals)
+  - POST `/proposals/run` (Id + schemaId → proposals)
   - POST `/derive/ocr` (image attachment → derived text)
   - POST `/derive/transcribe` (audio stream/live → transcript)
   - POST `/derive/scrape` (url → extracted text)
@@ -219,9 +219,9 @@ The editor should only need this shape (add methods later as needed):
 - evidence:
   - listEvidenceGroups(recordId|null)
   - upsertEvidenceGroup(group)
-  - listEvidenceItems(groupId)
-  - upsertEvidenceItem(item)
-  - deleteEvidenceItem(id)
+  - lists(groupId)
+  - upsert(item)
+  - delete(id)
 
 - attachments:
   - createAttachment(args)
@@ -241,7 +241,7 @@ The editor should only need this shape (add methods later as needed):
 
 ## ProposalClient
 
-- runProposals({ evidenceItemId, schemaId, currentData? }) → proposals[]
+- runProposals({ Id, schemaId, currentData? }) → proposals[]
 
 ---
 

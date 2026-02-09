@@ -28,7 +28,7 @@
         "prepare": "husky",
         "pre:commit": "echo '\n===\n>> Todo:: enable `pnpm exec lint-staged --debug`'",
         "postinstall": "echo '\n=== >> Success:: Install complete.'",
-        "workspace": "pnpm --filter='!(*)'",
+        "workspace": "pnpm -r ",
         "\n========== PUBLISH >> ==========": "",
         "release": "pnpm run prerelease && pnpm changeset",
         "prerelease": "pnpm run build && pnpm run fix && pnpm run check && pnpm test",
