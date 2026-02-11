@@ -49,9 +49,9 @@ Notes:
 ### Typed API Layer
 
 - **express-zod-api**
-    - typed request/response contracts
-    - shared validation schemas
-    - consistent error handling
+  - typed request/response contracts
+  - shared validation schemas
+  - consistent error handling
 
 ### Proposal Engine
 
@@ -74,9 +74,9 @@ All derivations feed evidence text. Evidence text feeds proposals.
 ### Database Access
 
 - **Drizzle** (recommended)
-    - clear SQL control
-    - strong typing
-    - composable adapters
+  - clear SQL control
+  - strong typing
+  - composable adapters
 
 ### Database
 

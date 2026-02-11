@@ -78,10 +78,10 @@ These are examples — the component itself is generic.
 2. Paste listing description
 3. Record quick audio note (“got this used, seems quiet”)
 4. AI proposes:
-    - brand
-    - model
-    - specs
-    - purchase source
+   - brand
+   - model
+   - specs
+   - purchase source
 5. You apply only what looks correct
 6. Provenance is stored per field
 
@@ -106,13 +106,13 @@ Result: clean inventory records with source traceability.
 2. Add photo of medication bottle
 3. Record voice note (“ate less today, hiding”)
 4. AI proposes:
-    - pet name
-    - species
-    - treatment
-    - dosage
-    - dates
-    - equipment used
-    - observations
+   - pet name
+   - species
+   - treatment
+   - dosage
+   - dates
+   - equipment used
+   - observations
 5. You selectively apply fields
 6. Evidence stays attached to every data point
 
@@ -135,10 +135,10 @@ This is especially useful when data comes from many places over time.
 1. Upload paper
 2. OCR extracts text into evidence
 3. AI proposes:
-    - title
-    - authors
-    - sample size
-    - conclusions
+   - title
+   - authors
+   - sample size
+   - conclusions
 4. Researcher confirms fields manually
 
 Result: structured datasets with citation provenance.

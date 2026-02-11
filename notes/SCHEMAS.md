@@ -17,14 +17,14 @@ The Operator is schema-agnostic:
 Schemas may come from multiple places:
 
 1. **Repo-backed (recommended)**
-    - Generated from Zod
-    - Committed JSON Schema files
+   - Generated from Zod
+   - Committed JSON Schema files
 2. **DB-backed**
-    - Stored as JSON
-    - Versioned by `schemaId`
+   - Stored as JSON
+   - Versioned by `schemaId`
 3. **Ad-hoc / Playground**
-    - Pasted at runtime
-    - Stored in localStorage or ephemeral memory
+   - Pasted at runtime
+   - Stored in localStorage or ephemeral memory
 
 All are resolved via `SchemaResolver`.
 
@@ -52,8 +52,8 @@ Example:
 
 ```json
 {
-    "schemaId": "equipment.v1",
-    "title": "Equipment Record v1"
+  "schemaId": "equipment.v1",
+  "title": "Equipment Record v1"
 }
 ```
 
