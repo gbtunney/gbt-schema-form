@@ -5,8 +5,8 @@ export const mdlint = { config: markdownlint.config({}) }
 const options = {
     config: {
         // 'MD001/heading-increment'
-        'MD001': false,
-        'MD013': {
+        MD001: false,
+        MD013: {
             // Number of characters for code blocks
             //  code_block_line_length: markdownlint.getScaledWidth('comments'),
             code_block_line_length: 140,
@@ -27,11 +27,11 @@ const options = {
             tables: true,
         },
         //'MD024/no-duplicate-heading'
-        'MD024': false,
+        MD024: false,
         // 'MD025/single-title/single-h1'
-        'MD025': false,
+        MD025: false,
         //todo: temporarily dosabled. pls try to fix later, also how can i include the
-        'MD032': true,
+        MD032: true,
         'no-multiple-blanks': false,
     },
 }

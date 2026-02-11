@@ -1,3 +1,4 @@
 packages:
     - 'packages/operator-core'
+    # - 'packages/operator-ui'
     #- 'apps/*'

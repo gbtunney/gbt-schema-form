@@ -1,8 +1,13 @@
-import { merge, Prettier } from '@snailicide/build-config'
 import type { Config as PrettierConfig } from 'prettier'
 
-const overrides: PrettierConfig = {
+const config: PrettierConfig = {
     overrides: [
+        {
+            files: '.husky/*',
+            options: {
+                parser: 'sh',
+            },
+        },
         {
             files: '**/*.md',
             options: {
@@ -11,10 +16,12 @@ const overrides: PrettierConfig = {
             },
         },
     ],
-
-    plugins: ['@prettier/plugin-xml'],
+    plugins: ['@prettier/plugin-xml', 'prettier-plugin-sh'],
+    printWidth: 110,
+    semi: false,
+    singleQuote: true,
+    tabWidth: 4,
+    trailingComma: 'all',
 }
 
-const default_config: PrettierConfig = Prettier.config
-const config: PrettierConfig = merge(default_config, overrides)
 export default config

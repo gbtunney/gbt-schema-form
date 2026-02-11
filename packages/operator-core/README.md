@@ -7,6 +7,5 @@
 
 > Core logic and types for the evidence‑driven schema operator
 
-This package exposes the foundational types and pure functions used by the operator
-system. It contains no dependencies on React, databases or AI services. See
-`src/index.ts` for the starting point.
+This package exposes the foundational types and pure functions used by the operator system. It contains no
+dependencies on React, databases or AI services. See `src/index.ts` for the starting point.

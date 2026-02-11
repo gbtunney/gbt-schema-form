@@ -1,8 +1,11 @@
-// Domain schema placeholder. In a complete implementation this file would
-// export Zod schemas for specific domains (e.g. equipment.v1). A build
-// process would generate JSON Schema representations as part of the dist.
-
 import { z } from 'zod'
+
+/**
+ * Domain schema placeholder.
+ *
+ * Domain Zod schemas live here (not in operator packages).
+ * Build outputs should generate JSON Schema artifacts for UI runtime use.
+ */
 
 export const exampleSchema = z.object({
     id: z.string(),
@@ -10,4 +13,4 @@ export const exampleSchema = z.object({
     value: z.number().optional(),
 })
 
-export type Example = typeof exampleSchema._type
+export type Example = z.infer<typeof exampleSchema>

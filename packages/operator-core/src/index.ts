@@ -1,158 +1,457 @@
-// Core types and pure functions for the schema-driven operator.
-//
-// Evidence items represent the messy inputs (text, images, audio, urls) that users collect
-// before extracting structured data. Proposals suggest field values derived from the evidence.
-// Patches represent reversible changes to records.
+/**
+ * @operator/core
+ *
+ * Opinionated rules:
+ * - Zod v4 schemas are the source of truth. Export schemas + infer TS types.
+ * - Everything is JSON-serializable. If it can’t round-trip through JSON, it doesn’t belong here.
+ * - Patches are reversible by construction (they carry before/after existence + value).
+ *
+ * No classes, no `interface`, no `any`.
+ */
 
 import { z } from 'zod'
+export type Id = string
 
-/* Evidence types */
+export const IdSchema = z.string().min(1)
 
-/** Supported evidence item kinds. You can extend this union when adding new media types. */
-export type EvidenceType = 'text' | 'image' | 'audio' | 'url'
+export type IsoDateTimeString = string
 
-/**
- * An evidence item captures raw user input. The content field is deliberately untyped because it may contain any
- * structure appropriate for the evidence type.
- */
-export type EvidenceItem = {
-    id: string
-    type: EvidenceType
-    content: unknown
+export const IsoDateTimeStringSchema = z.string().datetime()
+
+export type JsonPrimitive = boolean | null | number | string
+
+export type JsonObject = { [key: string]: JsonValue }
+
+export type JsonValue = JsonObject | Array<JsonValue> | JsonPrimitive
+
+export const JsonValueSchema: z.ZodJSONSchema = z.json()
+
+export type JsonPointer = string
+
+export const JsonPointerSchema = z
+    .string()
+    .refine(
+        (pointer) => pointer === '' || pointer.startsWith('/'),
+        'JSON Pointer must be "" (root) or start with "/"',
+    )
+
+export type ValueRef =
+    | { exists: false }
+    | {
+          exists: true
+          value: JsonValue
+      }
+
+export const ValueRefSchema = z.union([
+    z.object({ exists: z.literal(false) }),
+    z.object({ exists: z.literal(true), value: JsonValueSchema }),
+])
+
+export type OperatorPatchOp = {
+    op: 'change'
+    path: JsonPointer
+    before: ValueRef
+    after: ValueRef
 }
 
-/** Zod schema for EvidenceItem. This can be used to validate external inputs. */
-export const EvidenceItemSchema = z.object({
-    content: z.unknown(),
-    id: z.string(),
-    type: z.union([
-        z.literal('text'),
-        z.literal('image'),
-        z.literal('audio'),
-        z.literal('url'),
-    ]),
+export const OperatorPatchOpSchema = z.object({
+    after: ValueRefSchema,
+    before: ValueRefSchema,
+    op: z.literal('change'),
+    path: JsonPointerSchema,
 })
 
-/* Proposal types */
+export type OperatorPatch = Array<OperatorPatchOp>
 
-/** A proposal suggests a value for a record field along with metadata about its provenance. */
-export type Proposal<T = unknown> = {
-    field: string
-    value: T
-    confidence?: number
-    evidenceIds: Array<string>
+export const OperatorPatchSchema = z.array(OperatorPatchOpSchema)
+
+export type RecordSnapshot = {
+    recordId: Id
+    schemaId: Id
+    data: JsonValue
+    updatedAt: IsoDateTimeString
 }
 
-/* Patch types */
+export const RecordSnapshotSchema = z.object({
+    data: JsonValueSchema,
+    recordId: IdSchema,
+    schemaId: IdSchema,
+    updatedAt: IsoDateTimeStringSchema,
+})
 
-/** A single patch operation following the JSON Patch specification (RFC 6902). */
-export type PatchOperation = {
-    op: 'add' | 'remove' | 'replace'
-    path: string
-    value?: unknown
+export type Attachment = {
+    id: Id
+    storageKey: string
+    contentType: string
+    filename?: string
+    byteSize?: number
+    createdAt: IsoDateTimeString
 }
 
-/** A Patch is an ordered array of operations that can be applied atomically to an object. */
-export type Patch = Array<PatchOperation>
+export const AttachmentSchema = z.object({
+    byteSize: z.number().int().nonnegative().optional(),
+    contentType: z.string().min(1),
+    createdAt: IsoDateTimeStringSchema,
+    filename: z.string().min(1).optional(),
+    id: IdSchema,
+    storageKey: z.string().min(1),
+})
 
-/* Utility functions */
+export type EvidenceOwner =
+    | {
+          kind: 'record'
+          recordId: Id
+      }
+    | {
+          kind: 'global'
+      }
 
-/**
- * Apply a patch to an object, returning a new object with the changes applied. This does not mutate the input. Paths
- * use JSON Pointer notation (e.g. "/a/b/0").
- */
-export function applyPatch<T>(data: T, patch: Patch): T {
-    // Deep clone the data to avoid mutating the original. structuredClone is
-    // preferred when available; fallback to JSON clone otherwise.
-    const clone: any =
-        typeof (globalThis as any).structuredClone === 'function'
-            ? (globalThis as any).structuredClone(data)
-            : JSON.parse(JSON.stringify(data))
+export const EvidenceOwnerSchema = z.union([
+    z.object({ kind: z.literal('record'), recordId: IdSchema }),
+    z.object({ kind: z.literal('global') }),
+])
 
-    for (const op of patch) {
-        const segments = op.path.split('/').slice(1).map(decodeURIComponent)
-        let target: any = clone
-        for (let i = 0; i < segments.length - 1; i++) {
-            const key = segments[i]
-            if (!(key in target)) {
-                target[key] = {}
+export type EvidenceGroup = {
+    id: Id
+    owner: EvidenceOwner
+    title: string
+    createdAt: IsoDateTimeString
+}
+
+export const EvidenceGroupSchema = z.object({
+    createdAt: IsoDateTimeStringSchema,
+    id: IdSchema,
+    owner: EvidenceOwnerSchema,
+    title: z.string().min(1),
+})
+
+export type EvidenceItemBase = {
+    id: Id
+    groupId: Id
+    createdAt: IsoDateTimeString
+    summary?: string
+}
+
+export type EvidenceTextItem = EvidenceItemBase & {
+    type: 'text'
+    text: string
+}
+
+export type EvidenceUrlItem = EvidenceItemBase & {
+    type: 'url'
+    url: string
+}
+
+export type EvidenceImageItem = EvidenceItemBase & {
+    type: 'image'
+    attachmentId: Id
+}
+
+export type EvidenceAudioItem = EvidenceItemBase & {
+    type: 'audio'
+    attachmentId: Id
+}
+
+export type EvidencePdfItem = EvidenceItemBase & {
+    type: 'pdf'
+    attachmentId: Id
+}
+
+export type EvidenceItem =
+    | EvidenceAudioItem
+    | EvidenceImageItem
+    | EvidencePdfItem
+    | EvidenceTextItem
+    | EvidenceUrlItem
+
+export const EvidenceItemSchema = z.discriminatedUnion('type', [
+    z.object({
+        createdAt: IsoDateTimeStringSchema,
+        groupId: IdSchema,
+        id: IdSchema,
+        summary: z.string().min(1).optional(),
+        text: z.string(),
+        type: z.literal('text'),
+    }),
+    z.object({
+        createdAt: IsoDateTimeStringSchema,
+        groupId: IdSchema,
+        id: IdSchema,
+        summary: z.string().min(1).optional(),
+        type: z.literal('url'),
+        url: z.string().url(),
+    }),
+    z.object({
+        attachmentId: IdSchema,
+        createdAt: IsoDateTimeStringSchema,
+        groupId: IdSchema,
+        id: IdSchema,
+        summary: z.string().min(1).optional(),
+        type: z.literal('image'),
+    }),
+    z.object({
+        attachmentId: IdSchema,
+        createdAt: IsoDateTimeStringSchema,
+        groupId: IdSchema,
+        id: IdSchema,
+        summary: z.string().min(1).optional(),
+        type: z.literal('audio'),
+    }),
+    z.object({
+        attachmentId: IdSchema,
+        createdAt: IsoDateTimeStringSchema,
+        groupId: IdSchema,
+        id: IdSchema,
+        summary: z.string().min(1).optional(),
+        type: z.literal('pdf'),
+    }),
+])
+
+export type Proposal = {
+    id: Id
+    createdAt: IsoDateTimeString
+    path: JsonPointer
+    value: JsonValue
+    confidence: number
+    evidenceItemIds: Array<Id>
+    note?: string
+}
+
+export const ProposalSchema = z.object({
+    confidence: z.number().min(0).max(1),
+    createdAt: IsoDateTimeStringSchema,
+    evidenceItemIds: z.array(IdSchema),
+    id: IdSchema,
+    note: z.string().min(1).optional(),
+    path: JsonPointerSchema,
+    value: JsonValueSchema,
+})
+
+/** Escapes one JSON Pointer segment. */
+export function escapeJsonPointerSegment(segment: string): string {
+    return segment.replaceAll('~', '~0').replaceAll('/', '~1')
+}
+
+/** Unescapes one JSON Pointer segment. */
+export function unescapeJsonPointerSegment(segment: string): string {
+    return segment.replaceAll('~1', '/').replaceAll('~0', '~')
+}
+
+/** Converts a JSON Pointer string to unescaped segments. */
+export function parseJsonPointer(pointer: JsonPointer): Array<string> {
+    if (pointer === '') return []
+    if (!pointer.startsWith('/')) {
+        throw new Error('Invalid JSON Pointer: must start with "/" or be ""')
+    }
+    return pointer.split('/').slice(1).map(unescapeJsonPointerSegment)
+}
+
+/** Converts segments to a JSON Pointer string. */
+export function formatJsonPointer(segments: ReadonlyArray<string>): JsonPointer {
+    if (segments.length === 0) return ''
+    return `/${segments.map(escapeJsonPointerSegment).join('/')}`
+}
+
+function isNonNegativeIntegerString(value: string): boolean {
+    return /^(0|[1-9]\d*)$/.test(value)
+}
+
+function isJsonObject(value: JsonValue): value is JsonObject {
+    return value !== null && typeof value === 'object' && !Array.isArray(value)
+}
+
+/** Reads a value at a pointer, preserving whether it exists. */
+export function getAtJsonPointer(args: { data: JsonValue; pointer: JsonPointer }): ValueRef {
+    const segments = parseJsonPointer(args.pointer)
+    let current: JsonValue = args.data
+
+    if (segments.length === 0) return { exists: true, value: current }
+
+    for (const segment of segments) {
+        if (Array.isArray(current)) {
+            if (!isNonNegativeIntegerString(segment)) return { exists: false }
+            const index = Number(segment)
+            if (!Number.isSafeInteger(index) || index < 0 || index >= current.length) {
+                return { exists: false }
             }
-            target = target[key]
+            current = current[index] as JsonValue
+            continue
         }
-        const last = segments[segments.length - 1]
-        switch (op.op) {
-            case 'add':
-            case 'replace':
-                target[last] = op.value
-                break
-            case 'remove':
-                if (Array.isArray(target)) {
-                    target.splice(Number(last), 1)
-                } else {
-                    delete target[last]
-                }
-                break
+
+        if (isJsonObject(current)) {
+            if (!(segment in current)) return { exists: false }
+            current = current[segment] as JsonValue
+            continue
         }
+
+        return { exists: false }
     }
-    return clone as T
+
+    return { exists: true, value: current }
 }
 
-/**
- * Invert a patch by reversing the order of operations and swapping add/remove. Replace operations are inverted with
- * remove when no previous value is known. For a full implementation you would capture previous values when applying
- * patches.
- */
-export function invertPatch(patch: Patch): Patch {
-    return [...patch].reverse().map((op) => {
-        if (op.op === 'add') {
-            return { op: 'remove', path: op.path } as PatchOperation
+function setAtSegments(args: {
+    current: JsonValue
+    segments: ReadonlyArray<string>
+    value: JsonValue
+}): JsonValue {
+    if (args.segments.length === 0) return args.value
+
+    const [head, ...tail] = args.segments
+
+    if (Array.isArray(args.current) && isNonNegativeIntegerString(head)) {
+        const index = Number(head)
+        const nextCurrent: JsonValue =
+            index >= 0 && index < args.current.length
+                ? (args.current[index] as JsonValue)
+                : nextContainerForNextSegment(tail[0])
+
+        const nextValue = setAtSegments({
+            current: nextCurrent,
+            segments: tail,
+            value: args.value,
+        })
+
+        const copy = args.current.slice()
+        if (index === copy.length) {
+            copy.push(nextValue)
+        } else {
+            copy[index] = nextValue
         }
-        if (op.op === 'remove') {
-            return {
-                op: 'add',
-                path: op.path,
-                value: op.value,
-            } as PatchOperation
-        }
-        // For replace we cannot know the old value; treat as remove.
-        return { op: 'remove', path: op.path } as PatchOperation
+        return copy
+    }
+
+    const objectCurrent: JsonObject = isJsonObject(args.current) ? args.current : {}
+
+    const nextCurrent: JsonValue =
+        head in objectCurrent ? (objectCurrent[head] as JsonValue) : nextContainerForNextSegment(tail[0])
+
+    const nextValue = setAtSegments({
+        current: nextCurrent,
+        segments: tail,
+        value: args.value,
     })
+
+    return { ...objectCurrent, [head]: nextValue }
 }
 
-/** Utility to get a value at a JSON pointer. Returns undefined if the path does not exist. */
-export function getAtPath(obj: unknown, pointer: string): unknown {
-    const segments = pointer.split('/').slice(1).map(decodeURIComponent)
-    let target: any = obj
-    for (const key of segments) {
-        if (target == null) return undefined
-        target = target[key]
+function nextContainerForNextSegment(nextSegment: string | undefined): JsonValue {
+    if (nextSegment === undefined) return {}
+    if (isNonNegativeIntegerString(nextSegment)) return []
+    return {}
+}
+
+function removeAtSegments(args: { current: JsonValue; segments: ReadonlyArray<string> }): JsonValue {
+    if (args.segments.length === 0) {
+        throw new Error('Refusing to delete the root document')
     }
-    return target
-}
 
-/** Utility to set a value at a JSON pointer on an object, mutating the object. Creates intermediate objects as needed. */
-export function setAtPath(obj: any, pointer: string, value: unknown): void {
-    const segments = pointer.split('/').slice(1).map(decodeURIComponent)
-    let target: any = obj
-    for (let i = 0; i < segments.length - 1; i++) {
-        const key = segments[i]
-        if (!(key in target) || typeof target[key] !== 'object') {
-            target[key] = {}
+    const [head, ...tail] = args.segments
+
+    if (tail.length === 0) {
+        if (Array.isArray(args.current) && isNonNegativeIntegerString(head)) {
+            const index = Number(head)
+            if (index < 0 || index >= args.current.length) return args.current
+            const copy = args.current.slice()
+            copy.splice(index, 1)
+            return copy
         }
-        target = target[key]
+
+        if (isJsonObject(args.current)) {
+            if (!(head in args.current)) return args.current
+            const { [head]: _removed, ...rest } = args.current
+            return rest
+        }
+
+        return args.current
     }
-    const last = segments[segments.length - 1]
-    target[last] = value
+
+    if (Array.isArray(args.current) && isNonNegativeIntegerString(head)) {
+        const index = Number(head)
+        if (index < 0 || index >= args.current.length) return args.current
+        const child = args.current[index] as JsonValue
+        const nextChild = removeAtSegments({ current: child, segments: tail })
+        if (nextChild === child) return args.current
+        const copy = args.current.slice()
+        copy[index] = nextChild
+        return copy
+    }
+
+    if (isJsonObject(args.current)) {
+        if (!(head in args.current)) return args.current
+        const child = args.current[head] as JsonValue
+        const nextChild = removeAtSegments({ current: child, segments: tail })
+        if (nextChild === child) return args.current
+        return { ...args.current, [head]: nextChild }
+    }
+
+    return args.current
 }
 
-/** Deterministic JSON stringify with stable key ordering. Useful for hashing. */
-export function stableStringify(value: unknown): string {
-    if (value && typeof value === 'object' && !Array.isArray(value)) {
-        const sorted: Record<string, unknown> = {}
-        for (const key of Object.keys(value as any).sort()) {
-            sorted[key] = (value as any)[key]
-        }
-        return JSON.stringify(sorted)
+/** Sets a value at a pointer immutably (creating intermediate objects/arrays). */
+export function setAtJsonPointer(args: {
+    data: JsonValue
+    pointer: JsonPointer
+    value: JsonValue
+}): JsonValue {
+    const segments = parseJsonPointer(args.pointer)
+    return setAtSegments({ current: args.data, segments, value: args.value })
+}
+
+/** Removes a value at a pointer immutably. Array removals shift remaining elements. */
+export function removeAtJsonPointer(args: { data: JsonValue; pointer: JsonPointer }): JsonValue {
+    const segments = parseJsonPointer(args.pointer)
+    return removeAtSegments({ current: args.data, segments })
+}
+
+/** Creates a reversible change op by capturing the current value at `path`. */
+export function createChangeOp(args: {
+    data: JsonValue
+    path: JsonPointer
+    after: ValueRef
+}): OperatorPatchOp {
+    return {
+        after: args.after,
+        before: getAtJsonPointer({ data: args.data, pointer: args.path }),
+        op: 'change',
+        path: args.path,
     }
-    return JSON.stringify(value)
+}
+
+/** Applies a reversible patch to JSON data immutably. */
+export function applyOperatorPatch(args: { data: JsonValue; patch: OperatorPatch }): JsonValue {
+    return args.patch.reduce((current, op) => {
+        if (op.op !== 'change') return current
+        if (op.after.exists) {
+            return setAtJsonPointer({
+                data: current,
+                pointer: op.path,
+                value: op.after.value,
+            })
+        }
+        return removeAtJsonPointer({ data: current, pointer: op.path })
+    }, args.data)
+}
+
+/** Inverts a reversible patch. */
+export function invertOperatorPatch(patch: OperatorPatch): OperatorPatch {
+    return [...patch].reverse().map((op) => ({ ...op, after: op.before, before: op.after }))
+}
+
+function sortJsonKeys(value: JsonValue): JsonValue {
+    if (Array.isArray(value)) return value.map(sortJsonKeys)
+    if (isJsonObject(value)) {
+        const keys = Object.keys(value).sort()
+        const sorted: JsonObject = {}
+        for (const key of keys) {
+            sorted[key] = sortJsonKeys(value[key] as JsonValue)
+        }
+        return sorted
+    }
+    return value
+}
+
+/** Stable JSON stringify (recursively sorts object keys). */
+export function stableStringify(value: JsonValue): string {
+    return JSON.stringify(sortJsonKeys(value))
 }

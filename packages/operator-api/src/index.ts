@@ -1,4 +1,7 @@
-// API server placeholder. In a complete implementation this file would create
-// an Express router exposing endpoints for proposals, derivations and uploads.
-
-export const apiPlaceholder = undefined
+/**
+ * Server-side API package placeholder.
+ *
+ * This package is the boundary for AI/derivations. It is intentionally not used
+ * by `@operator/ui`.
+ */
+export const apiPlaceholder: null = null

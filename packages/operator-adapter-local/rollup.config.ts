@@ -1,21 +1,19 @@
 import { defineConfig } from 'rollup'
-import esbuild from 'rollup-plugin-esbuild'
 import dts from 'rollup-plugin-dts'
+import esbuild from 'rollup-plugin-esbuild'
 
 const libraryName = 'OperatorAdapterLocal'
 
 export default defineConfig([
     {
+        external: ['@operator/core', '@operator/store'],
         input: 'src/index.ts',
         output: {
             file: 'dist/index.js',
             format: 'es',
             sourcemap: true,
         },
-        plugins: [
-            esbuild({ target: 'es2019', minify: false, sourcemap: true }),
-        ],
-        external: ['@operator/core', '@operator/store'],
+        plugins: [esbuild({ minify: false, sourcemap: true, target: 'es2019' })],
     },
     {
         input: 'dist/dts/index.d.ts',

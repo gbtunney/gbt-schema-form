@@ -1,39 +1,54 @@
-// Operator store interfaces for persistence and client abstraction.
+import type { Id, JsonValue, Proposal, RecordSnapshot } from '@operator/core'
+
+/**
+ * Persistence + client contracts.
+ *
+ * This package defines types only.
+ *
+ * Rules:
+ * - No `interface`, no `any`, no classes.
+ * - JSON-only values: prefer `JsonValue` where possible.
+ */
 
 export type OperatorStore = {
-    /** Load a record by its ID. Implementations should return undefined if the record does not exist. */
-    loadRecord: (recordId: string) => Promise<unknown | undefined>
+    /** Load a record snapshot by ID. Return `undefined` if it does not exist. */
+    loadRecord: (recordId: Id) => Promise<RecordSnapshot | undefined>
 
-    /** Persist a record. Implementations may choose how to store the data. */
-    saveRecord: (
-        recordId: string,
-        data: unknown,
-        schemaId: string,
-    ) => Promise<void>
+    /** Persist a record snapshot. */
+    saveRecord: (snapshot: RecordSnapshot) => Promise<void>
 
-    /** List records available to the user. Filtering is optional. */
-    listRecords: (query?: unknown) => Promise<Array<unknown>>
+    /** List record snapshots. Filtering is adapter-defined. */
+    listRecords: (args?: { schemaId?: Id }) => Promise<Array<RecordSnapshot>>
 }
 
 export type SchemaResolver = {
-    /** Resolve a schema by its ID. */
-    resolve: (
-        schemaId: string,
-    ) => Promise<{ schemaId: string; jsonSchema: unknown; uiSchema?: unknown }>
+    /** Resolve a JSON Schema bundle by ID. */
+    resolve: (schemaId: Id) => Promise<{
+        schemaId: Id
+        jsonSchema: JsonValue
+        uiSchema?: JsonValue
+    }>
 }
 
 export type ProposalClient = {
-    /** Run proposal generation on an evidence item. Optionally provide currentData. */
+    /** Generate proposals from evidence + current record state. */
     runProposals: (args: {
-        evidenceItemId: string
-        schemaId: string
-        currentData?: unknown
-    }) => Promise<Array<unknown>>
+        evidenceItemId: Id
+        schemaId: Id
+        currentData?: JsonValue
+    }) => Promise<Array<Proposal>>
 }
 
 export type DerivationClient = {
-    ocr: (attachmentId: string) => Promise<string>
-    transcribe: (attachmentId: string) => Promise<string>
+    /** Extract text from an image attachment. */
+    ocr: (attachmentId: Id) => Promise<string>
+
+    /** Transcribe an audio attachment. */
+    transcribe: (attachmentId: Id) => Promise<string>
+
+    /** Fetch and extract text content from a URL. */
     scrape: (url: string) => Promise<string>
-    extractPdf: (attachmentId: string) => Promise<string>
+
+    /** Extract text from a PDF attachment. */
+    extractPdf: (attachmentId: Id) => Promise<string>
 }

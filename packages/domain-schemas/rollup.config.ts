@@ -1,21 +1,19 @@
 import { defineConfig } from 'rollup'
-import esbuild from 'rollup-plugin-esbuild'
 import dts from 'rollup-plugin-dts'
+import esbuild from 'rollup-plugin-esbuild'
 
 const libraryName = 'DomainSchemas'
 
 export default defineConfig([
     {
+        external: ['zod'],
         input: 'src/index.ts',
         output: {
             file: 'dist/index.js',
             format: 'es',
             sourcemap: true,
         },
-        plugins: [
-            esbuild({ target: 'es2019', minify: false, sourcemap: true }),
-        ],
-        external: ['zod'],
+        plugins: [esbuild({ minify: false, sourcemap: true, target: 'es2019' })],
     },
     {
         input: 'dist/dts/index.d.ts',

@@ -35,12 +35,12 @@
 ### Repository Structure
 
 - **[`notes/knowledge_base/`](notes/knowledge_base)**: Contains detailed documentation, including:
-  - **[`FoundationalTypeLayers.md`](notes/knowledge_base/FoundationalTypeLayers.md)**: Explains the three
-    foundational type layers.
-  - **[`VocabularyAndCheatsheet.md`](notes/knowledge_base/VocabularyAndCheatsheet.md)**: A technical
-    vocabulary and TypeScript cheatsheet for types and constraints.
-  - **[`PlanAiGuidedInterview.md`](notes/knowledge_base/PlanAiGuidedInterview.md)**: The guided interview
-    specification and flow design.
+    - **[`FoundationalTypeLayers.md`](notes/knowledge_base/FoundationalTypeLayers.md)**: Explains the three
+      foundational type layers.
+    - **[`VocabularyAndCheatsheet.md`](notes/knowledge_base/VocabularyAndCheatsheet.md)**: A technical
+      vocabulary and TypeScript cheatsheet for types and constraints.
+    - **[`PlanAiGuidedInterview.md`](notes/knowledge_base/PlanAiGuidedInterview.md)**: The guided interview
+      specification and flow design.
 
 ---
 

@@ -2,7 +2,6 @@
 applyTo: '**'
 ---
 
-
 # AI Coding Standards
 
 ## General research
@@ -10,34 +9,38 @@ applyTo: '**'
 1. Provide accurate, factual, and unique answers THAT ARE NOT REPETITIVE, while keeping them WELL-STRUCTURED.
 2. Dive into the essence of EACH question to understand its intent.
 3. Say "I don't know" if the information is unknown to you, without further explanation.
-4. If a question involves multiple topics, separate your response for each topic and simplify complex issues into more manageable steps.
+4. If a question involves multiple topics, separate your response for each topic and simplify complex issues
+   into more manageable steps.
 5. Present several perspectives or solutions when applicable.
 6. Always request clarification for ambiguous questions before answering.
-7. If a question begins with ".", conduct an internet search and respond based on multiple verified sources ensuring their credibility and including links.
-8. For complex questions, include explanations and details for better understanding but keep answers as concise as possible, ideally just a few words.
-
+7. If a question begins with ".", conduct an internet search and respond based on multiple verified sources
+   ensuring their credibility and including links.
+8. For complex questions, include explanations and details for better understanding but keep answers as
+   concise as possible, ideally just a few words.
 
 ## AI Coding standards, domain knowledge, and preferences that AI should follow if possible
 
-- In minimal array/objects function calls, please use words and types whenever
-  possible.
+- In minimal array/objects function calls, please use words and types whenever possible.
+
 ```ts
 /* * Example: this is bad - i dont know what 'c' is and
  has no type, color:string ="default" would be bettter variable * */
-  const    example = [
-       /^btn-link(-(\S+))?$/,
-    ([, , c = "primary"]) =>
-      `btn-focus-${c} text-${c}-600 dark:text-${c}-500 hover:underline underline-offset-4`,
-  ]
+const example = [
+    /^btn-link(-(\S+))?$/,
+    ([, , c = 'primary']) =>
+        `btn-focus-${c} text-${c}-600 dark:text-${c}-500 hover:underline underline-offset-4`,
+]
 
-  /* all variables, functions, types should be words and not single letter */
-  type Wrapped<T   extends string> = Promise<T> ; //BAD!!!!!!!
-  type Wrapped<Type extends string> = Promise<Type>   ; //GOOD!!!!!!!
+/* all variables, functions, types should be words and not single letter */
+type Wrapped<T extends string> = Promise<T> //BAD!!!!!!!
+type Wrapped<Type extends string> = Promise<Type> //GOOD!!!!!!!
 ```
 
-- Please, no // comments unless temporary OR nessecary or make sense at end of line . ALWAYS USE JSDocCOMMENTS (single or multiline, no @return or @params) for documenting and breaking up functions.
+- Please, no // comments unless temporary OR nessecary or make sense at end of line . ALWAYS USE JSDocCOMMENTS
+  (single or multiline, no @return or @params) for documenting and breaking up functions.
 - Local imports should always include applicable {js,cjs,mjs,tsx,jsx} extensions in esm imports
-- IMPORTANT - i use pnpm workspace monorepo. All terminal commands MUST stay in root and use `pnpm --filter=<package-name> <command>` OR `pnpm --filter=<package-name> exec<package-root-dir>` Please try
+- IMPORTANT - i use pnpm workspace monorepo. All terminal commands MUST stay in root and use
+  `pnpm --filter=<package-name> <command>` OR `pnpm --filter=<package-name> exec<package-root-dir>` Please try
   to avoid jumping around via cd to do things to directories besides the root. Do NOT change directories!
 - too many versions make me nervous, I will ask if I want you to make a version or script after I have thought
   about it. I would prefer a single source of truth using canvas if possible, but please make me aware of
@@ -77,14 +80,14 @@ applyTo: '**'
 ### Hardware
 
 - macbook: (currently broken)
-  - Model Identifier: MacBookPro13,2
-  - Processor Name: Dual-Core Intel Core i7
-  - System Firmware Version: 529.120.1.0.0
-  - Serial Number (system): C02SN1FRHF1R
+    - Model Identifier: MacBookPro13,2
+    - Processor Name: Dual-Core Intel Core i7
+    - System Firmware Version: 529.120.1.0.0
+    - Serial Number (system): C02SN1FRHF1R
 - Old MacBook Pro (only working laptop)
-  - Model: MacBookPro10,1 Catalina 
-  - Processor Name: Quad-Core Intel Core i7
-  - Serial Number (system): C02JK9XSDKQ1
+    - Model: MacBookPro10,1 Catalina
+    - Processor Name: Quad-Core Intel Core i7
+    - Serial Number (system): C02JK9XSDKQ1
 - Home Assistant via Home Assistant Green using Alexa
 - iPhone: 16 ProMax
 - iPadPro w Apple Pencil 2nd Gen

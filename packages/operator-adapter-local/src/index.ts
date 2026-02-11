@@ -1,21 +1,59 @@
-// In-memory implementation of OperatorStore for demos and offline development.
-// This store keeps records in a simple JavaScript Map. Evidence and attachments
-// are not implemented here but could be added similarly.
-
+import type { Id, IsoDateTimeString, JsonValue, RecordSnapshot } from '@operator/core'
 import type { OperatorStore } from '@operator/store'
 
-export function createInMemoryStore(): OperatorStore {
-    const records = new Map<string, { data: unknown; schemaId: string }>()
+export type InMemoryStoreState = {
+    recordsById: Record<string, RecordSnapshot>
+}
+
+function nowIsoString(): IsoDateTimeString {
+    return new Date().toISOString()
+}
+
+/**
+ * In-memory `OperatorStore` for demos and offline development.
+ *
+ * Intentional constraints:
+ * - JSON-only payloads (`JsonValue`).
+ * - No persistence across reloads.
+ */
+export function createInMemoryStore(initialState?: InMemoryStoreState): OperatorStore {
+    let state: InMemoryStoreState = initialState ?? { recordsById: {} }
+
     return {
-        async listRecords() {
-            return Array.from(records.values()).map((entry) => entry.data)
+        async listRecords(args) {
+            const all = Object.values(state.recordsById)
+            if (args?.schemaId === undefined) return all
+            return all.filter((snapshot) => snapshot.schemaId === args.schemaId)
         },
         async loadRecord(recordId) {
-            const entry = records.get(recordId)
-            return entry ? entry.data : undefined
+            return state.recordsById[recordId]
         },
-        async saveRecord(recordId, data, schemaId) {
-            records.set(recordId, { data, schemaId })
+        async saveRecord(snapshot) {
+            state = {
+                ...state,
+                recordsById: {
+                    ...state.recordsById,
+                    [snapshot.recordId]: {
+                        ...snapshot,
+                        updatedAt: snapshot.updatedAt ?? nowIsoString(),
+                    },
+                },
+            }
         },
+    }
+}
+
+/** Creates a new record snapshot from JSON data. */
+export function createRecordSnapshot(args: {
+    recordId: Id
+    schemaId: Id
+    data: JsonValue
+    updatedAt?: IsoDateTimeString
+}): RecordSnapshot {
+    return {
+        data: args.data,
+        recordId: args.recordId,
+        schemaId: args.schemaId,
+        updatedAt: args.updatedAt ?? nowIsoString(),
     }
 }

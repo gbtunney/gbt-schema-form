@@ -83,8 +83,8 @@ pnpm --filter=gbt-boilerplate exec node ./workspace.mjs
 export type HelloWorld = string | number
 
 const sampleFunc = (value: HelloWorld): HelloWorld => {
-  console.log('sampleFunc:: ', value)
-  return value
+    console.log('sampleFunc:: ', value)
+    return value
 }
 ```
 
