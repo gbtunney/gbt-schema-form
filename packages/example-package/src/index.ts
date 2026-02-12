@@ -2,7 +2,7 @@
 
 export type HelloWorld = string | number
 
-const sampleFunc = (value: HelloWorld): HelloWorld => {
-    console.log('sampleFunc:: ', value)
+/** Returns the input value unchanged. */
+export function echoHelloWorld(value: HelloWorld): HelloWorld {
     return value
 }
