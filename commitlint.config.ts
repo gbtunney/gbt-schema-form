@@ -7,6 +7,9 @@ import { commitlint, CommitlintUserConfig } from '@snailicide/build-config'
 
 const Configuration: CommitlintUserConfig = commitlint.configuration([
     'root',
+    'core',
+    'store',
+    'ui',
     'notes',
     '@gbt/example-package',
     'todo:fix disable scope',

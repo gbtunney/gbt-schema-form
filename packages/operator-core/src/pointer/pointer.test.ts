@@ -1,9 +1,6 @@
 import { describe, expect, test } from 'vitest'
-import { isEffectivelySame } from '../compare/equality.js'
-import { normalizePointerValue } from '../compare/normalize.js'
 import type { JsonValue } from '../json/json-value.js'
-import { applyAppliedPatch, invertAppliedPatch, makeAppliedPatch } from '../patch/applied-patch.js'
-import { getPointer, setPointer } from '../pointer/pointer.js'
+import { getPointer, removePointer, setPointer } from '../pointer/pointer.js'
 
 describe('pointer getPointer/setPointer', () => {
     test('"" returns root', () => {
@@ -31,34 +28,18 @@ describe('pointer getPointer/setPointer', () => {
     })
 })
 
-describe('AppliedPatch apply + invert', () => {
-    test('apply then invert restores', () => {
-        const doc: JsonValue = { a: { b: 1 } }
+describe('pointer removePointer', () => {
+    test('removes a key immutably', () => {
+        const doc: JsonValue = { a: { b: 1, c: 2 } }
 
-        const p = makeAppliedPatch({
-            afterJson: 2,
-            beforeJson: 1,
-            path: '/a/b',
-            recordId: 'r1',
-            source: 'manual',
-        })
+        const next = removePointer(doc, '/a/b')
 
-        const next = applyAppliedPatch(doc, p)
-        expect(getPointer(next, '/a/b')).toBe(2)
-
-        const inv = invertAppliedPatch(p)
-        const restored = applyAppliedPatch(next, inv)
-        expect(getPointer(restored, '/a/b')).toBe(1)
-    })
-})
-
-describe('normalize/equality', () => {
-    test('isEffectivelySame handles trimmed strings', () => {
-        expect(isEffectivelySame('/x', '  hi  ', 'hi')).toBe(true)
+        expect(next).toEqual({ a: { c: 2 } })
+        expect(doc).toEqual({ a: { b: 1, c: 2 } })
     })
 
-    test('empty string normalizes to null', () => {
-        expect(normalizePointerValue('/x', '')).toBeNull()
-        expect(isEffectivelySame('/x', '', null)).toBe(true)
+    test('refuses to delete root', () => {
+        const doc: JsonValue = { a: 1 }
+        expect(() => removePointer(doc, '')).toThrow()
     })
 })

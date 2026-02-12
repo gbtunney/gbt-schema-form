@@ -2,6 +2,7 @@ import { type Json, objectUtils } from '@snailicide/g-library'
 import { Writable } from 'type-fest'
 import { normalizePointerValue } from './normalize.js'
 import type { JsonValue } from '../json/json-value.js'
+
 /* ------------------ Equality ------------------ */
 
 /**
@@ -36,25 +37,14 @@ function equalsObject(leftValue: Writable<Json.Object>, rightValue: Json.Object)
     if (leftKeys.length !== rightKeys.length) return false
 
     for (const key of leftKeys) {
-        if (leftValue[key] === undefined || rightValue[key] === undefined) return false
+        if (!Object.prototype.hasOwnProperty.call(rightValue, key)) return false
 
-        if (objectUtils.isJsonifiable(leftValue[key]) || objectUtils.isJsonifiable(rightValue[key])) {
-            /**
-             *as Json.Object
-             */
-            const innerLeftVal: JsonValue = leftValue[key]
-            /**
-             *as Json.Object
-             */
-            const innerRightVal: JsonValue = rightValue[key]
+        const innerLeftVal = leftValue[key]
+        const innerRightVal = rightValue[key]
 
-            if (
-                !Object.prototype.hasOwnProperty.call(rightKeys, key) ||
-                !Object.prototype.hasOwnProperty.call(leftKeys, key)
-            )
-                return false
-            if (!jsonEquals(innerLeftVal, innerRightVal)) return false
-        }
+        if (innerLeftVal === undefined || innerRightVal === undefined) return false
+
+        if (!jsonEquals(innerLeftVal as JsonValue, innerRightVal as JsonValue)) return false
     }
     return true
 }

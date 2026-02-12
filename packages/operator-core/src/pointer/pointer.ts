@@ -8,6 +8,36 @@ function isContainer(jsonValue: JsonValue): jsonValue is Json.Object | Json.Arra
     return objectUtils.isJsonifiableObject(jsonValue) || objectUtils.isJsonifiableArray(jsonValue)
 }
 
+/**
+ * Enforce strict JSON Pointer array behavior:
+ * when traversing through an array, the next segment must be a base-10 integer.
+ */
+function assertPointerDoesNotUseArrayProperties(document: JsonValue, pointer: Pointer): void {
+    if (pointer === '') return
+
+    const segments = pointer.split('/').slice(1)
+    let current: JsonValue = document
+
+    for (const segment of segments) {
+        if (objectUtils.isJsonifiableArray(current)) {
+            if (!/^\d+$/.test(segment)) {
+                throw new Error(`Invalid array index segment for pointer: ${pointer}`)
+            }
+
+            const index = Number(segment)
+            current = current[index] as JsonValue
+            continue
+        }
+
+        if (objectUtils.isJsonifiableObject(current) && current !== null) {
+            current = (current)[segment] as JsonValue
+            continue
+        }
+
+        current = undefined as unknown as JsonValue
+    }
+}
+
 function cloneContainer<Type extends Container>(value: Type): JsonValue {
     return structuredClone(value)
 }
@@ -30,6 +60,8 @@ export function setPointer(document: JsonValue, pointer: Pointer, value: JsonVal
     if (!isContainer(document)) {
         throw new Error(`Cannot set non-root pointer on non-container root: ${pointer}`)
     }
+
+    assertPointerDoesNotUseArrayProperties(document, pointer)
 
     const clone = cloneContainer(document)
 

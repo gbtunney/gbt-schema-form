@@ -11,9 +11,30 @@ function cloneJson(value: JsonValue): JsonValue {
 
 export function applyRfc6902Patch(doc: JsonValue, ops: Array<JsonPatchOp>): JsonValue {
     const cloned = cloneJson(doc)
-    const res = applyPatch(cloned as unknown as object, ops)
 
-    // rfc6902 returns { doc, ... }, but typings vary; keep wrapper strict.
-    const next = (res as unknown as { doc: unknown }).doc
-    return next as JsonValue
+    /**
+     * `rfc6902.applyPatch` mutates the passed document in-place.
+     * Return shapes vary by version; handle the common cases.
+     */
+    const result = applyPatch(cloned as unknown as object, ops) as unknown
+
+    if (Array.isArray(result)) {
+        const errorItems = result.filter((item) => {
+            if (typeof item !== 'object' || item === null) return false
+            if (!('error' in item)) return false
+            return Boolean((item as { error?: unknown }).error)
+        })
+
+        if (errorItems.length > 0) {
+            throw new Error('RFC6902 patch failed')
+        }
+
+        return cloned
+    }
+
+    if (typeof result === 'object' && result !== null && 'doc' in result) {
+        return (result as { doc: unknown }).doc as JsonValue
+    }
+
+    return cloned
 }
