@@ -48,6 +48,10 @@
         }
     },
     "dependencies": {
+        "@snailicide/g-library": "^1.2.2",
+        "@types/json-pointer": "^1.0.34",
+        "json-pointer": "^0.6.2",
+        "rfc6902": "^5.1.2",
         "type-fest": "^5.4.4",
         "zod": "^4.3.6"
     },
