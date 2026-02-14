@@ -62,19 +62,21 @@ Pure TypeScript logic + types.
 
 Responsibilities:
 
-- core types: Evidence, Attachments, Proposals, Patches
-- Zod schemas for these core types (not your domain data)
+- core domain types:
+  - Evidence models: `EvidenceGroup`, `EvidenceItem`, `EvidenceAttachment`, `EvidenceOwner`
+  - Record model: `RecordSnapshot`
+  - Proposal model: `FieldProposal
+  - Patch model: `AppliedPatch`
+  - ID types: `RecordId`, `SchemaId`, `EvidenceGroupId`, `EvidenceItemId`, `AttachmentId`
+  - JSON type: `JsonValue`
 - patch functions:
   - apply patch
   - invert patch
-  - undo/redo helpers
-- proposal helpers:
-  - normalize values
-  - equality/similarity checks
-  - hide already-applied proposals
-  - collapse similar proposals
-  - dedupe/rank proposals
-- utility: getAtPath / setAtPath, stable stringify, etc.
+  - make patch (with auto-generated ID/timestamp)
+- JSON Pointer utilities:
+  - `getPointer`, `setPointer`
+- equality/normalization helpers:
+  - `jsonEquals`, `isEffectivelySame`, `normalizePointerValue`
 
 Must not depend on:
 
@@ -82,20 +84,35 @@ Must not depend on:
 - any database library
 - OpenAI SDK
 
+**Note:** No Zod schemas in core - core exports plain TypeScript types only.
+
 ---
 
 ## 2) `@operator/store`
 
-Contracts only: interfaces that make UI pluggable.
+Persistence contracts + Zod validation schemas.
 
 Responsibilities:
 
-- `OperatorStore` interface (CRUD for records/evidence/patches/attachments)
-- `SchemaResolver` interface (load schema by schemaId)
-- `ProposalClient` interface (request proposal generation)
-- `DerivationClient` interface (OCR/transcribe/scrape)
+- **Zod schemas** for validation:
+  - ID schemas: `RecordIdSchema`, `SchemaIdSchema`, etc.
+  - Evidence schemas: `EvidenceGroupSchema`, `EvidenceItemSchema`, `EvidenceOwnerSchema`
+  - Record schema: `RecordDocSchema`
+  - Proposal schema: `FieldProposalSchema`, `ProposalRequestSchema`
+  - Timestamp schema: `IsoDateTimeStringSchema`
+- **DI Port types** (TypeScript function contracts):
+  - `OperatorStore` - persistence interface for records/evidence/patches
+  - `SchemaResolver` - load JSON schema by schemaId
+  - `ProposalClient` - request AI proposal generation
 
-No implementations. No DB dependencies.
+**Architecture:**
+
+- Domain types come from `@operator/core`
+- Zod schemas in `@operator/store` validate these types
+- Store contract uses plain TypeScript function types (not Zod function schemas)
+- No implementations - only contracts
+
+Dependencies: `@operator/core`, `zod`
 
 ---
 

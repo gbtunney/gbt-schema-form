@@ -1,15 +1,18 @@
 # STORE.md
 
-## Operator Store — Persistence Contract (Types-First)
+## Operator Store — Persistence Contract
 
 This document defines the **store contract** used by the Operator system. The store is a **functional DI
 port**: a plain object of functions.
 
-No classes.  
-No `interface`.  
-No `any`.  
-`unknown` only at true boundaries.  
-Zod 4–compatible.
+**Implementation approach:**
+
+- Domain models (Evidence, Record, Proposal) defined in `@operator/core` as TypeScript types
+- Zod schemas in `@operator/store` validate data structures
+- Store contract uses plain TypeScript function types
+- No classes, no `interface`, no `any`
+- `unknown` only at true boundaries
+- Zod 4–compatible
 
 The Operator UI depends **only** on this contract.
 
@@ -47,20 +50,28 @@ It **does**:
 
 ## Shared primitives
 
-```ts
-export type RecordId = string
-export type SchemaId = string
+All ID types are exported from `@operator/core`:
 
-export type GroupId = string
-export type ItemId = string
-export type AttachmentId = string
-export type PatchId = string
+```ts
+import type { RecordId, SchemaId, EvidenceGroupId, EvidenceItemId, AttachmentId } from '@operator/core'
+```
+
+Zod schemas for validation are in `@operator/store`:
+
+```ts
+import {
+  RecordIdSchema,
+  SchemaIdSchema,
+  EvidenceGroupIdSchema,
+  EvidenceItemIdSchema,
+  AttachmentIdSchema,
+} from '@operator/store'
 ```
 
 JSON values are always JSON-safe:
 
 ```ts
-import { JsonValue } from '@operator/core/json'
+import type { JsonValue } from '@operator/core'
 ```
 
 ---
@@ -69,12 +80,26 @@ import { JsonValue } from '@operator/core/json'
 
 A record is always a **schema + JSON document** pair.
 
+Type from `@operator/core`:
+
 ```ts
-export type RecordSnapshot = {
-  recordId: RecordId
-  schemaId: SchemaId
-  data: JsonValue
-}
+import type { RecordSnapshot } from '@operator/core'
+
+// RecordSnapshot = {
+//   id: RecordId
+//   schemaId: SchemaId
+//   data: JsonValue
+//   createdAt: string
+//   updatedAt: string
+// }
+```
+
+Zod schema from `@operator/store`:
+
+```ts
+import { RecordDocSchema } from '@operator/store'
+
+// RecordDoc = same shape as RecordSnapshot, validated by Zod
 ```
 
 The store does not validate `data` against the schema. Validation is handled by the UI / schema engine.
@@ -83,85 +108,86 @@ The store does not validate `data` against the schema. Validation is handled by 
 
 ## Evidence models (from @operator/core)
 
-The store persists these **as-is**:
+All Evidence domain models are defined in `@operator/core`:
 
-- `EvidenceGroup`
-- `EvidenceItem`
-- `EvidenceAttachment`
-- `AppliedPatch`
+```ts
+import type {
+  EvidenceOwner, // { kind: 'record'; recordId } | { kind: 'draft' }
+  EvidenceGroup,
+  EvidenceItem,
+  EvidenceAttachment,
+} from '@operator/core'
+```
 
-The store never mutates their meaning.
+Corresponding Zod schemas for validation are in `@operator/store`:
+
+```ts
+import { EvidenceOwnerSchema, EvidenceGroupSchema, EvidenceItemSchema } from '@operator/store'
+```
+
+The store persists these models as-is and never mutates their meaning.
 
 ---
 
 ## Store contract
 
 ```ts
+import type { OperatorStore } from '@operator/store'
+
 export type OperatorStore = {
   /* ==========================
      Records
      ========================== */
 
-  loadRecord: (recordId: RecordId) => Promise<RecordSnapshot | null>
-
-  saveRecord: (snapshot: RecordSnapshot) => Promise<void>
-
-  listRecords: (args?: { schemaId?: SchemaId; search?: string; limit?: number; offset?: number }) => Promise<
-    {
-      recordId: RecordId
-      schemaId: SchemaId
-      summary?: string
-      updatedAt: string
-    }[]
-  >
+  records: {
+    list?: () => Promise<RecordDoc[]>
+    load: (recordId: string) => Promise<RecordDoc | null>
+    save: (record: RecordDoc) => Promise<void>
+  }
 
   /* ==========================
      Evidence Groups
      ========================== */
 
-  listEvidenceGroups: (recordId: RecordId | null) => Promise<EvidenceGroup[]>
-
-  upsertEvidenceGroup: (group: EvidenceGroup) => Promise<void>
-
-  deleteEvidenceGroup?: (groupId: GroupId) => Promise<void>
+  evidenceGroups: {
+    list: (owner: EvidenceOwner) => Promise<EvidenceGroup[]>
+    create: (args: { owner: EvidenceOwner; title: string }) => Promise<EvidenceGroup>
+  }
 
   /* ==========================
      Evidence Items
      ========================== */
 
-  listEvidenceItems: (groupId: GroupId) => Promise<EvidenceItem[]>
-
-  upsertEvidenceItem: (item: EvidenceItem) => Promise<void>
-
-  deleteEvidenceItem: (itemId: ItemId) => Promise<void>
-
-  /* ==========================
-     Attachments
-     ========================== */
-
-  listAttachments: (itemId: ItemId) => Promise<EvidenceAttachment[]>
-
-  upsertAttachment: (attachment: EvidenceAttachment) => Promise<void>
+  evidenceItems: {
+    list: (groupId: string) => Promise<EvidenceItem[]>
+    create: (args: { groupId: string; title: string; text: string }) => Promise<EvidenceItem>
+    update?: (args: {
+      id: string
+      patch: Partial<Omit<EvidenceItem, 'id' | 'groupId' | 'createdAt'>>
+    }) => Promise<EvidenceItem>
+  }
 
   /* ==========================
      Patches (history)
      ========================== */
 
-  listPatches: (recordId: RecordId) => Promise<AppliedPatch[]>
-
-  appendPatch: (patch: AppliedPatch) => Promise<void>
+  patches: {
+    list: (recordId: string) => Promise<AppliedPatch[]>
+    append: (patch: AppliedPatch) => Promise<void>
+  }
 }
 ```
 
-All methods are **idempotent where possible**. Upserts are preferred to partial updates.
+All methods return Promises. Create operations generate IDs and timestamps automatically.
 
 ---
 
 ## Draft behavior
 
-- `recordId = null` on `EvidenceGroup` means **draft**
+- `owner: {kind: 'draft'}` on `EvidenceGroup` means **draft** (not attached to a record)
+- `owner: {kind: 'record', recordId}` means attached to that record
 - Draft evidence may exist before a record exists
-- Draft groups can later be attached to a record
+- Draft groups can later be attached to a record by updating the owner
 
 The store must support this flow.
 
@@ -174,8 +200,8 @@ When applying a proposal in the UI:
 1. UI computes a patch
 2. UI updates in-memory `data`
 3. UI calls:
-   - `appendPatch(patch)`
-   - `saveRecord(snapshot)`
+   - `store.patches.append(patch)`
+   - `store.records.save(snapshot)`
 
 Adapters **should** ensure atomicity where possible.
 
