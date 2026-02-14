@@ -14,7 +14,7 @@ export const deriveOcrEndpoint = {
     input: z
         .object({
             base64: z.string().optional(),
-            imageUrl: z.string().url().optional(),
+            imageUrl: z.url().optional(),
         })
         .refine((data) => data.imageUrl || data.base64, {
             message: 'Provide either imageUrl or base64',

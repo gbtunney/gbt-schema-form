@@ -15,11 +15,11 @@ export const env = {
      * API key for the OpenAI client. Required when real proposals are
      * implemented. Leave empty for the mock service.
      */
-    openaiApiKey: process.env.OPENAI_API_KEY ?? '',
+    openaiApiKey: process.env['OPENAI_API_KEY'] ?? '',
 
     /**
      * Port number the server will listen on. Falls back to 3001 when not
      * provided. Use strings here because environment variables are strings.
      */
-    port: process.env.PORT ?? '3001',
+    port: process.env['PORT'] ?? '3001',
 }

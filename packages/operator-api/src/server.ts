@@ -59,7 +59,7 @@ export function buildServices(): Services {
  * services and binds routes to handlers. If no services are passed
  * explicitly, the default mock services are used.
  */
-export function buildServer(services: Services = buildServices()) {
+export function buildServer(services: Services = buildServices()): express.Express {
     const app = express()
     app.use(express.json())
 
@@ -80,8 +80,11 @@ export function buildServer(services: Services = buildServices()) {
     /**
      * Generic helper to validate derivation inputs and return text
      */
-    function deriveEndpoint(inputSchema: z.ZodTypeAny, handler: (args: any) => Promise<string>) {
-        return async (req: express.Request, res: express.Response) => {
+    function deriveEndpoint(
+        inputSchema: z.ZodType,
+        handler: (args: any) => Promise<string>,
+    ): (req: express.Request, res: express.Response) => Promise<void> {
+        return async (req: express.Request, res: express.Response): Promise<void> => {
             try {
                 const input = inputSchema.parse(req.body)
                 const text = await handler(input)
@@ -96,7 +99,7 @@ export function buildServer(services: Services = buildServices()) {
     const ocrInputSchema = z
         .object({
             base64: z.string().optional(),
-            imageUrl: z.string().url().optional(),
+            imageUrl: z.url().optional(),
         })
         .refine((data) => data.imageUrl || data.base64, {
             message: 'Provide either imageUrl or base64',
@@ -106,7 +109,7 @@ export function buildServer(services: Services = buildServices()) {
     // POST /derive/whisper — transcribe audio to text
     const whisperInputSchema = z
         .object({
-            audioUrl: z.string().url().optional(),
+            audioUrl: z.url().optional(),
             base64: z.string().optional(),
         })
         .refine((data) => data.audioUrl || data.base64, {
@@ -115,7 +118,7 @@ export function buildServer(services: Services = buildServices()) {
     app.post('/derive/whisper', deriveEndpoint(whisperInputSchema, services.whisper))
 
     // POST /derive/scrape — scrape text from a URL
-    const scrapeInputSchema = z.object({ url: z.string().url() })
+    const scrapeInputSchema = z.object({ url: z.url() })
     app.post('/derive/scrape', deriveEndpoint(scrapeInputSchema, services.scrape))
 
     return app

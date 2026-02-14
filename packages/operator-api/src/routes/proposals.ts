@@ -4,8 +4,7 @@
 // together the input/output schemas with the injected services. See
 // src/server.ts for how this endpoint is bound to an Express route.
 
-import { fieldProposalSchema } from '@operator/core'
-import { proposalRequestSchema } from '@operator/store'
+import { fieldProposalSchema, proposalRequestSchema } from '@operator/store'
 import { z } from 'zod'
 import type { Services } from '../server.js'
 

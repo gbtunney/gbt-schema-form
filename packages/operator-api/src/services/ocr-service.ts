@@ -7,8 +7,8 @@ export type OcrInput = { imageUrl?: string; base64?: string }
 export type OcrService = (input: OcrInput) => Promise<string>
 
 export function createOcrService(): OcrService {
-    return async (input: OcrInput) => {
-        if (input.base64) return input.base64
-        return input.imageUrl ?? ''
+    return (input: OcrInput) => {
+        if (input.base64) return Promise.resolve(input.base64)
+        return Promise.resolve(input.imageUrl ?? '')
     }
 }
