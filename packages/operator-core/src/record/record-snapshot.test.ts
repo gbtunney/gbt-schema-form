@@ -3,14 +3,14 @@ import { recordDocSchema, recordSnapshotSchema } from './record-snapshot.js'
 
 describe('record/record-snapshot recordSnapshotSchema', () => {
     const validRecord = {
+        createdAt: '2024-01-15T10:30:00Z',
+        data: {
+            age: 30,
+            email: 'john@example.com',
+            name: 'John Doe',
+        },
         id: 'record-123',
         schemaId: 'schema-contact-v1',
-        data: {
-            name: 'John Doe',
-            email: 'john@example.com',
-            age: 30,
-        },
-        createdAt: '2024-01-15T10:30:00Z',
         updatedAt: '2024-01-15T12:00:00Z',
     }
 
@@ -29,7 +29,7 @@ describe('record/record-snapshot recordSnapshotSchema', () => {
             { simple: 'value' },
             { nested: { deep: { structure: 'value' } } },
             { array: [1, 2, 3] },
-            { mixed: { strings: 'text', numbers: 42, booleans: true, nulls: null } },
+            { mixed: { booleans: true, nulls: null, numbers: 42, strings: 'text' } },
             { arrayOfObjects: [{ id: 1 }, { id: 2 }] },
             null,
             'simple string',
@@ -41,7 +41,7 @@ describe('record/record-snapshot recordSnapshotSchema', () => {
         testData.forEach((data) => {
             const record = { ...validRecord, data }
             const result = recordSnapshotSchema.safeParse(record)
-            expect(result.success, `Should accept data: ${JSON.stringify(data)}`).toBe(true)
+            expect(result.success).toBe(true)
         })
     })
 
@@ -107,10 +107,10 @@ describe('record/record-snapshot recordDocSchema alias', () => {
 
     test('recordDocSchema validates the same way as recordSnapshotSchema', () => {
         const validRecord = {
+            createdAt: '2024-01-15T10:30:00Z',
+            data: { test: 'value' },
             id: 'record-789',
             schemaId: 'schema-test',
-            data: { test: 'value' },
-            createdAt: '2024-01-15T10:30:00Z',
             updatedAt: '2024-01-15T12:00:00Z',
         }
 

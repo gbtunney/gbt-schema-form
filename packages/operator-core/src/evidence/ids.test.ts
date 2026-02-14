@@ -17,19 +17,19 @@ describe('evidence/ids schemas', () => {
     ]
 
     schemas.forEach(({ name, schema }) => {
-        describe(name, () => {
+        describe(`${name}`, () => {
             test('accepts valid non-empty string IDs', () => {
                 const validIds = ['a', '123', 'uuid-1234-5678', 'record_id', 'Very Long ID String']
 
                 validIds.forEach((id) => {
                     const result = schema.safeParse(id)
-                    expect(result.success, `${name} should accept "${id}"`).toBe(true)
+                    expect(result.success).toBe(true)
                 })
             })
 
             test('rejects empty strings', () => {
                 const result = schema.safeParse('')
-                expect(result.success, `${name} should reject empty string`).toBe(false)
+                expect(result.success).toBe(false)
             })
 
             test('rejects non-string values', () => {
@@ -37,7 +37,7 @@ describe('evidence/ids schemas', () => {
 
                 invalidValues.forEach((value) => {
                     const result = schema.safeParse(value)
-                    expect(result.success, `${name} should reject ${typeof value}`).toBe(false)
+                    expect(result.success).toBe(false)
                 })
             })
         })

@@ -3,19 +3,19 @@ import { proposalRequestSchema } from './ports.js'
 
 describe('operator-store/ports proposalRequestSchema', () => {
     const validEvidenceItem = {
-        id: 'item-123',
+        createdAt: '2024-01-15T10:30:00Z',
         groupId: 'group-456',
-        title: 'Test Evidence',
-        text: 'Evidence content',
+        id: 'item-123',
         pinned: false,
         selected: true,
-        createdAt: '2024-01-15T10:30:00Z',
+        text: 'Evidence content',
+        title: 'Test Evidence',
         updatedAt: '2024-01-15T12:00:00Z',
     }
 
     const validRecordData = {
-        name: 'John Doe',
         email: 'john@example.com',
+        name: 'John Doe',
     }
 
     const validProposalRequest = {
@@ -61,9 +61,7 @@ describe('operator-store/ports proposalRequestSchema', () => {
         testDataStructures.forEach((recordData) => {
             const request = { ...validProposalRequest, recordData }
             const result = proposalRequestSchema.safeParse(request)
-            expect(result.success, `Should accept recordData: ${JSON.stringify(recordData)}`).toBe(
-                true
-            )
+            expect(result.success).toBe(true)
         })
     })
 
@@ -123,34 +121,53 @@ describe('operator-store/ports proposalRequestSchema', () => {
 
         invalidValues.forEach((value) => {
             const result = proposalRequestSchema.safeParse(value)
-            expect(result.success, `Should reject: ${typeof value}`).toBe(false)
+            expect(result.success).toBe(false)
         })
     })
 })
 
 describe('operator-store/ports type contracts', () => {
     test('SchemaResolver type allows async schema resolution', () => {
-        /* Type-only test - verifying contract structure */
-        const mockResolver = async (schemaId: string) => ({
-            schemaId,
-            jsonSchema: { type: 'object', properties: {} },
-        })
+        /**
+         * Type-only test - verifying contract structure
+         */
+        const mockResolver = (
+            schemaId: string
+        ): Promise<{
+            schemaId: string
+            jsonSchema: unknown
+        }> =>
+            Promise.resolve({
+                jsonSchema: { properties: {}, type: 'object' },
+                schemaId,
+            })
 
         expect(mockResolver).toBeDefined()
         expect(typeof mockResolver).toBe('function')
     })
 
     test('ProposalClient type allows async proposal generation', () => {
-        /* Type-only test - verifying contract structure */
-        const mockClient = async () => [
-            {
-                id: 'prop-1',
-                evidenceItemId: 'item-1',
-                path: '/field',
-                value: 'test',
-                confidence: 'High' as const,
-            },
-        ]
+        /**
+         * Type-only test - verifying contract structure
+         */
+        const mockClient = (): Promise<
+            Array<{
+                id: string
+                evidenceItemId: string
+                path: string
+                value: string
+                confidence: 'High'
+            }>
+        > =>
+            Promise.resolve([
+                {
+                    confidence: 'High' as const,
+                    evidenceItemId: 'item-1',
+                    id: 'prop-1',
+                    path: '/field',
+                    value: 'test',
+                },
+            ])
 
         expect(mockClient).toBeDefined()
         expect(typeof mockClient).toBe('function')
@@ -159,36 +176,53 @@ describe('operator-store/ports type contracts', () => {
     test('OperatorStore type defines expected port structure', () => {
         /* Type-only test - verifying contract structure exists */
         const mockStore = {
-            records: {
-                load: async () => null,
-                save: async () => {},
-            },
             evidenceGroups: {
-                list: async () => [],
-                create: async () => ({
-                    id: 'group-1',
-                    owner: { kind: 'draft' as const },
-                    title: 'Test',
-                    createdAt: '2024-01-15T10:30:00Z',
-                    updatedAt: '2024-01-15T10:30:00Z',
-                }),
+                create: (): Promise<{
+                    id: string
+                    owner: { kind: 'draft' }
+                    title: string
+                    createdAt: string
+                    updatedAt: string
+                }> =>
+                    Promise.resolve({
+                        createdAt: '2024-01-15T10:30:00Z',
+                        id: 'group-1',
+                        owner: { kind: 'draft' as const },
+                        title: 'Test',
+                        updatedAt: '2024-01-15T10:30:00Z',
+                    }),
+                list: (): Promise<Array<never>> => Promise.resolve([]),
             },
             evidenceItems: {
-                list: async () => [],
-                create: async () => ({
-                    id: 'item-1',
-                    groupId: 'group-1',
-                    title: 'Test',
-                    text: 'Content',
-                    pinned: false,
-                    selected: false,
-                    createdAt: '2024-01-15T10:30:00Z',
-                    updatedAt: '2024-01-15T10:30:00Z',
-                }),
+                create: (): Promise<{
+                    id: string
+                    groupId: string
+                    title: string
+                    text: string
+                    pinned: boolean
+                    selected: boolean
+                    createdAt: string
+                    updatedAt: string
+                }> =>
+                    Promise.resolve({
+                        createdAt: '2024-01-15T10:30:00Z',
+                        groupId: 'group-1',
+                        id: 'item-1',
+                        pinned: false,
+                        selected: false,
+                        text: 'Content',
+                        title: 'Test',
+                        updatedAt: '2024-01-15T10:30:00Z',
+                    }),
+                list: (): Promise<Array<never>> => Promise.resolve([]),
             },
             patches: {
-                list: async () => [],
-                append: async () => {},
+                append: (): Promise<void> => Promise.resolve(),
+                list: (): Promise<Array<never>> => Promise.resolve([]),
+            },
+            records: {
+                load: (): Promise<null> => Promise.resolve(null),
+                save: (): Promise<void> => Promise.resolve(),
             },
         }
 

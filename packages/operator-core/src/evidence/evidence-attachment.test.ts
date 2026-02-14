@@ -3,11 +3,11 @@ import { evidenceAttachmentSchema } from './evidence-attachment.js'
 
 describe('evidence/evidence-attachment evidenceAttachmentSchema', () => {
     const validAttachment = {
+        createdAt: '2024-01-15T10:30:00Z',
         id: 'attach-123',
         itemId: 'item-456',
-        url: 'https://example.com/files/document.pdf',
         mimeType: 'application/pdf',
-        createdAt: '2024-01-15T10:30:00Z',
+        url: 'https://example.com/files/document.pdf',
     }
 
     test('accepts valid evidence attachment with all required fields', () => {
@@ -32,7 +32,7 @@ describe('evidence/evidence-attachment evidenceAttachmentSchema', () => {
         validUrls.forEach((url) => {
             const attachment = { ...validAttachment, url }
             const result = evidenceAttachmentSchema.safeParse(attachment)
-            expect(result.success, `Should accept URL: ${url}`).toBe(true)
+            expect(result.success).toBe(true)
         })
     })
 
@@ -42,7 +42,7 @@ describe('evidence/evidence-attachment evidenceAttachmentSchema', () => {
         invalidUrls.forEach((url) => {
             const attachment = { ...validAttachment, url }
             const result = evidenceAttachmentSchema.safeParse(attachment)
-            expect(result.success, `Should reject invalid URL: ${url}`).toBe(false)
+            expect(result.success).toBe(false)
         })
     })
 
@@ -59,7 +59,7 @@ describe('evidence/evidence-attachment evidenceAttachmentSchema', () => {
         validMimeTypes.forEach((mimeType) => {
             const attachment = { ...validAttachment, mimeType }
             const result = evidenceAttachmentSchema.safeParse(attachment)
-            expect(result.success, `Should accept MIME type: ${mimeType}`).toBe(true)
+            expect(result.success).toBe(true)
         })
     })
 

@@ -3,13 +3,13 @@ import { evidenceItemSchema } from './evidence-item.js'
 
 describe('evidence/evidence-item evidenceItemSchema', () => {
     const validEvidenceItem = {
-        id: 'item-123',
+        createdAt: '2024-01-15T10:30:00Z',
         groupId: 'group-456',
-        title: 'Test Evidence',
-        text: 'This is the evidence content.',
+        id: 'item-123',
         pinned: false,
         selected: true,
-        createdAt: '2024-01-15T10:30:00Z',
+        text: 'This is the evidence content.',
+        title: 'Test Evidence',
         updatedAt: '2024-01-15T12:00:00Z',
     }
 
@@ -67,7 +67,7 @@ describe('evidence/evidence-item evidenceItemSchema', () => {
     })
 
     test('accepts empty strings for title and text', () => {
-        const itemWithEmptyStrings = { ...validEvidenceItem, title: '', text: '' }
+        const itemWithEmptyStrings = { ...validEvidenceItem, text: '', title: '' }
         const result = evidenceItemSchema.safeParse(itemWithEmptyStrings)
         expect(result.success).toBe(true)
     })

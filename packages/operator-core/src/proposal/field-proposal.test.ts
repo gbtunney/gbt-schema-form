@@ -3,12 +3,12 @@ import { fieldProposalSchema } from './field-proposal.js'
 
 describe('proposal/field-proposal fieldProposalSchema', () => {
     const validProposal = {
-        id: 'proposal-123',
+        confidence: 'High' as const,
         evidenceItemId: 'item-456',
+        excerpt: 'Email found in document: user@example.com',
+        id: 'proposal-123',
         path: '/contact/email',
         value: 'user@example.com',
-        confidence: 'High' as const,
-        excerpt: 'Email found in document: user@example.com',
     }
 
     test('accepts valid field proposal with all fields', () => {
@@ -35,7 +35,7 @@ describe('proposal/field-proposal fieldProposalSchema', () => {
         confidenceLevels.forEach((confidence) => {
             const proposal = { ...validProposal, confidence }
             const result = fieldProposalSchema.safeParse(proposal)
-            expect(result.success, `Should accept confidence: ${confidence}`).toBe(true)
+            expect(result.success).toBe(true)
         })
     })
 
@@ -45,7 +45,7 @@ describe('proposal/field-proposal fieldProposalSchema', () => {
         invalidConfidences.forEach((confidence) => {
             const proposal = { ...validProposal, confidence }
             const result = fieldProposalSchema.safeParse(proposal)
-            expect(result.success, `Should reject confidence: ${confidence}`).toBe(false)
+            expect(result.success).toBe(false)
         })
     })
 
@@ -64,7 +64,7 @@ describe('proposal/field-proposal fieldProposalSchema', () => {
         testValues.forEach((value) => {
             const proposal = { ...validProposal, value }
             const result = fieldProposalSchema.safeParse(proposal)
-            expect(result.success, `Should accept value: ${JSON.stringify(value)}`).toBe(true)
+            expect(result.success).toBe(true)
         })
     })
 
@@ -104,7 +104,7 @@ describe('proposal/field-proposal fieldProposalSchema', () => {
         validPaths.forEach((path) => {
             const proposal = { ...validProposal, path }
             const result = fieldProposalSchema.safeParse(proposal)
-            expect(result.success, `Should accept path: ${path}`).toBe(true)
+            expect(result.success).toBe(true)
         })
     })
 

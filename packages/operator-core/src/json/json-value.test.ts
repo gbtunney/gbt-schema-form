@@ -7,7 +7,7 @@ describe('json/json-value jsonValueSchema', () => {
 
         values.forEach((value) => {
             const result = jsonValueSchema.safeParse(value)
-            expect(result.success, `Should accept string: "${value}"`).toBe(true)
+            expect(result.success).toBe(true)
         })
     })
 
@@ -16,7 +16,7 @@ describe('json/json-value jsonValueSchema', () => {
 
         values.forEach((value) => {
             const result = jsonValueSchema.safeParse(value)
-            expect(result.success, `Should accept number: ${value}`).toBe(true)
+            expect(result.success).toBe(true)
         })
     })
 
@@ -25,7 +25,7 @@ describe('json/json-value jsonValueSchema', () => {
 
         values.forEach((value) => {
             const result = jsonValueSchema.safeParse(value)
-            expect(result.success, `Should accept boolean: ${value}`).toBe(true)
+            expect(result.success).toBe(true)
         })
     })
 
@@ -41,13 +41,16 @@ describe('json/json-value jsonValueSchema', () => {
             ['a', 'b', 'c'],
             [true, false, null],
             [1, 'mixed', true, null],
-            [[1, 2], [3, 4]],
+            [
+                [1, 2],
+                [3, 4],
+            ],
             [{ nested: 'object' }],
         ]
 
         arrays.forEach((value) => {
             const result = jsonValueSchema.safeParse(value)
-            expect(result.success, `Should accept array: ${JSON.stringify(value)}`).toBe(true)
+            expect(result.success).toBe(true)
         })
     })
 
@@ -56,15 +59,15 @@ describe('json/json-value jsonValueSchema', () => {
             {},
             { key: 'value' },
             { a: 1, b: 2 },
-            { str: 'text', num: 42, bool: true, nil: null },
+            { bool: true, nil: null, num: 42, str: 'text' },
             { nested: { deep: { object: 'value' } } },
             { arr: [1, 2, 3] },
-            { mixed: { strings: ['a', 'b'], numbers: [1, 2] } },
+            { mixed: { numbers: [1, 2], strings: ['a', 'b'] } },
         ]
 
         objects.forEach((value) => {
             const result = jsonValueSchema.safeParse(value)
-            expect(result.success, `Should accept object: ${JSON.stringify(value)}`).toBe(true)
+            expect(result.success).toBe(true)
         })
     })
 
@@ -106,31 +109,31 @@ describe('json/json-value jsonValueSchema', () => {
 
         invalidNumbers.forEach((value) => {
             const result = jsonValueSchema.safeParse(value)
-            expect(result.success, `Should reject: ${value}`).toBe(false)
+            expect(result.success).toBe(false)
         })
     })
 
     test('handles complex real-world JSON structures', () => {
         const realWorldData = {
-            user: {
-                id: '12345',
-                name: 'John Doe',
-                email: 'john@example.com',
-                active: true,
-                age: null,
-                roles: ['admin', 'user'],
-                metadata: {
-                    lastLogin: '2024-01-15T10:30:00Z',
-                    preferences: {
-                        theme: 'dark',
-                        notifications: true,
-                    },
-                },
-            },
             items: [
                 { id: 1, value: 'First' },
                 { id: 2, value: 'Second' },
             ],
+            user: {
+                active: true,
+                age: null,
+                email: 'john@example.com',
+                id: '12345',
+                metadata: {
+                    lastLogin: '2024-01-15T10:30:00Z',
+                    preferences: {
+                        notifications: true,
+                        theme: 'dark',
+                    },
+                },
+                name: 'John Doe',
+                roles: ['admin', 'user'],
+            },
         }
 
         const result = jsonValueSchema.safeParse(realWorldData)

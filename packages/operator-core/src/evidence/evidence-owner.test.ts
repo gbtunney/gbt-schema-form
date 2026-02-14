@@ -39,11 +39,7 @@ describe('evidence/evidence-owner evidenceOwnerSchema', () => {
     })
 
     test('rejects unknown kind values', () => {
-        const invalidOwners = [
-            { kind: 'unknown' },
-            { kind: 'invalid', recordId: 'rec-123' },
-            { kind: 123 },
-        ]
+        const invalidOwners = [{ kind: 'unknown' }, { kind: 'invalid', recordId: 'rec-123' }, { kind: 123 }]
 
         invalidOwners.forEach((owner) => {
             const result = evidenceOwnerSchema.safeParse(owner)

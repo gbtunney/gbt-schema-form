@@ -5,11 +5,19 @@ describe('evidence/evidence-group evidenceGroupSchema', () => {
     const validRecordOwner = { kind: 'record' as const, recordId: 'rec-123' }
     const validDraftOwner = { kind: 'draft' as const }
 
-    const createValidGroup = (owner: typeof validRecordOwner | typeof validDraftOwner) => ({
-        id: 'group-123',
-        title: 'Test Evidence Group',
-        owner,
+    const createValidGroup = (
+        owner: typeof validRecordOwner | typeof validDraftOwner
+    ): {
+        id: string
+        title: string
+        owner: typeof validRecordOwner | typeof validDraftOwner
+        createdAt: string
+        updatedAt: string
+    } => ({
         createdAt: '2024-01-15T10:30:00Z',
+        id: 'group-123',
+        owner,
+        title: 'Test Evidence Group',
         updatedAt: '2024-01-15T12:00:00Z',
     })
 
