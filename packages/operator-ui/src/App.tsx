@@ -193,7 +193,9 @@ function App(): ReactElement {
                         <tr
                             key={record.id}
                             style={{ borderBottom: '1px solid #eee', cursor: 'pointer' }}
-                            onClick={() => { setSelectedRecordId(record.id); }}
+                            onClick={() => {
+                                setSelectedRecordId(record.id)
+                            }}
                         >
                             <td style={{ padding: '1rem' }}>
                                 {(record.data as { serialNumber?: string })?.serialNumber ?? '-'}

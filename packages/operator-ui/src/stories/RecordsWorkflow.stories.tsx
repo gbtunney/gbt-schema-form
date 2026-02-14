@@ -213,7 +213,9 @@ function RecordsWorkflow(): ReactElement {
                                         {typeof data['category'] === 'string' ? data['category'] : '—'}
                                     </td>
                                     <td style={{ padding: '1rem' }}>
-                                        {typeof data['manufacturer'] === 'string' ? data['manufacturer'] : '—'}
+                                        {typeof data['manufacturer'] === 'string'
+                                            ? data['manufacturer']
+                                            : '—'}
                                     </td>
                                     <td style={{ padding: '1rem' }}>
                                         <span
