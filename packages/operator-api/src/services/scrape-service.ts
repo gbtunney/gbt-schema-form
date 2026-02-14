@@ -7,7 +7,7 @@ export type ScrapeInput = { url: string }
 export type ScrapeService = (input: ScrapeInput) => Promise<string>
 
 export function createScrapeService(): ScrapeService {
-    return async (input: ScrapeInput) => {
-        return `scraped content from ${input.url}`
+    return (input: ScrapeInput) => {
+        return Promise.resolve(`scraped content from ${input.url}`)
     }
 }

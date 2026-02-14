@@ -18,7 +18,7 @@ export function createProposalService(): ProposalService {
                 confidence: 'High',
                 evidenceItemId: request.evidenceItem.id,
                 excerpt: 'Detected model from evidence text',
-                id: `${Date.now()}`,
+                id: String(Date.now()),
                 path: '/model',
                 value: 'Eheim 2211',
             }

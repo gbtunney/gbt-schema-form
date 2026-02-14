@@ -13,7 +13,7 @@ export const deriveWhisperEndpoint = {
     },
     input: z
         .object({
-            audioUrl: z.string().url().optional(),
+            audioUrl: z.url().optional(),
             base64: z.string().optional(),
         })
         .refine((data) => data.audioUrl || data.base64, {

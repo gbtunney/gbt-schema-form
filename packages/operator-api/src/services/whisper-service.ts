@@ -7,8 +7,8 @@ export type WhisperInput = { audioUrl?: string; base64?: string }
 export type WhisperService = (input: WhisperInput) => Promise<string>
 
 export function createWhisperService(): WhisperService {
-    return async (input: WhisperInput) => {
-        if (input.base64) return input.base64
-        return input.audioUrl ?? ''
+    return (input: WhisperInput) => {
+        if (input.base64) return Promise.resolve(input.base64)
+        return Promise.resolve(input.audioUrl ?? '')
     }
 }

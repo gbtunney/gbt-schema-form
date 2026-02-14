@@ -10,6 +10,6 @@ export const deriveScrapeEndpoint = {
         const text = await ctx.services.scrape(input)
         return { text }
     },
-    input: z.object({ url: z.string().url() }),
+    input: z.object({ url: z.url() }),
     output: z.object({ text: z.string() }),
 } as const
