@@ -2,26 +2,16 @@
     "name": "@operator/adapter-drizzle",
     "version": "0.0.0",
     "description": "Drizzle ORM persistence adapter implementing OperatorStore.",
-    "private": true,
-    "main": "dist/index.js",
-    "module": "dist/index.js",
-    "types": "dist/index.d.ts",
-    "exports": {
-        ".": {
-            "import": "./dist/index.js",
-            "require": "./dist/index.js"
-        }
-    },
     "scripts": {
         "\n========== DEVELOPMENT >> ==========": "",
         "dev": "pnpm build:ts --watch",
         "dev:ts": "pnpm build:ts --watch",
-        "dev:rollup": "rollup --watch --config ./rollup.config.js",
+        "dev:rollup": "rollup --watch --config ./rollup.config.mjs",
         "dev:vite": "pnpm exec vite --config ./vite.config.ts",
         "\n========== BUILD >> ==========": "",
         "build": "pnpm build:ts && pnpm build:rollup",
         "build:ts": "pnpm exec tsc --build",
-        "build:rollup": "rollup --config ./rollup.config.js",
+        "build:rollup": "rollup --config ./rollup.config.mjs",
         "build:vite": "pnpm exec vite build --config ./vite.config.ts",
         "\n========== TEST >> ==========": "",
         "test": "vitest run",
@@ -59,5 +49,15 @@
         "rollup-plugin-esbuild": "^6.2.1",
         "typescript": "^5.9.3",
         "vitest": "^4.0.18"
+    },
+    "private": true,
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "require": "./dist/index.js"
+        }
     }
 }
