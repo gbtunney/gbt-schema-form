@@ -1,19 +1,16 @@
 {
     "extends": "@snailicide/build-config/tsconfig-base",
-
     "compilerOptions": {
-        "lib": ["ES2020", "DOM", "DOM.Iterable"],
-        "composite": false,
-        "noEmit": true,
-        "jsxFragmentFactory": "",
-        "jsxFactory": "",
+        //override
+        "jsxFactory": null,
+        "jsxFragmentFactory": null,
+
+        "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
+        "types": ["vite/client"],
         "allowImportingTsExtensions": true,
-        "exactOptionalPropertyTypes": false /*TODO: remove?*/,
-        "jsx": "react-jsx",
-        "allowJs": true,
-        "sourceMap": true,
-        "rootDir": "./",
-        "noUncheckedSideEffectImports": true
+        "noEmit": true,
+        "jsx": "react-jsx"
     },
-    "include": ["**/*.ts", "**/*.tsx"]
+    "include": ["src"]
 }

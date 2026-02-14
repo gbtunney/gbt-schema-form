@@ -1,27 +1,31 @@
 {
     "name": "@operator/ui",
-    "version": "0.0.0",
     "private": true,
     "description": "React components and hooks for the operator user interface.",
+    "version": "0.0.0",
     "scripts": {
         "\n========== DEVELOPMENT >> ==========": "",
-        "dev": "pnpm build:ts --watch",
+        "dev": "pnpm build:ts && pnpm dev:vite",
+        "dev:storybook": "pnpm build:ts && pnpm exec storybook dev -p 6006",
         "dev:ts": "pnpm build:ts --watch",
         "dev:rollup": "rollup --watch --config ./rollup.config.js",
         "dev:vite": "pnpm exec vite --config ./vite.config.ts",
         "\n========== BUILD >> ==========": "",
-        "build": "pnpm build:ts && pnpm build:rollup",
+        "build": "pnpm build:ts && pnpm build:vite",
         "build:ts": "pnpm exec tsc --build",
-        "build:rollup": "rollup --config ./rollup.config.js",
+        "build:storybook": "storybook build",
         "build:vite": "pnpm exec vite build --config ./vite.config.ts",
-        "\n========== TEST >> ==========": "",
-        "test": "vitest run",
-        "test:watch": "vitest watch",
-        "test:repo": "pnpm exec ls $(git rev-parse --show-toplevel)",
+        "\n========== DOCS >> ==========": "",
+        "docs": "pnpm run docs:build",
+        "docs:build": "pnpm run build:storybook",
+        "docs:serve": "pnpm run dev:storybook",
         "\n========== CLEAN >> ==========": "",
         "clean": "pnpm clean:ts && pnpm clean:build",
         "clean:ts": "pnpm exec tsc --build --clean",
-        "clean:build": "pnpm exec rm -rf ./dist ./types",
+        "clean:build": "pnpm exec rm -rf ./dist ./types storybook-static",
+        "\n========== TEST >> ==========": "",
+        "test": "echo '\"\\n===\\n>> Unit Test:: no test specified!'",
+        "chromatic": "npx chromatic --project-token=chpt_6be402f4f5a7153 --build-script-name docs:build",
         "\n========== PUBLISH >> ==========": "",
         "release": "pnpm run prerelease && pnpm changeset",
         "prerelease": "pnpm run build && pnpm run fix && pnpm run check && pnpm test",
@@ -38,30 +42,48 @@
         "lint": "pnpm exec eslint .",
         "lint:md": "pnpm exec markdownlint-cli2 '{./*,./**/*}.md' '#**/node_modules/**' '#packages/test-package/**/*' "
     },
-    "peerDependencies": {
-        "react": ">=17",
-        "react-dom": ">=17"
-    },
     "dependencies": {
         "@operator/core": "workspace:*",
-        "@operator/store": "workspace:*"
+        "@operator/store": "workspace:*",
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0"
     },
     "devDependencies": {
+        "@eslint/js": "^9.39.1",
         "@snailicide/build-config": "^1.4.4",
-        "eslint": "^10.0.0",
-        "rollup": "^4.57.1",
-        "rollup-plugin-dts": "^6.3.0",
-        "rollup-plugin-esbuild": "^6.2.1",
-        "typescript": "^5.9.3",
-        "vitest": "^4.0.18"
+        "@types/node": "^24.10.1",
+        "@types/react": "^19.2.7",
+        "@types/react-dom": "^19.2.3",
+        "@vitejs/plugin-react": "^5.1.1",
+        "eslint": "^9.39.1",
+        "eslint-plugin-react-hooks": "^7.0.1",
+        "eslint-plugin-react-refresh": "^0.4.24",
+        "globals": "^16.5.0",
+        "typescript": "~5.9.3",
+        "typescript-eslint": "^8.48.0",
+        "vite": "^7.3.1"
     },
-    "main": "dist/index.js",
-    "module": "dist/index.js",
-    "types": "dist/index.d.ts",
-    "exports": {
-        ".": {
-            "import": "./dist/index.js",
-            "require": "./dist/index.js"
-        }
-    }
+    "type": "module",
+    "author": {
+        "name": "Gillian Tunney",
+        "email": "gbtunney@mac.com"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/gbtunney/gbt-boilerplate"
+    },
+    "homepage": "https://github.com/gbtunney/gbt-boilerplate",
+    "packageManager": "pnpm@10.29.1+sha512.48dae233635a645768a3028d19545cacc1688639eeb1f3734e42d6d6b971afbf22aa1ac9af52a173d9c3a20c15857cfa400f19994d79a2f626fcc73fccda9bbc",
+    "engines": {
+        "node": "21.x"
+    },
+    "files": [
+        "CHANGELOG.md",
+        "dist",
+        "types"
+    ],
+    "keywords": [
+        "boilerplate"
+    ]
 }
