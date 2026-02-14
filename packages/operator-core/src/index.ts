@@ -22,8 +22,10 @@ export type { EvidenceItem } from './evidence/evidence-item.js'
 export type { EvidenceOwner } from './evidence/evidence-owner.js'
 /** Evidence domain models */
 export type { AttachmentId, EvidenceGroupId, EvidenceItemId, RecordId, SchemaId } from './evidence/ids.js'
+export * as JsonStringified from './json/json-stringified.js'
 /** JSON types */
-export type { JsonValue } from './json/json-value.js'
+export type { JsonSchemaType, JsonValue } from './json/json-value.js'
+export type { jsonValueSchema } from './json/json-value.js'
 
 /** Patches */
 export type { AppliedPatch, PatchSource } from './patch/applied-patch.js'
