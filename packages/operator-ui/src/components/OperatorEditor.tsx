@@ -42,7 +42,7 @@ export function OperatorEditor({
     /** Load existing record if recordId provided */
     useEffect(() => {
         if (activeRecordId) {
-            void store.records.load(activeRecordId).then((loaded: RecordDoc | null) => {
+            void store.records.load(activeRecordId).then((loaded) => {
                 if (loaded) {
                     setRecord(loaded)
                     setFormData((loaded.data ?? {}) as Record<string, JsonSchemaType>)

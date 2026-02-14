@@ -37,7 +37,7 @@ const mockSchemaResolver: SchemaResolver = async (schemaId: string) =>
     })
 
 /** Create store with sample equipment records */
-const createSampleStore = () =>
+const createSampleStore = (): ReturnType<typeof createInMemoryStore> =>
     createInMemoryStore({
         recordsById: new Map<string, RecordDoc>([
             [
@@ -206,9 +206,15 @@ function RecordsWorkflow(): ReactElement {
                                         e.currentTarget.style.background = 'transparent'
                                     }}
                                 >
-                                    <td style={{ padding: '1rem' }}>{String(data['name'] ?? '—')}</td>
-                                    <td style={{ padding: '1rem' }}>{String(data['category'] ?? '—')}</td>
-                                    <td style={{ padding: '1rem' }}>{String(data['manufacturer'] ?? '—')}</td>
+                                    <td style={{ padding: '1rem' }}>
+                                        {typeof data['name'] === 'string' ? data['name'] : '—'}
+                                    </td>
+                                    <td style={{ padding: '1rem' }}>
+                                        {typeof data['category'] === 'string' ? data['category'] : '—'}
+                                    </td>
+                                    <td style={{ padding: '1rem' }}>
+                                        {typeof data['manufacturer'] === 'string' ? data['manufacturer'] : '—'}
+                                    </td>
                                     <td style={{ padding: '1rem' }}>
                                         <span
                                             style={{
@@ -229,7 +235,7 @@ function RecordsWorkflow(): ReactElement {
                                                 padding: '0.25rem 0.75rem',
                                             }}
                                         >
-                                            {String(data['status'] ?? 'Unknown')}
+                                            {typeof data['status'] === 'string' ? data['status'] : 'Unknown'}
                                         </span>
                                     </td>
                                     <td style={{ padding: '1rem' }}>

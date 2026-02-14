@@ -71,7 +71,7 @@ type Wrapped<Type extends string> = Promise<Type> //GOOD!!!!!!!
 
 ## SYSTEM
 
-- node v21.7.3
+- node v20.x (LTS) or higher
 - pnpm 10.9.0 (preferred package manager)
 - python 3.x
 - git version 2.x

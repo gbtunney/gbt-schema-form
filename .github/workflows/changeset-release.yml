@@ -23,7 +23,7 @@ jobs:
             - name: Setup Node.js environment 🛎️
               uses: actions/setup-node@v4
               with:
-                  node-version: '21.7.3'
+                  node-version: 'lts/*'
 
             - name: Install pnpm 🔧
               env:
