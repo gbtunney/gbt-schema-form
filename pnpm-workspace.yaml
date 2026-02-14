@@ -1,5 +1,6 @@
 packages:
     - 'packages/operator-core'
     - 'packages/operator-store'
+    - 'packages/operator-adapter-local'
     # - 'packages/operator-ui'
     #- 'apps/*'

@@ -10,6 +10,7 @@ const Configuration: CommitlintUserConfig = commitlint.configuration([
     'core',
     'store',
     'ui',
+    'adapter-local',
     'notes',
     '@gbt/example-package',
     'todo:fix disable scope',
