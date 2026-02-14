@@ -1,5 +1,5 @@
-import type { AppliedPatch } from '@operator/core'
-import type { EvidenceGroup, EvidenceItem, OperatorStore, RecordDoc } from '@operator/store'
+import type { AppliedPatch, EvidenceGroup, EvidenceItem, RecordDoc } from '@operator/core'
+import type { OperatorStore } from '@operator/store'
 
 /**
  * In-memory state for the local adapter.

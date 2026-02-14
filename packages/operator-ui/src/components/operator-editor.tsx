@@ -1,6 +1,6 @@
-import { JsonSchemaType } from '@operator/core'
+import { type EvidenceItem, JsonSchemaType, type RecordDoc } from '@operator/core'
 
-import type { EvidenceItem, OperatorStore, RecordDoc, SchemaResolver } from '@operator/store'
+import type { OperatorStore, SchemaResolver } from '@operator/store'
 import type { RJSFSchema } from '@rjsf/utils'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
 
@@ -60,7 +60,7 @@ export function OperatorEditor({
             if (!activeRecordId) {
                 setActiveRecordId(currentRecordId)
             }
-
+            console.log('currentRecordId', currentRecordId, 'updatedData', updatedData)
             const now = new Date().toISOString()
             const recordToSave: RecordDoc = {
                 createdAt: record?.createdAt ?? now,

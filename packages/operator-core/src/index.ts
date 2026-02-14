@@ -15,17 +15,30 @@
 export { isEffectivelySame, jsonEquals } from './compare/equality.js'
 export { normalizePointerValue } from './compare/normalize.js'
 
-export type { EvidenceAttachment } from './evidence/evidence-attachment.js'
+/** Evidence domain models (types + schemas) */
+export { type EvidenceAttachment, evidenceAttachmentSchema } from './evidence/evidence-attachment.js'
+export { type EvidenceGroup, evidenceGroupSchema } from './evidence/evidence-group.js'
+export { type EvidenceItem, evidenceItemSchema } from './evidence/evidence-item.js'
+export { type EvidenceOwner, evidenceOwnerSchema } from './evidence/evidence-owner.js'
 
-export type { EvidenceGroup } from './evidence/evidence-group.js'
-export type { EvidenceItem } from './evidence/evidence-item.js'
-export type { EvidenceOwner } from './evidence/evidence-owner.js'
-/** Evidence domain models */
-export type { AttachmentId, EvidenceGroupId, EvidenceItemId, RecordId, SchemaId } from './evidence/ids.js'
+/** ID types and schemas */
+export {
+    type AttachmentId,
+    attachmentIdSchema,
+    type EvidenceGroupId,
+    evidenceGroupIdSchema,
+    type EvidenceItemId,
+    evidenceItemIdSchema,
+    type RecordId,
+    recordIdSchema,
+    type SchemaId,
+    schemaIdSchema,
+} from './evidence/ids.js'
+
 export * as JsonStringified from './json/json-stringified.js'
-/** JSON types */
-export type { JsonSchemaType, JsonValue } from './json/json-value.js'
-export type { jsonValueSchema } from './json/json-value.js'
+
+/** JSON types and schemas */
+export { type JsonSchemaType, type JsonValue, jsonValueSchema } from './json/json-value.js'
 
 /** Patches */
 export type { AppliedPatch, PatchSource } from './patch/applied-patch.js'
@@ -39,7 +52,16 @@ export { applyRfc6902Patch } from './patch/rfc6902.js'
 export type { Pointer } from './pointer/pointer.js'
 export { getPointer, setPointer } from './pointer/pointer.js'
 
-/** Proposals */
-export type { FieldProposal } from './proposal/field-proposal.js'
-/** Record snapshot */
-export type { RecordSnapshot } from './record/record-snapshot.js'
+/** Proposals (types + schemas) */
+export { type FieldProposal, fieldProposalSchema } from './proposal/field-proposal.js'
+
+/** Record snapshot (types + schemas) */
+export {
+    type RecordDoc,
+    recordDocSchema,
+    type RecordSnapshot,
+    recordSnapshotSchema,
+} from './record/record-snapshot.js'
+
+/** Shared schemas */
+export { type IsoDateTimeString, isoDateTimeStringSchema } from './shared.js'

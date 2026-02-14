@@ -1,12 +1,14 @@
 // packages/operator-store/src/ports.ts
-import type { AppliedPatch } from '@operator/core'
+import type {
+    AppliedPatch,
+    EvidenceGroup,
+    EvidenceItem,
+    EvidenceOwner,
+    FieldProposal,
+    RecordDoc,
+} from '@operator/core'
+import { evidenceItemSchema, recordDocSchema, recordIdSchema, schemaIdSchema } from '@operator/core'
 import { z } from 'zod'
-
-import { type EvidenceGroup, type EvidenceItem, evidenceItemSchema, type EvidenceOwner } from './evidence.js'
-import { recordIdSchema, schemaIdSchema } from './ids.js'
-import { type FieldProposal } from './proposal.js'
-import { recordDocSchema } from './record.js'
-import type { RecordDoc } from './record.js'
 
 /**
  * JSON Schema payload for RJSF.

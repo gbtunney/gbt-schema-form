@@ -1,4 +1,5 @@
-import type { EvidenceGroup, EvidenceItem, EvidenceOwner, OperatorStore } from '@operator/store'
+import type { EvidenceGroup, EvidenceItem, EvidenceOwner } from '@operator/core'
+import type { OperatorStore } from '@operator/store'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
 
 export type EvidencePaneProps = {

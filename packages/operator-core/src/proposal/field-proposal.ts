@@ -1,15 +1,18 @@
-import type { EvidenceItemId } from '../evidence/ids.js'
-import type { JsonValue } from '../json/json-value.js'
+import { z } from 'zod'
+import { evidenceItemIdSchema } from '../evidence/ids.js'
+import { jsonValueSchema } from '../json/json-value.js'
 
 /**
  * AI-generated proposal for filling a specific field.
  * Derived from an evidence item.
  */
-export type FieldProposal = {
-    id: string
-    evidenceItemId: EvidenceItemId
-    path: string
-    value: JsonValue
-    confidence: 'High' | 'Medium' | 'Low'
-    excerpt?: string
-}
+export const fieldProposalSchema = z.object({
+    confidence: z.enum(['High', 'Medium', 'Low']),
+    evidenceItemId: evidenceItemIdSchema,
+    excerpt: z.string().optional(),
+    id: z.string(),
+    path: z.string(),
+    value: jsonValueSchema,
+})
+
+export type FieldProposal = z.infer<typeof fieldProposalSchema>

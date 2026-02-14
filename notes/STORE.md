@@ -5,16 +5,18 @@
 This document defines the **store contract** used by the Operator system. The store is a **functional DI
 port**: a plain object of functions.
 
-**Implementation approach:**
+**Architecture:**
 
-- Domain models (Evidence, Record, Proposal) defined in `@operator/core` as TypeScript types
-- Zod schemas in `@operator/store` validate data structures
-- Store contract uses plain TypeScript function types
+- **Domain models** (Evidence, Record, Proposal) defined in `@operator/core` as **Zod schemas**
+- **TypeScript types** inferred from Zod schemas (e.g.,
+  `type EvidenceGroup = z.infer<typeof EvidenceGroupSchema>`)
+- **Store contracts** in `@operator/store` are plain TypeScript function types
+- **Adapters** implement the contracts and use core schemas for validation at boundaries
 - No classes, no `interface`, no `any`
 - `unknown` only at true boundaries
 - Zod 4–compatible
 
-The Operator UI depends **only** on this contract.
+The Operator UI depends **only** on the store contract (ports).
 
 ---
 
@@ -25,6 +27,7 @@ The Operator UI depends **only** on this contract.
 - Domain-agnostic (equipment, pets, anything)
 - Explicit persistence (no hidden writes)
 - Patch-first history
+- Single source of truth (schemas in core, not duplicated)
 
 ---
 
@@ -50,28 +53,33 @@ It **does**:
 
 ## Shared primitives
 
-All ID types are exported from `@operator/core`:
+All ID types and schemas are exported from `@operator/core`:
 
 ```ts
 import type { RecordId, SchemaId, EvidenceGroupId, EvidenceItemId, AttachmentId } from '@operator/core'
-```
 
-Zod schemas for validation are in `@operator/store`:
-
-```ts
 import {
   RecordIdSchema,
   SchemaIdSchema,
   EvidenceGroupIdSchema,
   EvidenceItemIdSchema,
   AttachmentIdSchema,
-} from '@operator/store'
+} from '@operator/core'
+```
+
+Types are inferred from schemas:
+
+```ts
+// In @operator/core
+export const RecordIdSchema = z.string().brand('RecordId')
+export type RecordId = z.infer<typeof RecordIdSchema>
 ```
 
 JSON values are always JSON-safe:
 
 ```ts
 import type { JsonValue } from '@operator/core'
+import { JsonValueSchema } from '@operator/core'
 ```
 
 ---
@@ -80,26 +88,22 @@ import type { JsonValue } from '@operator/core'
 
 A record is always a **schema + JSON document** pair.
 
-Type from `@operator/core`:
+Type and schema from `@operator/core`:
 
 ```ts
 import type { RecordSnapshot } from '@operator/core'
+import { RecordSnapshotSchema } from '@operator/core'
 
-// RecordSnapshot = {
-//   id: RecordId
-//   schemaId: SchemaId
-//   data: JsonValue
-//   createdAt: string
-//   updatedAt: string
-// }
-```
-
-Zod schema from `@operator/store`:
-
-```ts
-import { RecordDocSchema } from '@operator/store'
-
-// RecordDoc = same shape as RecordSnapshot, validated by Zod
+// Schema definition (in @operator/core):
+// export const RecordSnapshotSchema = z.object({
+//   id: RecordIdSchema,
+//   schemaId: SchemaIdSchema,
+//   data: JsonValueSchema,
+//   createdAt: z.string().datetime(),
+//   updatedAt: z.string().datetime(),
+// });
+//
+// export type RecordSnapshot = z.infer<typeof RecordSnapshotSchema>;
 ```
 
 The store does not validate `data` against the schema. Validation is handled by the UI / schema engine.
@@ -119,13 +123,15 @@ import type {
 } from '@operator/core'
 ```
 
-Corresponding Zod schemas for validation are in `@operator/store`:
+Corresponding Zod schemas are also in `@operator/core`:
 
 ```ts
-import { EvidenceOwnerSchema, EvidenceGroupSchema, EvidenceItemSchema } from '@operator/store'
+import { EvidenceOwnerSchema, EvidenceGroupSchema, EvidenceItemSchema } from '@operator/core'
 ```
 
 The store persists these models as-is and never mutates their meaning.
+
+**Note:** Adapters use these schemas to validate data at boundaries (DB reads/writes, API responses).
 
 ---
 

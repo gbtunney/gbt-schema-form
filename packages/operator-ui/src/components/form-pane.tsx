@@ -44,6 +44,23 @@ export function FormPane({ formData, onChange, schema, uiSchema }: FormPaneProps
                     <></>
                 </Form>
             </div>
+            <div className="form-pane__footer">
+                <details>
+                    <summary>
+                        <strong>Form Data (JSON)</strong>
+                    </summary>
+                    <pre
+                        style={{
+                            background: '#f5f5f5',
+                            maxHeight: '300px',
+                            overflow: 'auto',
+                            padding: '1rem',
+                        }}
+                    >
+                        {JSON.stringify(formData, null, 2)}
+                    </pre>
+                </details>
+            </div>
         </div>
     )
 }

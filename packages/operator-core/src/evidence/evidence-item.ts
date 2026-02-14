@@ -1,16 +1,23 @@
-import type { EvidenceGroupId, EvidenceItemId } from './ids.js'
+import { z } from 'zod'
+import {
+    evidenceGroupIdSchema,
+    evidenceItemIdSchema,
+} from './ids.js'
+import { isoDateTimeStringSchema } from '../shared.js'
 
 /**
  * A single piece of evidence within a group.
  * Can contain text, attachments, and generate proposals.
  */
-export type EvidenceItem = {
-    id: EvidenceItemId
-    groupId: EvidenceGroupId
-    title: string
-    text: string
-    pinned: boolean
-    selected: boolean
-    createdAt: string
-    updatedAt: string
-}
+export const evidenceItemSchema = z.object({
+    createdAt: isoDateTimeStringSchema,
+    groupId: evidenceGroupIdSchema,
+    id: evidenceItemIdSchema,
+    pinned: z.boolean(),
+    selected: z.boolean(),
+    text: z.string(),
+    title: z.string(),
+    updatedAt: isoDateTimeStringSchema,
+})
+
+export type EvidenceItem = z.infer<typeof evidenceItemSchema>

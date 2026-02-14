@@ -1,13 +1,17 @@
-import type { AttachmentId, EvidenceItemId } from './ids.js'
+import { z } from 'zod'
+import { attachmentIdSchema, evidenceItemIdSchema } from './ids.js'
+import { isoDateTimeStringSchema } from '../shared.js'
 
 /**
  * File attachment linked to an evidence item.
  * Bytes are stored externally; this tracks metadata.
  */
-export type EvidenceAttachment = {
-    id: AttachmentId
-    itemId: EvidenceItemId
-    url: string
-    mimeType: string
-    createdAt: string
-}
+export const evidenceAttachmentSchema = z.object({
+    createdAt: isoDateTimeStringSchema,
+    id: attachmentIdSchema,
+    itemId: evidenceItemIdSchema,
+    mimeType: z.string(),
+    url: z.string().url(),
+})
+
+export type EvidenceAttachment = z.infer<typeof evidenceAttachmentSchema>

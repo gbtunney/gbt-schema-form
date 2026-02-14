@@ -1,11 +1,10 @@
-export * from './evidence.js'
 /**
  * @packageDocumentation
- * @operator/store - Persistence contracts and Zod schemas for the operator system.
+ * @operator/store - Persistence contracts (ports) for the operator system.
+ *
+ * Domain models and schemas live in @operator/core.
+ * This package defines only the interfaces (ports) that implementations must satisfy.
  */
 
-export * from './ids.js'
-export * from './ports.js'
-export * from './proposal.js'
-export * from './record.js'
-export * from './shared.js'
+export type { JsonSchema, OperatorStore, ProposalClient, ProposalRequest, SchemaResolver } from './ports.js'
+export { proposalRequestSchema } from './ports.js'

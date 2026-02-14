@@ -36,21 +36,29 @@ equipment-inventory/
 
 ## Dependency Rules (import graph)
 
+```
+operator-core (zod only)
+    ↓
+operator-store (types from core)
+    ↓
+operator-ui + operator-adapter-* (implement ports)
+```
+
 Allowed imports:
 
-- `operator-core` → (none)
-- `operator-store` → `operator-core`
-- `operator-ui` → `operator-core`, `operator-store`
-- `operator-adapter-*` → `operator-core`, `operator-store` (and their own deps)
-- `operator-api` → `operator-core` (optional), `domain-schemas` (optional)
-- `domain-schemas` → (zod + schema generator deps only)
+- `operator-core` → `zod` only (no React, no DB, no OpenAI)
+- `operator-store` → `operator-core` (types only, no runtime deps)
+- `operator-ui` → `operator-core` (schemas/types), `operator-store` (ports)
+- `operator-adapter-*` → `operator-core` (schemas/types), `operator-store` (ports), DB libs
+- `operator-api` → `operator-core` (schemas), `domain-schemas` (optional)
+- `domain-schemas` → `zod` + schema generator deps only
 - `apps/*` → everything needed
 
 Not allowed:
 
 - `operator-ui` importing DB or OpenAI
-- `operator-core` importing React
-- `operator-core` importing Drizzle/Prisma
+- `operator-core` importing React, Drizzle, Prisma, or any DB lib
+- `operator-store` importing Zod schemas (imports types from core instead)
 
 ---
 
@@ -58,25 +66,34 @@ Not allowed:
 
 ## 1) `@operator/core`
 
-Pure TypeScript logic + types.
+Pure business logic + data models (no React, no DB, no AI).
 
 Responsibilities:
 
-- core domain types:
-  - Evidence models: `EvidenceGroup`, `EvidenceItem`, `EvidenceAttachment`, `EvidenceOwner`
-  - Record model: `RecordSnapshot`
-  - Proposal model: `FieldProposal
-  - Patch model: `AppliedPatch`
-  - ID types: `RecordId`, `SchemaId`, `EvidenceGroupId`, `EvidenceItemId`, `AttachmentId`
-  - JSON type: `JsonValue`
-- patch functions:
-  - apply patch
-  - invert patch
-  - make patch (with auto-generated ID/timestamp)
-- JSON Pointer utilities:
-  - `getPointer`, `setPointer`
-- equality/normalization helpers:
-  - `jsonEquals`, `isEffectivelySame`, `normalizePointerValue`
+- **Zod schemas** (single source of truth):
+  - Evidence models: `EvidenceGroupSchema`, `EvidenceItemSchema`, `EvidenceAttachmentSchema`,
+    `EvidenceOwnerSchema`
+  - Record model: `RecordSnapshotSchema`
+  - Proposal model: `FieldProposalSchema`
+  - Patch model: `AppliedPatchSchema`
+  - ID schemas: `RecordIdSchema`, `SchemaIdSchema`, `EvidenceGroupIdSchema`, `EvidenceItemIdSchema`,
+    `AttachmentIdSchema`
+  - JSON type: `JsonValueSchema`
+- **TypeScript types** (inferred from Zod):
+  - `EvidenceGroup = z.infer<typeof EvidenceGroupSchema>`
+  - `RecordSnapshot = z.infer<typeof RecordSnapshotSchema>`
+  - etc.
+- **Pure functions**:
+  - patch functions: apply, invert, make patch (with auto-generated ID/timestamp)
+  - JSON Pointer utilities: `getPointer`, `setPointer`
+  - equality/normalization helpers: `jsonEquals`, `isEffectivelySame`, `normalizePointerValue`
+
+**Architecture:**
+
+- Schemas define types (via inference)
+- Zero type duplication
+- Validation happens at boundaries (adapters, UI inputs)
+- Core exports both schemas and types
 
 Must not depend on:
 
@@ -84,35 +101,45 @@ Must not depend on:
 - any database library
 - OpenAI SDK
 
-**Note:** No Zod schemas in core - core exports plain TypeScript types only.
+Dependencies: `zod` only
 
 ---
 
 ## 2) `@operator/store`
 
-Persistence contracts + Zod validation schemas.
+Persistence contracts (DI ports) - implementations live in adapters.
 
 Responsibilities:
 
-- **Zod schemas** for validation:
-  - ID schemas: `RecordIdSchema`, `SchemaIdSchema`, etc.
-  - Evidence schemas: `EvidenceGroupSchema`, `EvidenceItemSchema`, `EvidenceOwnerSchema`
-  - Record schema: `RecordDocSchema`
-  - Proposal schema: `FieldProposalSchema`, `ProposalRequestSchema`
-  - Timestamp schema: `IsoDateTimeStringSchema`
-- **DI Port types** (TypeScript function contracts):
-  - `OperatorStore` - persistence interface for records/evidence/patches
+- **Port interfaces** (TypeScript function types):
+  - `OperatorStore` - persistence contract for records/evidence/patches
   - `SchemaResolver` - load JSON schema by schemaId
   - `ProposalClient` - request AI proposal generation
+  - `DerivationClient` - OCR, transcription, scraping
+- **No implementations** - pure contracts only
+- **No schemas** - imports types/schemas from `@operator/core`
 
 **Architecture:**
 
-- Domain types come from `@operator/core`
-- Zod schemas in `@operator/store` validate these types
-- Store contract uses plain TypeScript function types (not Zod function schemas)
-- No implementations - only contracts
+- Imports types from `@operator/core`
+- Defines function signatures only (plain TS types)
+- No Zod schemas (those live in core)
+- No runtime behavior
+- DI pattern: UI depends on ports, not concrete implementations
 
-Dependencies: `@operator/core`, `zod`
+Example:
+
+```ts
+import type { EvidenceGroup, RecordSnapshot } from '@operator/core'
+
+export type OperatorStore = {
+  loadRecord: (id: string) => Promise<RecordSnapshot | null>
+  listEvidenceGroups: (recordId: string | null) => Promise<EvidenceGroup[]>
+  // ...
+}
+```
+
+Dependencies: `@operator/core` (types only)
 
 ---
 
@@ -148,28 +175,46 @@ Must not depend on:
 
 ## 4) `@operator/adapter-drizzle`
 
-Concrete persistence adapter implementing `OperatorStore`.
+Concrete persistence adapter implementing `OperatorStore` port.
 
 Responsibilities:
 
 - Drizzle schema tables (Postgres/SQLite)
-- CRUD for EquipmentRecord/EvidenceGroup//Attachments/Patches
+- CRUD for Record/EvidenceGroup/Items/Attachments/Patches
 - transactions for applying patches and saving form data
 - optionally: minimal indexing/projection table for grid view
+- **Validation**: uses Zod schemas from `@operator/core` at boundaries
+
+**Architecture:**
+
+- Implements `OperatorStore` interface from `@operator/store`
+- Imports schemas from `@operator/core` for validation
+- DB schema separate from domain schemas
 
 This package is swappable.
+
+Dependencies: `@operator/core`, `@operator/store`, `drizzle-orm`
 
 ---
 
 ## 5) `@operator/adapter-local`
 
-Local storage adapter implementing `OperatorStore`.
+Local/mock persistence adapter implementing `OperatorStore` port.
 
 Responsibilities:
 
 - IndexedDB (Dexie) or in-memory store
 - used for demos, playground, offline dev
-- proves UI independence
+- proves UI independence from backend
+- **Validation**: uses Zod schemas from `@operator/core` at boundaries
+
+**Architecture:**
+
+- Implements `OperatorStore` interface from `@operator/store`
+- Imports schemas from `@operator/core` for validation
+- Can be purely in-memory for testing
+
+Dependencies: `@operator/core`, `@operator/store`, `dexie` (optional)
 
 ---
 

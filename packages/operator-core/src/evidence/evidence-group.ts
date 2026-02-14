@@ -1,14 +1,18 @@
-import type { EvidenceOwner } from './evidence-owner.js'
-import type { EvidenceGroupId } from './ids.js'
+import { z } from 'zod'
+import { evidenceOwnerSchema } from './evidence-owner.js'
+import { evidenceGroupIdSchema } from './ids.js'
+import { isoDateTimeStringSchema } from '../shared.js'
 
 /**
  * A collection of related evidence items.
  * Groups can be owned by a record or exist as drafts.
  */
-export type EvidenceGroup = {
-    id: EvidenceGroupId
-    owner: EvidenceOwner
-    title: string
-    createdAt: string
-    updatedAt: string
-}
+export const evidenceGroupSchema = z.object({
+    createdAt: isoDateTimeStringSchema,
+    id: evidenceGroupIdSchema,
+    owner: evidenceOwnerSchema,
+    title: z.string(),
+    updatedAt: isoDateTimeStringSchema,
+})
+
+export type EvidenceGroup = z.infer<typeof evidenceGroupSchema>

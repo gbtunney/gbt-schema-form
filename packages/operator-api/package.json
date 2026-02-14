@@ -48,7 +48,11 @@
         }
     },
     "dependencies": {
-        "@operator/core": "workspace:*"
+        "@operator/core": "workspace:*",
+        "dotenv": "^17.3.1",
+        "express-zod-api": "^27.0.1",
+        "openai": "^6.22.0",
+        "zod": "^4.3.6"
     },
     "devDependencies": {
         "@snailicide/build-config": "^1.4.4",
