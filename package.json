@@ -12,14 +12,22 @@
         "commit:direct": "git commit --no-verify -m",
         "lint:all": "pnpm fix && pnpm build",
         "\n========== INSPECT >>==========": "",
-        "inspect:lint": "pnpm exec eslint  --inspect-config ",
+        "inspect:nx": "pnpm nx:graph",
+        "inspect:lint": "pnpm exec eslint-config-inspector",
         "inspect:vitest": "pnpm exec vitest --ui",
         "\n========== BUILD >> ==========": "",
-        "build": "pnpm build:self && pnpm build:all",
+        "build": "pnpm build:self && pnpm nx:build",
         "build:self": "pnpm exec tsc --build",
+        "nx:build": "pnpm exec nx run-many -t build",
+        "nx:build:all": "pnpm exec nx run-many --target=build --all",
         "build:all": "pnpm workspace build",
         "\n========== TEST >> ==========": "",
-        "test": "pnpm workspace test",
+        "test": "pnpm nx:test",
+        "nx:test": "pnpm exec nx run-many --target=test",
+        "\n========== NX >> ==========": "",
+        "nx:graph": "pnpm nx graph",
+        "nx:affected": "nx affected --target=build",
+        "nx:reset": "pnpm exec nx reset",
         "\n========== CLEAN >> ==========": "",
         "clean": "pnpm clean:self && pnpm clean:all",
         "clean:self": "pnpm exec tsc --build --clean",
@@ -50,7 +58,7 @@
         "fix:md": "pnpm run lint:md --fix",
         "fix:self": "pnpm prettier --write && pnpm lint --fix && pnpm fix:md",
         "\n========== UNINSTALL >> ==========": "",
-        "uninstall": "pnpm run clean && pnpm uninstall:list && pnpm run uninstall:rm && pnpm run uninstall:lock",
+        "uninstall": "pnpm nx:reset && pnpm run clean && pnpm uninstall:list && pnpm run uninstall:rm && pnpm run uninstall:lock",
         "uninstall:list": "find . -name 'node_modules' -type d -prune",
         "uninstall:rm": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
         "uninstall:lock": "rm -f pnpm-lock.yaml && rm -f packages/**/pnpm-lock.yaml"
@@ -124,5 +132,8 @@
         "commitizen": {
             "path": "@commitlint/cz-commitlint"
         }
+    },
+    "dependencies": {
+        "nx": "^22.5.1"
     }
 }
