@@ -4,8 +4,8 @@ import type { OperatorStore, SchemaResolver } from '@operator/store'
 import type { RJSFSchema } from '@rjsf/utils'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
 
-import { EvidencePane } from './evidence-pane.tsx'
-import { FormPane } from './form-pane.tsx'
+import { EvidencePane } from './EvidencePane.tsx'
+import { FormPane } from './FormPane.tsx'
 import './operator-editor.css'
 
 export type OperatorEditorProps = {

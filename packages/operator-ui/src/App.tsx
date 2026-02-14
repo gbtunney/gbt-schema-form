@@ -4,7 +4,7 @@ import type { JsonSchema, SchemaResolver } from '@operator/store'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
 
 import './App.css'
-import { OperatorEditor } from './components/operator-editor.tsx'
+import { OperatorEditor } from './components/OperatorEditor.tsx'
 
 /** Sample JSON Schema for equipment records */
 const equipmentSchema = {
