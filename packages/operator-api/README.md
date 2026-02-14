@@ -1,12 +1,11 @@
 <!-- Template-inspired header with badges and a succinct description. -->
 
-# @operator/api Operator API (Express Zod API) 
-> (Express Zod API) – Architecture & Build Plan:  Server-side API for AI proposals and derivations
+# @operator/api Operator API (Express Zod API)
+
+> (Express Zod API) – Architecture & Build Plan: Server-side API for AI proposals and derivations
 
 This package scaffolds an Express-based API for integrating AI services such as proposal generation, OCR and
 transcription. It depends on `@operator/core` but otherwise remains backend agnostic.
-
-
 
 ## Package Placement
 
@@ -35,6 +34,7 @@ UI calls an injected `proposalClient` that points to this API.
 `operator-api` should **import those schemas** and use them directly for request/response validation.
 
 That guarantees:
+
 - API and UI stay in sync
 - No duplicated schemas
 - No drift
@@ -45,14 +45,16 @@ That guarantees:
 
 ## 1️⃣ Proposals (Core Loop)
 
-**POST /proposals**
+### POST /proposals
 
 Input:
+
 ```ts
 ProposalRequest
 ```
 
 Output:
+
 ```ts
 FieldProposal[]
 ```
@@ -83,11 +85,7 @@ Implements:
 UI receives these via DI:
 
 ```tsx
-<OperatorEditor
-  store={store}
-  schemaResolver={resolver}
-  proposalClient={proposalClient}
-/>
+<OperatorEditor store={store} schemaResolver={resolver} proposalClient={proposalClient} />
 ```
 
 ---
@@ -109,21 +107,21 @@ UI → store
 
 ```sh
 packages/operator-api/
-  src/
-    index.ts
-    server.ts
-    routes/
-      proposals.ts
-      derive-ocr.ts
-      derive-whisper.ts
-      derive-scrape.ts
-    services/
-      proposal-service.ts
-      ocr-service.ts
-      whisper-service.ts
-      scrape-service.ts
-    config/
-      env.ts
+src/
+index.ts
+server.ts
+routes/
+proposals.ts
+derive-ocr.ts
+derive-whisper.ts
+derive-scrape.ts
+services/
+proposal-service.ts
+ocr-service.ts
+whisper-service.ts
+scrape-service.ts
+config/
+env.ts
 ```
 
 If using OpenAI later, install it only in `@operator/api`.
@@ -135,16 +133,16 @@ If using OpenAI later, install it only in `@operator/api`.
 Example conceptual route definition:
 
 ```ts
-import { z } from "zod";
-import { ProposalRequestSchema, FieldProposalSchema } from "@operator/store";
+import { z } from 'zod'
+import { ProposalRequestSchema, FieldProposalSchema } from '@operator/store'
 
 export const proposalsEndpoint = {
   input: ProposalRequestSchema,
   output: z.array(FieldProposalSchema),
   handler: async ({ input, ctx }) => {
-    return ctx.services.proposals(input);
+    return ctx.services.proposals(input)
   },
-};
+}
 ```
 
 Services are injected via `ctx.services`.
@@ -205,9 +203,9 @@ If evidence contains "model", propose:
 
 ```json
 {
-  path: "/model",
-  value: "Eheim 2211",
-  confidence: 0.9
+  "path": "/model",
+  "value": "Eheim 2211",
+  "confidence": 0.9
 }
 ```
 
@@ -225,4 +223,3 @@ Get apply/undo working first.
 - (later) `GET /attachments/:id`
 
 ---
-

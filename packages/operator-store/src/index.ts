@@ -1,7 +1,7 @@
 /**
  * Persistence contracts (ports) for the operator system.
  *
- * Domain models and schemas live in operator/core.
+ * Domain models and schemas live in @operator/core.
  * This package defines only the interfaces (ports) that implementations must satisfy.
  *
  * @packageDocumentation
