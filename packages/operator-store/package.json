@@ -2,17 +2,18 @@
     "name": "@operator/store",
     "version": "0.0.0",
     "private": true,
+    "type": "module",
     "description": "Contracts and interfaces for plugging different operator persistence backends.",
     "scripts": {
         "\n========== DEVELOPMENT >> ==========": "",
         "dev": "pnpm build:ts --watch",
         "dev:ts": "pnpm build:ts --watch",
-        "dev:rollup": "rollup --watch --config ./rollup.config.js",
+        "dev:rollup": "rollup --watch --config ./rollup.config.mjs",
         "dev:vite": "pnpm exec vite --config ./vite.config.ts",
         "\n========== BUILD >> ==========": "",
         "build": "pnpm build:ts && pnpm build:rollup",
         "build:ts": "pnpm exec tsc --build",
-        "build:rollup": "rollup --config ./rollup.config.js",
+        "build:rollup": "rollup --config ./rollup.config.mjs",
         "build:vite": "pnpm exec vite build --config ./vite.config.ts",
         "\n========== TEST >> ==========": "",
         "test": "vitest run",
@@ -39,7 +40,8 @@
         "lint:md": "pnpm exec markdownlint-cli2 '{./*,./**/*}.md' '#**/node_modules/**' '#packages/test-package/**/*' "
     },
     "dependencies": {
-        "@operator/core": "workspace:*"
+        "@operator/core": "workspace:*",
+        "zod": "^4.3.6"
     },
     "devDependencies": {
         "@snailicide/build-config": "^1.4.4",

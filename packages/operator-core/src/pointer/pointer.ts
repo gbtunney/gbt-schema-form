@@ -30,7 +30,7 @@ function assertPointerDoesNotUseArrayProperties(document: JsonValue, pointer: Po
         }
 
         if (objectUtils.isJsonifiableObject(current) && current !== null) {
-            current = (current)[segment] as JsonValue
+            current = current[segment] as JsonValue
             continue
         }
 

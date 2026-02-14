@@ -26,9 +26,9 @@ applyTo: '**'
 /* * Example: this is bad - i dont know what 'c' is and
  has no type, color:string ="default" would be bettter variable * */
 const example = [
-    /^btn-link(-(\S+))?$/,
-    ([, , c = 'primary']) =>
-        `btn-focus-${c} text-${c}-600 dark:text-${c}-500 hover:underline underline-offset-4`,
+  /^btn-link(-(\S+))?$/,
+  ([, , c = 'primary']) =>
+    `btn-focus-${c} text-${c}-600 dark:text-${c}-500 hover:underline underline-offset-4`,
 ]
 
 /* all variables, functions, types should be words and not single letter */
@@ -75,19 +75,19 @@ type Wrapped<Type extends string> = Promise<Type> //GOOD!!!!!!!
 - pnpm 10.9.0 (preferred package manager)
 - python 3.x
 - git version 2.x
-- MacOS Catalina 10.15.7 (:()
+- MacOS Catalina 10.15.8 (:()
 
 ### Hardware
 
 - macbook: (currently broken)
-    - Model Identifier: MacBookPro13,2
-    - Processor Name: Dual-Core Intel Core i7
-    - System Firmware Version: 529.120.1.0.0
-    - Serial Number (system): C02SN1FRHF1R
+  - Model Identifier: MacBookPro13,2
+  - Processor Name: Dual-Core Intel Core i7
+  - System Firmware Version: 529.120.1.0.0
+  - Serial Number (system): C02SN1FRHF1R
 - Old MacBook Pro (only working laptop)
-    - Model: MacBookPro10,1 Catalina
-    - Processor Name: Quad-Core Intel Core i7
-    - Serial Number (system): C02JK9XSDKQ1
+  - Model: MacBookPro10,1 Catalina
+  - Processor Name: Quad-Core Intel Core i7
+  - Serial Number (system): C02JK9XSDKQ1
 - Home Assistant via Home Assistant Green using Alexa
 - iPhone: 16 ProMax
 - iPadPro w Apple Pencil 2nd Gen

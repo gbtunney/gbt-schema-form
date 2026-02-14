@@ -13,6 +13,7 @@ const config: PrettierConfig = {
             options: {
                 printWidth: 110,
                 proseWrap: 'always',
+                tabWidth: 2,
             },
         },
     ],

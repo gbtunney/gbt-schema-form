@@ -1,17 +1,22 @@
 # STORE.md
 
-## Operator Store — Persistence Contract (Types-First)
+## Operator Store — Persistence Contract
 
 This document defines the **store contract** used by the Operator system. The store is a **functional DI
 port**: a plain object of functions.
 
-No classes.  
-No `interface`.  
-No `any`.  
-`unknown` only at true boundaries.  
-Zod 4–compatible.
+**Architecture:**
 
-The Operator UI depends **only** on this contract.
+- **Domain models** (Evidence, Record, Proposal) defined in `@operator/core` as **Zod schemas**
+- **TypeScript types** inferred from Zod schemas (e.g.,
+  `type EvidenceGroup = z.infer<typeof EvidenceGroupSchema>`)
+- **Store contracts** in `@operator/store` are plain TypeScript function types
+- **Adapters** implement the contracts and use core schemas for validation at boundaries
+- No classes, no `interface`, no `any`
+- `unknown` only at true boundaries
+- Zod 4–compatible
+
+The Operator UI depends **only** on the store contract (ports).
 
 ---
 
@@ -22,6 +27,7 @@ The Operator UI depends **only** on this contract.
 - Domain-agnostic (equipment, pets, anything)
 - Explicit persistence (no hidden writes)
 - Patch-first history
+- Single source of truth (schemas in core, not duplicated)
 
 ---
 
@@ -47,20 +53,33 @@ It **does**:
 
 ## Shared primitives
 
-```ts
-export type RecordId = string
-export type SchemaId = string
+All ID types and schemas are exported from `@operator/core`:
 
-export type GroupId = string
-export type ItemId = string
-export type AttachmentId = string
-export type PatchId = string
+```ts
+import type { RecordId, SchemaId, EvidenceGroupId, EvidenceItemId, AttachmentId } from '@operator/core'
+
+import {
+  RecordIdSchema,
+  SchemaIdSchema,
+  EvidenceGroupIdSchema,
+  EvidenceItemIdSchema,
+  AttachmentIdSchema,
+} from '@operator/core'
+```
+
+Types are inferred from schemas:
+
+```ts
+// In @operator/core
+export const RecordIdSchema = z.string().brand('RecordId')
+export type RecordId = z.infer<typeof RecordIdSchema>
 ```
 
 JSON values are always JSON-safe:
 
 ```ts
-import { JsonValue } from '@operator/core/json'
+import type { JsonValue } from '@operator/core'
+import { JsonValueSchema } from '@operator/core'
 ```
 
 ---
@@ -69,12 +88,22 @@ import { JsonValue } from '@operator/core/json'
 
 A record is always a **schema + JSON document** pair.
 
+Type and schema from `@operator/core`:
+
 ```ts
-export type RecordSnapshot = {
-  recordId: RecordId
-  schemaId: SchemaId
-  data: JsonValue
-}
+import type { RecordSnapshot } from '@operator/core'
+import { RecordSnapshotSchema } from '@operator/core'
+
+// Schema definition (in @operator/core):
+// export const RecordSnapshotSchema = z.object({
+//   id: RecordIdSchema,
+//   schemaId: SchemaIdSchema,
+//   data: JsonValueSchema,
+//   createdAt: z.string().datetime(),
+//   updatedAt: z.string().datetime(),
+// });
+//
+// export type RecordSnapshot = z.infer<typeof RecordSnapshotSchema>;
 ```
 
 The store does not validate `data` against the schema. Validation is handled by the UI / schema engine.
@@ -83,85 +112,88 @@ The store does not validate `data` against the schema. Validation is handled by 
 
 ## Evidence models (from @operator/core)
 
-The store persists these **as-is**:
+All Evidence domain models are defined in `@operator/core`:
 
-- `EvidenceGroup`
-- `EvidenceItem`
-- `EvidenceAttachment`
-- `AppliedPatch`
+```ts
+import type {
+  EvidenceOwner, // { kind: 'record'; recordId } | { kind: 'draft' }
+  EvidenceGroup,
+  EvidenceItem,
+  EvidenceAttachment,
+} from '@operator/core'
+```
 
-The store never mutates their meaning.
+Corresponding Zod schemas are also in `@operator/core`:
+
+```ts
+import { EvidenceOwnerSchema, EvidenceGroupSchema, EvidenceItemSchema } from '@operator/core'
+```
+
+The store persists these models as-is and never mutates their meaning.
+
+**Note:** Adapters use these schemas to validate data at boundaries (DB reads/writes, API responses).
 
 ---
 
 ## Store contract
 
 ```ts
+import type { OperatorStore } from '@operator/store'
+
 export type OperatorStore = {
   /* ==========================
      Records
      ========================== */
 
-  loadRecord: (recordId: RecordId) => Promise<RecordSnapshot | null>
-
-  saveRecord: (snapshot: RecordSnapshot) => Promise<void>
-
-  listRecords: (args?: { schemaId?: SchemaId; search?: string; limit?: number; offset?: number }) => Promise<
-    {
-      recordId: RecordId
-      schemaId: SchemaId
-      summary?: string
-      updatedAt: string
-    }[]
-  >
+  records: {
+    list?: () => Promise<RecordDoc[]>
+    load: (recordId: string) => Promise<RecordDoc | null>
+    save: (record: RecordDoc) => Promise<void>
+  }
 
   /* ==========================
      Evidence Groups
      ========================== */
 
-  listEvidenceGroups: (recordId: RecordId | null) => Promise<EvidenceGroup[]>
-
-  upsertEvidenceGroup: (group: EvidenceGroup) => Promise<void>
-
-  deleteEvidenceGroup?: (groupId: GroupId) => Promise<void>
+  evidenceGroups: {
+    list: (owner: EvidenceOwner) => Promise<EvidenceGroup[]>
+    create: (args: { owner: EvidenceOwner; title: string }) => Promise<EvidenceGroup>
+  }
 
   /* ==========================
      Evidence Items
      ========================== */
 
-  listEvidenceItems: (groupId: GroupId) => Promise<EvidenceItem[]>
-
-  upsertEvidenceItem: (item: EvidenceItem) => Promise<void>
-
-  deleteEvidenceItem: (itemId: ItemId) => Promise<void>
-
-  /* ==========================
-     Attachments
-     ========================== */
-
-  listAttachments: (itemId: ItemId) => Promise<EvidenceAttachment[]>
-
-  upsertAttachment: (attachment: EvidenceAttachment) => Promise<void>
+  evidenceItems: {
+    list: (groupId: string) => Promise<EvidenceItem[]>
+    create: (args: { groupId: string; title: string; text: string }) => Promise<EvidenceItem>
+    update?: (args: {
+      id: string
+      patch: Partial<Omit<EvidenceItem, 'id' | 'groupId' | 'createdAt'>>
+    }) => Promise<EvidenceItem>
+  }
 
   /* ==========================
      Patches (history)
      ========================== */
 
-  listPatches: (recordId: RecordId) => Promise<AppliedPatch[]>
-
-  appendPatch: (patch: AppliedPatch) => Promise<void>
+  patches: {
+    list: (recordId: string) => Promise<AppliedPatch[]>
+    append: (patch: AppliedPatch) => Promise<void>
+  }
 }
 ```
 
-All methods are **idempotent where possible**. Upserts are preferred to partial updates.
+All methods return Promises. Create operations generate IDs and timestamps automatically.
 
 ---
 
 ## Draft behavior
 
-- `recordId = null` on `EvidenceGroup` means **draft**
+- `owner: {kind: 'draft'}` on `EvidenceGroup` means **draft** (not attached to a record)
+- `owner: {kind: 'record', recordId}` means attached to that record
 - Draft evidence may exist before a record exists
-- Draft groups can later be attached to a record
+- Draft groups can later be attached to a record by updating the owner
 
 The store must support this flow.
 
@@ -174,8 +206,8 @@ When applying a proposal in the UI:
 1. UI computes a patch
 2. UI updates in-memory `data`
 3. UI calls:
-   - `appendPatch(patch)`
-   - `saveRecord(snapshot)`
+   - `store.patches.append(patch)`
+   - `store.records.save(snapshot)`
 
 Adapters **should** ensure atomicity where possible.
 

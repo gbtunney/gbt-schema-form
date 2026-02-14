@@ -7,12 +7,12 @@
         "\n========== DEVELOPMENT >> ==========": "",
         "dev": "pnpm build:ts --watch",
         "dev:ts": "pnpm build:ts --watch",
-        "dev:rollup": "rollup --watch --config ./rollup.config.js",
+        "dev:rollup": "rollup --watch --config ./rollup.config.mjs",
         "dev:vite": "pnpm exec vite --config ./vite.config.ts",
         "\n========== BUILD >> ==========": "",
         "build": "pnpm build:ts && pnpm build:rollup",
         "build:ts": "pnpm exec tsc --build",
-        "build:rollup": "rollup --config ./rollup.config.js",
+        "build:rollup": "rollup --config ./rollup.config.mjs",
         "build:vite": "pnpm exec vite build --config ./vite.config.ts",
         "\n========== TEST >> ==========": "",
         "test": "vitest run",
@@ -47,6 +47,8 @@
         "cross-var": "^1.1.0",
         "eslint": "^10.0.0",
         "rollup": "^4.57.1",
+        "rollup-plugin-dts": "^6.3.0",
+        "rollup-plugin-esbuild": "^6.2.1",
         "typescript": "^5.9.3",
         "vitest": "^4.0.18"
     },
@@ -71,7 +73,7 @@
     "homepage": "https://github.com/gbtunney/gbt-boilerplate",
     "packageManager": "pnpm@10.9.0",
     "engines": {
-        "node": "21.x",
+        "node": ">=22.0.0",
         "pnpm": ">=9.0.0"
     },
     "files": [
