@@ -1,7 +1,7 @@
 # TODO LIST
 
-If linting breaks, switch node 21 before commiting!
+Use Node LTS (v20.x or higher) for development and linting!
 
 ```sh
-nvm use 21
+nvm use --lts
 ```

@@ -34,7 +34,7 @@ export function OperatorEditor({
 
     /** Resolve the JSON Schema on mount */
     useEffect(() => {
-        void schemaResolver(schemaId).then((resolved) => {
+        void schemaResolver(schemaId).then((resolved: { schemaId: string; jsonSchema: unknown }) => {
             setSchema(resolved.jsonSchema as RJSFSchema)
         })
     }, [schemaResolver, schemaId])

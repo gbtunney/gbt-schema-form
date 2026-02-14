@@ -1,8 +1,5 @@
 import { z } from 'zod'
-import {
-    evidenceGroupIdSchema,
-    evidenceItemIdSchema,
-} from './ids.js'
+import { evidenceGroupIdSchema, evidenceItemIdSchema } from './ids.js'
 import { isoDateTimeStringSchema } from '../shared.js'
 
 /**

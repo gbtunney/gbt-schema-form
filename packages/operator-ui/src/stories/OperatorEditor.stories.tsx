@@ -52,7 +52,7 @@ export const WithExistingData: Story = {
         recordId: 'rec-001',
         schemaId: 'patient-intake',
         schemaResolver: mockSchemaResolver,
-        store: (() => {
+        store: ((): ReturnType<typeof createInMemoryStore> => {
             const recordId = 'rec-001'
             const groupId = 'grp-001'
             return createInMemoryStore({

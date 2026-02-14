@@ -36,7 +36,7 @@ equipment-inventory/
 
 ## Dependency Rules (import graph)
 
-```
+```sh
 operator-core (zod only)
     ↓
 operator-store (types from core)

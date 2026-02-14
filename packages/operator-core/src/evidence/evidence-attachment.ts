@@ -11,7 +11,7 @@ export const evidenceAttachmentSchema = z.object({
     id: attachmentIdSchema,
     itemId: evidenceItemIdSchema,
     mimeType: z.string(),
-    url: z.string().url(),
+    url: z.url(),
 })
 
 export type EvidenceAttachment = z.infer<typeof evidenceAttachmentSchema>
