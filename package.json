@@ -70,6 +70,8 @@
         "commitizen": "^4.3.1",
         "cross-var": "^1.1.0",
         "eslint": "^9.25.1",
+        "eslint-plugin-react-hooks": "^7.0.1",
+        "eslint-plugin-react-refresh": "^0.4.26",
         "husky": "^9.1.7",
         "lint-staged": "^16.2.7",
         "markdownlint-cli2": "^0.20.0",

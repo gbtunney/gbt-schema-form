@@ -75,7 +75,7 @@ type Wrapped<Type extends string> = Promise<Type> //GOOD!!!!!!!
 - pnpm 10.9.0 (preferred package manager)
 - python 3.x
 - git version 2.x
-- MacOS Catalina 10.15.7 (:()
+- MacOS Catalina 10.15.8 (:()
 
 ### Hardware
 

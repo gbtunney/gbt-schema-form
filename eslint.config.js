@@ -1,4 +1,6 @@
 import { EsLint } from '@snailicide/build-config'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
 import tsEslint from 'typescript-eslint'
 import url from 'node:url'
 
@@ -39,6 +41,21 @@ export default [
             '@typescript-eslint/no-floating-promises': 'warn',
         },
     }),
-
+    // Allow PascalCase for .tsx component files
+    {
+        files: ['**/*.tsx'],
+        ...reactHooks.configs.flat.recommended,
+        ...reactRefresh.configs.vite,
+        rules: {
+            '@typescript-eslint/naming-convention': [
+                'error',
+                {
+                    format: ['PascalCase', 'camelCase'],
+                    selector: 'function',
+                },
+            ],
+            'filenames-simple/naming-convention': ['error', { rule: 'PascalCase' }],
+        },
+    },
     {},
 ]
