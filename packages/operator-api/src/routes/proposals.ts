@@ -4,9 +4,8 @@
 // together the input/output schemas with the injected services. See
 // src/server.ts for how this endpoint is bound to an Express route.
 
-import { fieldProposalSchema } from '@operator/core'
-import { proposalRequestSchema } from '@operator/store'
 import { z } from 'zod'
+import { fieldProposalSchema, proposalRequestSchema } from '@operator/store'
 import type { Services } from '../server.js'
 
 /**
@@ -15,9 +14,9 @@ import type { Services } from '../server.js'
  * and returns an array of FieldProposal.
  */
 export const proposalsEndpoint = {
-    handler: async ({ ctx, input }: { input: any; ctx: { services: Services } }) => {
-        return await ctx.services.proposals(input)
-    },
     input: proposalRequestSchema,
     output: z.array(fieldProposalSchema),
+    handler: async ({ input, ctx }: { input: any; ctx: { services: Services } }) => {
+        return await ctx.services.proposals(input)
+    },
 } as const

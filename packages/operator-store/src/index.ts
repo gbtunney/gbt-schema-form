@@ -9,3 +9,6 @@
 
 export type { JsonSchema, OperatorStore, ProposalClient, ProposalRequest, SchemaResolver } from './ports.js'
 export { proposalRequestSchema } from './ports.js'
+
+/** Re-export FieldProposal from core for convenience */
+export { type FieldProposal, fieldProposalSchema } from '@operator/core'

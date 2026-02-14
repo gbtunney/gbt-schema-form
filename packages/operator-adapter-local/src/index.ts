@@ -86,7 +86,10 @@ export function createInMemoryStore(initialState?: Partial<InMemoryStoreState>):
                 )
             },
 
-            async update(args): Promise<EvidenceItem> {
+            async update(args: {
+                id: string
+                patch: Partial<Omit<EvidenceItem, 'id' | 'groupId' | 'createdAt'>>
+            }): Promise<EvidenceItem> {
                 const existing = state.evidenceItemsById.get(args.id)
                 if (!existing) {
                     return Promise.reject(new Error(`EvidenceItem not found: ${args.id}`))
@@ -123,7 +126,7 @@ export function createInMemoryStore(initialState?: Partial<InMemoryStoreState>):
                 return Promise.resolve(Array.from(state.recordsById.values()))
             },
 
-            async load(recordId): Promise<RecordDoc | null> {
+            async load(recordId: string): Promise<RecordDoc | null> {
                 const record = state.recordsById.get(recordId)
                 return Promise.resolve(record ?? null)
             },

@@ -10,7 +10,7 @@ import type { ProposalRequest } from '@operator/store'
 export type ProposalService = (request: ProposalRequest) => Promise<Array<FieldProposal>>
 
 export function createProposalService(): ProposalService {
-    return async (request: ProposalRequest) => {
+    return (request: ProposalRequest) => {
         const evidenceText = request.evidenceItem?.text ?? ''
         const proposals: Array<FieldProposal> = []
         if (/model/i.test(evidenceText)) {
@@ -24,6 +24,6 @@ export function createProposalService(): ProposalService {
             }
             proposals.push(proposal)
         }
-        return proposals
+        return Promise.resolve(proposals)
     }
 }
