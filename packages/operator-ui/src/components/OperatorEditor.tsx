@@ -34,7 +34,7 @@ export function OperatorEditor({
 
     /** Resolve the JSON Schema on mount */
     useEffect(() => {
-        void schemaResolver(schemaId).then((resolved) => {
+        void schemaResolver(schemaId).then((resolved: { schemaId: string; jsonSchema: unknown }) => {
             setSchema(resolved.jsonSchema as RJSFSchema)
         })
     }, [schemaResolver, schemaId])
@@ -42,7 +42,7 @@ export function OperatorEditor({
     /** Load existing record if recordId provided */
     useEffect(() => {
         if (activeRecordId) {
-            void store.records.load(activeRecordId).then((loaded) => {
+            void store.records.load(activeRecordId).then((loaded: RecordDoc | null) => {
                 if (loaded) {
                     setRecord(loaded)
                     setFormData((loaded.data ?? {}) as Record<string, JsonSchemaType>)

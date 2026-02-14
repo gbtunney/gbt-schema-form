@@ -28,7 +28,7 @@ export function EvidencePane({ onItemSelect, owner, store }: EvidencePaneProps):
     /** Load items when a group is expanded */
     useEffect(() => {
         if (expandedGroupId) {
-            void store.evidenceItems.list(expandedGroupId).then((loadedItems) => {
+            void store.evidenceItems.list(expandedGroupId).then((loadedItems: Array<EvidenceItem>) => {
                 setItemsByGroup((prev) => ({ ...prev, [expandedGroupId]: loadedItems }))
             })
         }
