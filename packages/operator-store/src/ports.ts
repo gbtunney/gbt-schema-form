@@ -2,12 +2,7 @@
 import type { AppliedPatch } from '@operator/core'
 import { z } from 'zod'
 
-import {
-    type EvidenceGroup,
-    type EvidenceItem,
-    evidenceItemSchema,
-    type EvidenceOwner,
-} from './evidence.js'
+import { type EvidenceGroup, type EvidenceItem, evidenceItemSchema, type EvidenceOwner } from './evidence.js'
 import { recordIdSchema, schemaIdSchema } from './ids.js'
 import { type FieldProposal } from './proposal.js'
 import { recordDocSchema } from './record.js'
