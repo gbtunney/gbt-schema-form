@@ -1,6 +1,6 @@
 import { fieldProposalSchema } from '@operator/core'
-import { beforeEach, describe, expect, it } from 'vitest'
 import request from 'supertest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
 import { buildServer, buildServices } from './server.js'
@@ -34,10 +34,7 @@ describe('server.ts API endpoints', () => {
                 schemaId: 'schema-1',
             }
 
-            const response = await request(app)
-                .post('/proposals')
-                .send(validRequest)
-                .expect(200)
+            const response = await request(app).post('/proposals').send(validRequest).expect(200)
 
             expect(Array.isArray(response.body)).toBe(true)
             expect(response.body.length).toBeGreaterThan(0)
@@ -69,10 +66,7 @@ describe('server.ts API endpoints', () => {
                 schemaId: 'schema-2',
             }
 
-            const response = await request(app)
-                .post('/proposals')
-                .send(validRequest)
-                .expect(200)
+            const response = await request(app).post('/proposals').send(validRequest).expect(200)
 
             expect(Array.isArray(response.body)).toBe(true)
             expect(response.body.length).toBe(0)
@@ -89,20 +83,14 @@ describe('server.ts API endpoints', () => {
                 // missing required schemaId
             }
 
-            const response = await request(app)
-                .post('/proposals')
-                .send(invalidRequest)
-                .expect(400)
+            const response = await request(app).post('/proposals').send(invalidRequest).expect(400)
 
             expect(response.body).toHaveProperty('error')
             expect(typeof response.body.error).toBe('string')
         })
 
         it('should return 400 for completely malformed request', async () => {
-            const response = await request(app)
-                .post('/proposals')
-                .send({ invalid: 'data' })
-                .expect(400)
+            const response = await request(app).post('/proposals').send({ invalid: 'data' }).expect(400)
 
             expect(response.body).toHaveProperty('error')
         })
@@ -123,10 +111,7 @@ describe('server.ts API endpoints', () => {
                 schemaId: 'schema-3',
             }
 
-            const response = await request(app)
-                .post('/proposals')
-                .send(validRequest)
-                .expect(200)
+            const response = await request(app).post('/proposals').send(validRequest).expect(200)
 
             // Verify the entire response can be parsed as an array of FieldProposal
             expect(() => z.array(fieldProposalSchema).parse(response.body)).not.toThrow()
@@ -137,10 +122,7 @@ describe('server.ts API endpoints', () => {
         it('should return text for valid request with imageUrl', async () => {
             const validRequest = { imageUrl: 'https://example.com/image.png' }
 
-            const response = await request(app)
-                .post('/derive/ocr')
-                .send(validRequest)
-                .expect(200)
+            const response = await request(app).post('/derive/ocr').send(validRequest).expect(200)
 
             expect(response.body).toHaveProperty('text')
             expect(typeof response.body.text).toBe('string')
@@ -150,10 +132,7 @@ describe('server.ts API endpoints', () => {
         it('should return text for valid request with base64', async () => {
             const validRequest = { base64: 'base64EncodedImageData' }
 
-            const response = await request(app)
-                .post('/derive/ocr')
-                .send(validRequest)
-                .expect(200)
+            const response = await request(app).post('/derive/ocr').send(validRequest).expect(200)
 
             expect(response.body).toHaveProperty('text')
             expect(typeof response.body.text).toBe('string')
@@ -163,10 +142,7 @@ describe('server.ts API endpoints', () => {
         it('should return 400 when neither imageUrl nor base64 provided', async () => {
             const invalidRequest = {}
 
-            const response = await request(app)
-                .post('/derive/ocr')
-                .send(invalidRequest)
-                .expect(400)
+            const response = await request(app).post('/derive/ocr').send(invalidRequest).expect(400)
 
             expect(response.body).toHaveProperty('error')
             expect(response.body.error).toContain('Provide either imageUrl or base64')
@@ -175,10 +151,7 @@ describe('server.ts API endpoints', () => {
         it('should return 400 for invalid imageUrl', async () => {
             const invalidRequest = { imageUrl: 'not-a-valid-url' }
 
-            const response = await request(app)
-                .post('/derive/ocr')
-                .send(invalidRequest)
-                .expect(400)
+            const response = await request(app).post('/derive/ocr').send(invalidRequest).expect(400)
 
             expect(response.body).toHaveProperty('error')
         })
@@ -188,10 +161,7 @@ describe('server.ts API endpoints', () => {
         it('should return text for valid request with audioUrl', async () => {
             const validRequest = { audioUrl: 'https://example.com/audio.mp3' }
 
-            const response = await request(app)
-                .post('/derive/whisper')
-                .send(validRequest)
-                .expect(200)
+            const response = await request(app).post('/derive/whisper').send(validRequest).expect(200)
 
             expect(response.body).toHaveProperty('text')
             expect(typeof response.body.text).toBe('string')
@@ -201,10 +171,7 @@ describe('server.ts API endpoints', () => {
         it('should return text for valid request with base64', async () => {
             const validRequest = { base64: 'base64EncodedAudioData' }
 
-            const response = await request(app)
-                .post('/derive/whisper')
-                .send(validRequest)
-                .expect(200)
+            const response = await request(app).post('/derive/whisper').send(validRequest).expect(200)
 
             expect(response.body).toHaveProperty('text')
             expect(typeof response.body.text).toBe('string')
@@ -214,10 +181,7 @@ describe('server.ts API endpoints', () => {
         it('should return 400 when neither audioUrl nor base64 provided', async () => {
             const invalidRequest = {}
 
-            const response = await request(app)
-                .post('/derive/whisper')
-                .send(invalidRequest)
-                .expect(400)
+            const response = await request(app).post('/derive/whisper').send(invalidRequest).expect(400)
 
             expect(response.body).toHaveProperty('error')
             expect(response.body.error).toContain('Provide either audioUrl or base64')
@@ -226,10 +190,7 @@ describe('server.ts API endpoints', () => {
         it('should return 400 for invalid audioUrl', async () => {
             const invalidRequest = { audioUrl: 'not-a-valid-url' }
 
-            const response = await request(app)
-                .post('/derive/whisper')
-                .send(invalidRequest)
-                .expect(400)
+            const response = await request(app).post('/derive/whisper').send(invalidRequest).expect(400)
 
             expect(response.body).toHaveProperty('error')
         })
@@ -239,10 +200,7 @@ describe('server.ts API endpoints', () => {
         it('should return text for valid request with url', async () => {
             const validRequest = { url: 'https://example.com/page' }
 
-            const response = await request(app)
-                .post('/derive/scrape')
-                .send(validRequest)
-                .expect(200)
+            const response = await request(app).post('/derive/scrape').send(validRequest).expect(200)
 
             expect(response.body).toHaveProperty('text')
             expect(typeof response.body.text).toBe('string')
@@ -253,10 +211,7 @@ describe('server.ts API endpoints', () => {
         it('should return 400 for invalid url', async () => {
             const invalidRequest = { url: 'not-a-valid-url' }
 
-            const response = await request(app)
-                .post('/derive/scrape')
-                .send(invalidRequest)
-                .expect(400)
+            const response = await request(app).post('/derive/scrape').send(invalidRequest).expect(400)
 
             expect(response.body).toHaveProperty('error')
         })
@@ -264,10 +219,7 @@ describe('server.ts API endpoints', () => {
         it('should return 400 for missing url', async () => {
             const invalidRequest = {}
 
-            const response = await request(app)
-                .post('/derive/scrape')
-                .send(invalidRequest)
-                .expect(400)
+            const response = await request(app).post('/derive/scrape').send(invalidRequest).expect(400)
 
             expect(response.body).toHaveProperty('error')
         })
