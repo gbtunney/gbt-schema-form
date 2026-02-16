@@ -33,7 +33,7 @@ export type JsonStringifiedSchema<TSchema extends z.ZodType> = z.ZodType<
 > &
     JsonStringifiedAPI<TSchema>
 
-/** WIP @todo - some other day */
+/** WIP TODO - some other day */
 export const jsonLooseCodec = <TSchema extends z.ZodType<Exclude<Jsonifiable, null | number | boolean>>>(
     schema: TSchema,
 ): z.ZodType<z.output<TSchema> | string> => {
