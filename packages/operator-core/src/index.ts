@@ -1,6 +1,4 @@
 /**
- * @operator/core
- *
  * Pure core exports.
  *
  * Constraints:
@@ -9,6 +7,8 @@
  * - No any (use unknown only at true boundaries)
  * - ESM TypeScript
  * - Local relative imports include ".js"
+ *
+ * @packageDocumentation
  */
 
 /** Equality and normalization */

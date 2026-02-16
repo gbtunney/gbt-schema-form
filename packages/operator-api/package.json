@@ -42,6 +42,7 @@
     },
     "dependencies": {
         "@operator/core": "workspace:*",
+        "@operator/store": "workspace:*",
         "dotenv": "^17.3.1",
         "express-zod-api": "^27.0.1",
         "openai": "^6.22.0",
@@ -49,6 +50,7 @@
     },
     "devDependencies": {
         "@snailicide/build-config": "^1.4.4",
+        "@types/express": "^5.0.6",
         "rollup": "^4.57.1",
         "rollup-plugin-dts": "^6.3.0",
         "rollup-plugin-esbuild": "^6.2.1",

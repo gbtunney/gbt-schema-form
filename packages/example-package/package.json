@@ -47,10 +47,7 @@
         "@snailicide/build-config": "^1.4.4",
         "@types/node": "^25.2.2",
         "cross-var": "^1.1.0",
-        "eslint": "^8.57.1",
         "rollup": "^4.57.1",
-        "rollup-plugin-dts": "^6.3.0",
-        "rollup-plugin-esbuild": "^6.2.1",
         "typescript": "^5.9.3",
         "vitest": "^4.0.18"
     },

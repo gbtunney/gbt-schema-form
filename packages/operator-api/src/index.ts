@@ -1,7 +1,11 @@
-/**
- * Server-side API package placeholder.
- *
- * This package is the boundary for AI/derivations. It is intentionally not used
- * by `@operator/ui`.
- */
-export const apiPlaceholder: null = null
+// packages/operator-api/src/index.ts
+// Entry point for the operator‑api package.
+// Exports a factory function to build an Express server with all routes wired up.
+
+import { buildServer, buildServices } from './server.js'
+
+// Re‑export the service and server builders for external consumption.
+export { buildServer, buildServices }
+
+// Default export simplifies require/import usage
+export default buildServer
