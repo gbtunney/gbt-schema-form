@@ -132,7 +132,7 @@ describe('operator-store/ports type contracts', () => {
          * Type-only test - verifying contract structure
          */
         const mockResolver = (
-            schemaId: string
+            schemaId: string,
         ): Promise<{
             schemaId: string
             jsonSchema: unknown

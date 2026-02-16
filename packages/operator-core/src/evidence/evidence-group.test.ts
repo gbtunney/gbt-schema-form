@@ -6,7 +6,7 @@ describe('evidence/evidence-group evidenceGroupSchema', () => {
     const validDraftOwner = { kind: 'draft' as const }
 
     const createValidGroup = (
-        owner: typeof validRecordOwner | typeof validDraftOwner
+        owner: typeof validRecordOwner | typeof validDraftOwner,
     ): {
         id: string
         title: string
