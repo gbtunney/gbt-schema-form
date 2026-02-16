@@ -46,11 +46,13 @@
         "build-storybook": "storybook build"
     },
     "dependencies": {
+        "@operator/contract": "workspace:*",
         "@operator/core": "workspace:*",
         "@operator/store": "workspace:*",
         "@rjsf/core": "^6.3.1",
         "@rjsf/utils": "^6.3.1",
         "@rjsf/validator-ajv8": "^6.3.1",
+        "@ts-rest/core": "^3.52.1",
         "json-schema-to-ts": "^3.1.1",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
