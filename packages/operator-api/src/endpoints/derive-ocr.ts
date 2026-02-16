@@ -4,12 +4,11 @@
 
 import { z } from 'zod'
 import type { Services } from '../server.js'
-import { defaultEndpointsFactory, type EndpointsFactory}from 'express-zod-api'
 
 // Request structure: one of imageUrl or base64 must be provided.
-export const deriveOcrEndpoint = defaultEndpointsFactory.build({
+export const deriveOcrEndpoint = {
     handler: async ({ ctx, input }: { input: any; ctx: { services: Services } }) => {
-        const text = await c1tx.services.ocr(input)
+        const text = await ctx.services.ocr(input)
         return { text }
     },
     input: z
@@ -21,4 +20,4 @@ export const deriveOcrEndpoint = defaultEndpointsFactory.build({
             message: 'Provide either imageUrl or base64',
         }),
     output: z.object({ text: z.string() }),
-} ) 
+} as const

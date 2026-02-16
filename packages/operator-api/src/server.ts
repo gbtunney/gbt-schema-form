@@ -5,7 +5,9 @@
 // implementations suitable for local development and testing.
 
 import { fieldProposalSchema } from '@operator/core'
+import { operatorContract } from '@operator/contract'
 import { proposalRequestSchema } from '@operator/store'
+import { createExpressEndpoints } from '@ts-rest/express'
 import express from 'express'
 import { z } from 'zod'
 
@@ -62,6 +64,39 @@ export function buildServices(): Services {
 export function buildServer(services: Services = buildServices()): express.Express {
     const app = express()
     app.use(express.json())
+
+    // ts-rest endpoints (mounted alongside the existing routes)
+    createExpressEndpoints(operatorContract, {
+        proposals: {
+            fromText: async ({ body }) => {
+                try {
+                    // Minimal mock implementation: if the text contains "model",
+                    // return a single proposal targeting /model.
+                    if (/model/i.test(body.text)) {
+                        return {
+                            status: 200,
+                            body: {
+                                proposals: [
+                                    {
+                                        confidence: 'High',
+                                        evidenceItemId: 'text-blob',
+                                        excerpt: 'Detected model from text blob',
+                                        id: String(Date.now()),
+                                        path: '/model',
+                                        value: 'Eheim 2211',
+                                    },
+                                ],
+                            },
+                        }
+                    }
+
+                    return { status: 200, body: { proposals: [] } }
+                } catch (err: any) {
+                    return { status: 400, body: { error: (err && err.message) || 'Invalid request' } }
+                }
+            },
+        },
+    }, app)
 
     // POST /proposals — core loop for generating field proposals
     app.post('/proposals', async (req, res) => {
@@ -123,3 +158,27 @@ export function buildServer(services: Services = buildServices()): express.Expre
 
     return app
 }
+
+
+/*
+import dotenv from 'dotenv'
+import { createConfig, createServer } from 'express-zod-api'
+import { router } from './router.js'
+
+dotenv.config()
+
+const port = Number(process.env.PORT || 3000)
+
+async function start() {
+    const config = createConfig({
+        cors: true,
+        http: { listen: port },
+        logger: { color: true, ctx: {}, depth: 2, level: 'info' },
+    })
+    await createServer(config, router)
+}
+
+start().catch((err) => {
+    console.error('Failed to start API server:', err)
+    process.exit(1)
+})*/
