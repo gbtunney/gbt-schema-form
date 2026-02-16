@@ -207,12 +207,21 @@ importers:
 
     packages/operator-api:
         dependencies:
+            '@operator/contract':
+                specifier: workspace:*
+                version: link:../operator-contract
             '@operator/core':
                 specifier: workspace:*
                 version: link:../operator-core
             '@operator/store':
                 specifier: workspace:*
                 version: link:../operator-store
+            '@ts-rest/core':
+                specifier: ^3.52.1
+                version: 3.52.1(@types/node@25.2.3)(zod@4.3.6)
+            '@ts-rest/express':
+                specifier: ^3.52.1
+                version: 3.52.1(@ts-rest/core@3.52.1(@types/node@25.2.3)(zod@4.3.6))(express@5.2.1)(zod@4.3.6)
             dotenv:
                 specifier: ^17.3.1
                 version: 17.3.1
@@ -250,6 +259,37 @@ importers:
             supertest:
                 specifier: ^7.2.2
                 version: 7.2.2
+            typescript:
+                specifier: ^5.9.3
+                version: 5.9.3
+            vitest:
+                specifier: ^4.0.18
+                version: 4.0.18(@types/node@25.2.3)(@vitest/browser-playwright@4.0.18)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+
+    packages/operator-contract:
+        dependencies:
+            '@operator/core':
+                specifier: workspace:*
+                version: link:../operator-core
+            '@ts-rest/core':
+                specifier: ^3.52.1
+                version: 3.52.1(@types/node@25.2.3)(zod@4.3.6)
+            zod:
+                specifier: ^4.3.6
+                version: 4.3.6
+        devDependencies:
+            '@snailicide/build-config':
+                specifier: ^1.4.4
+                version: 1.4.4(@babel/core@7.29.0)(@babel/runtime@7.28.6)(@typescript-eslint/eslint-plugin@8.55.0(@typescript-eslint/parser@8.55.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/parser@8.55.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1))(prettier-plugin-jsdoc@1.8.0(prettier@3.8.1))(prettier-plugin-sh@0.18.0(prettier@3.8.1))(prettier@3.8.1)(rollup@4.57.1)(typescript@5.9.3)(vite@7.3.1(@types/node@25.2.3)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vitepress@1.6.4(@algolia/client-search@5.48.1)(@types/node@25.2.3)(axios@1.13.5)(fuse.js@7.1.0)(postcss@8.5.6)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(search-insights@2.17.3)(terser@5.46.0)(typescript@5.9.3))(vitest@4.0.18)
+            rollup:
+                specifier: ^4.57.1
+                version: 4.57.1
+            rollup-plugin-dts:
+                specifier: ^6.3.0
+                version: 6.3.0(rollup@4.57.1)(typescript@5.9.3)
+            rollup-plugin-esbuild:
+                specifier: ^6.2.1
+                version: 6.2.1(esbuild@0.27.3)(rollup@4.57.1)
             typescript:
                 specifier: ^5.9.3
                 version: 5.9.3
@@ -327,6 +367,9 @@ importers:
 
     packages/operator-ui:
         dependencies:
+            '@operator/contract':
+                specifier: workspace:*
+                version: link:../operator-contract
             '@operator/core':
                 specifier: workspace:*
                 version: link:../operator-core
@@ -342,6 +385,9 @@ importers:
             '@rjsf/validator-ajv8':
                 specifier: ^6.3.1
                 version: 6.3.1(@rjsf/utils@6.3.1(react@19.2.4))
+            '@ts-rest/core':
+                specifier: ^3.52.1
+                version: 3.52.1(@types/node@24.10.13)(zod@4.3.6)
             json-schema-to-ts:
                 specifier: ^3.1.1
                 version: 3.1.1
@@ -2530,6 +2576,33 @@ packages:
         engines: { node: '>=12', npm: '>=6' }
         peerDependencies:
             '@testing-library/dom': '>=7.21.4'
+
+    '@ts-rest/core@3.52.1':
+        resolution:
+            {
+                integrity: sha512-tAjz7Kxq/grJodcTA1Anop4AVRDlD40fkksEV5Mmal88VoZeRKAG8oMHsDwdwPZz+B/zgnz0q2sF+cm5M7Bc7g==,
+            }
+        peerDependencies:
+            '@types/node': ^18.18.7 || >=20.8.4
+            zod: ^3.22.3
+        peerDependenciesMeta:
+            '@types/node':
+                optional: true
+            zod:
+                optional: true
+
+    '@ts-rest/express@3.52.1':
+        resolution:
+            {
+                integrity: sha512-ttVynyJSWYnVzn7FazSFvShD5j3Lq1JsIhSKereV2Z51zxWEQwo35CpCO3Q8rELzkfD9CYoT6eNSBJRlJLogIw==,
+            }
+        peerDependencies:
+            '@ts-rest/core': ~3.52.0
+            express: ^4.0.0
+            zod: ^3.22.3
+        peerDependenciesMeta:
+            zod:
+                optional: true
 
     '@tybys/wasm-util@0.9.0':
         resolution:
@@ -13027,6 +13100,23 @@ snapshots:
     '@testing-library/user-event@14.6.1(@testing-library/dom@10.4.1)':
         dependencies:
             '@testing-library/dom': 10.4.1
+
+    '@ts-rest/core@3.52.1(@types/node@24.10.13)(zod@4.3.6)':
+        optionalDependencies:
+            '@types/node': 24.10.13
+            zod: 4.3.6
+
+    '@ts-rest/core@3.52.1(@types/node@25.2.3)(zod@4.3.6)':
+        optionalDependencies:
+            '@types/node': 25.2.3
+            zod: 4.3.6
+
+    '@ts-rest/express@3.52.1(@ts-rest/core@3.52.1(@types/node@25.2.3)(zod@4.3.6))(express@5.2.1)(zod@4.3.6)':
+        dependencies:
+            '@ts-rest/core': 3.52.1(@types/node@25.2.3)(zod@4.3.6)
+            express: 5.2.1
+        optionalDependencies:
+            zod: 4.3.6
 
     '@tybys/wasm-util@0.9.0':
         dependencies:
