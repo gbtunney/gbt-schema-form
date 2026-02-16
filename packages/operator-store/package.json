@@ -13,11 +13,13 @@
         "\n========== BUILD >> ==========": "",
         "build": "pnpm build:ts && pnpm build:rollup",
         "build:ts": "pnpm exec tsc --build",
+        "build:nx": "cross-var nx run $npm_package_name:build",
         "build:rollup": "rollup --config ./rollup.config.mjs",
         "build:vite": "pnpm exec vite build --config ./vite.config.ts",
         "\n========== TEST >> ==========": "",
         "test": "vitest run",
         "test:watch": "vitest watch",
+        "test:nx": "cross-var nx run $npm_package_name:test",
         "test:repo": "pnpm exec ls $(git rev-parse --show-toplevel)",
         "\n========== CLEAN >> ==========": "",
         "clean": "pnpm clean:ts && pnpm clean:build",
@@ -45,7 +47,6 @@
     },
     "devDependencies": {
         "@snailicide/build-config": "^1.4.4",
-        "eslint": "^10.0.0",
         "rollup": "^4.57.1",
         "rollup-plugin-dts": "^6.3.0",
         "rollup-plugin-esbuild": "^6.2.1",
@@ -60,5 +61,14 @@
             "import": "./dist/index.js",
             "require": "./dist/index.js"
         }
+    },
+    "author": {
+        "name": "Gillian Tunney",
+        "email": "gbtunney@mac.com"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/gbtunney/gbt-boilerplate"
     }
 }

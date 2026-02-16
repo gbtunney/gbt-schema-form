@@ -12,10 +12,12 @@
         "\n========== BUILD >> ==========": "",
         "build": "pnpm build:ts && pnpm build:rollup",
         "build:ts": "pnpm exec tsc --build",
+        "build:nx": "cross-var nx run $npm_package_name:build",
         "build:rollup": "rollup --config ./rollup.config.mjs",
         "build:vite": "pnpm exec vite build --config ./vite.config.ts",
         "\n========== TEST >> ==========": "",
         "test": "vitest run",
+        "test:nx": "cross-var nx run $npm_package_name:test",
         "test:watch": "vitest watch",
         "test:repo": "pnpm exec ls $(git rev-parse --show-toplevel)",
         "\n========== CLEAN >> ==========": "",
@@ -38,6 +40,19 @@
         "lint": "pnpm exec eslint .",
         "lint:md": "pnpm exec markdownlint-cli2 '{./*,./**/*}.md' '#**/node_modules/**' '#packages/test-package/**/*'"
     },
+    "dependencies": {
+        "@operator/core": "workspace:*",
+        "@operator/store": "workspace:*"
+    },
+    "devDependencies": {
+        "@snailicide/build-config": "^1.4.4",
+        "rollup": "^4.57.1",
+        "rollup-plugin-dts": "^6.3.0",
+        "rollup-plugin-esbuild": "^6.2.1",
+        "typescript": "^5.9.3",
+        "vitest": "^4.0.18"
+    },
+    "type": "module",
     "main": "dist/index.js",
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -47,17 +62,13 @@
             "require": "./dist/index.js"
         }
     },
-    "dependencies": {
-        "@operator/core": "workspace:*",
-        "@operator/store": "workspace:*"
+    "author": {
+        "name": "Gillian Tunney",
+        "email": "gbtunney@mac.com"
     },
-    "devDependencies": {
-        "@snailicide/build-config": "^1.4.4",
-        "eslint": "^10.0.0",
-        "rollup": "^4.57.1",
-        "rollup-plugin-dts": "^6.3.0",
-        "rollup-plugin-esbuild": "^6.2.1",
-        "typescript": "^5.9.3",
-        "vitest": "^4.0.18"
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/gbtunney/gbt-boilerplate"
     }
 }

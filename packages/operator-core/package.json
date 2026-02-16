@@ -2,7 +2,6 @@
     "name": "@operator/core",
     "version": "0.0.0",
     "private": true,
-    "type": "module",
     "description": "Core logic and types for the evidence‑driven schema operator.",
     "scripts": {
         "\n========== DEVELOPMENT >> ==========": "",
@@ -14,11 +13,15 @@
         "build": "pnpm build:ts && pnpm build:rollup",
         "build:ts": "pnpm exec tsc --build",
         "build:rollup": "rollup --config ./rollup.config.mjs",
-        "build:vite": "pnpm exec vite build --config ./vite.config.ts",
+        "build:nx": "cross-var nx run $npm_package_name:build",
         "\n========== TEST >> ==========": "",
         "test": "vitest run",
+        "test:nx": "cross-var nx run $npm_package_name:test",
         "test:watch": "vitest watch",
         "test:repo": "pnpm exec ls $(git rev-parse --show-toplevel)",
+        "\n========== DOCS >> ==========": "",
+        "docs:build": "pnpm run build:ts && pnpm exec typedoc && pnpm docs:format",
+        "docs:format": "pnpm exec prettier ./docs --write",
         "\n========== CLEAN >> ==========": "",
         "clean": "pnpm clean:ts && pnpm clean:build",
         "clean:ts": "pnpm exec tsc --build --clean",
@@ -39,15 +42,6 @@
         "lint": "pnpm exec eslint .",
         "lint:md": "pnpm exec markdownlint-cli2 '{./*,./**/*}.md' '#**/node_modules/**' '#packages/test-package/**/*' "
     },
-    "main": "dist/index.js",
-    "module": "dist/index.js",
-    "types": "dist/index.d.ts",
-    "exports": {
-        ".": {
-            "import": "./dist/index.js",
-            "require": "./dist/index.js"
-        }
-    },
     "dependencies": {
         "@snailicide/g-library": "^1.2.2",
         "@types/json-pointer": "^1.0.34",
@@ -58,12 +52,21 @@
     },
     "devDependencies": {
         "@snailicide/build-config": "^1.4.4",
-        "eslint": "^9.25.1",
         "rollup": "^4.57.1",
         "rollup-plugin-dts": "^6.3.0",
         "rollup-plugin-esbuild": "^6.2.1",
         "typescript": "^5.9.3",
         "vitest": "^4.0.18"
+    },
+    "type": "module",
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "require": "./dist/index.js"
+        }
     },
     "author": {
         "name": "Gillian Tunney",

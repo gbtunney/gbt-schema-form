@@ -1,47 +1,31 @@
+import { rollup } from '@snailicide/build-config'
 import type { RollupOptions } from 'rollup'
-import dts from 'rollup-plugin-dts'
-import esbuild from 'rollup-plugin-esbuild'
-import { readFileSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
 
-type PackageJson = {
-    main?: string
-    types?: string
-    dependencies?: Record<string, string>
-    peerDependencies?: Record<string, string>
+import pkg from './package.json' with { type: 'json' }
+
+const PRINT_EXPORTS: boolean = false
+
+const directory_paths = {
+    output_dir: './dist/',
+    source_dir: './src/',
 }
 
-const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as PackageJson
-
-const packageRootUrl = new URL('.', import.meta.url)
-const entryPath = fileURLToPath(new URL('./src/index.ts', packageRootUrl))
-
-const externalModules = [...Object.keys(pkg.dependencies ?? {}), ...Object.keys(pkg.peerDependencies ?? {})]
-
-const config: Array<RollupOptions> = [
-    {
-        external: externalModules,
-        input: entryPath,
-        output: {
-            file: fileURLToPath(new URL(pkg.main ?? './dist/index.js', packageRootUrl)),
-            format: 'esm',
-            sourcemap: true,
-        },
-        plugins: [
-            esbuild({
-                target: 'es2022',
-            }),
+const CONFIG_OBJ = [
+    ...rollup.getConfigEntries(
+        directory_paths,
+        [
+            {
+                export_key: '*',
+                export_types: ['default', 'import', 'require', 'types'],
+                library_name: 'gbtBoilerplate',
+            },
         ],
-    },
-    {
-        external: externalModules,
-        input: entryPath,
-        output: {
-            file: fileURLToPath(new URL(pkg.types ?? './dist/index.d.ts', packageRootUrl)),
-            format: 'esm',
-        },
-        plugins: [dts()],
-    },
+        rollup.DEFAULT_PLUGINS_BUNDLED,
+        pkg,
+    ),
 ]
 
-export default config
+const CONFIG: Array<RollupOptions> = rollup.getRollupConfig(CONFIG_OBJ)
+rollup.getPackageExports(CONFIG_OBJ, PRINT_EXPORTS)
+
+export default CONFIG
