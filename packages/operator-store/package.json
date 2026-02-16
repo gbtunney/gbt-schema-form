@@ -59,7 +59,8 @@
     "exports": {
         ".": {
             "import": "./dist/index.js",
-            "require": "./dist/index.js"
+            "require": "./dist/index.js",
+            "types": "./dist/index.d.ts"
         }
     },
     "author": {
