@@ -64,8 +64,7 @@
         "uninstall:lock": "rm -f pnpm-lock.yaml && rm -f packages/**/pnpm-lock.yaml"
     },
     "dependencies": {
-        "@gbt/root": "link:",
-        "nx": "^22.5.1"
+        "@gbt/root": "link:"
     },
     "devDependencies": {
         "@changesets/cli": "^2.29.8",
@@ -88,6 +87,7 @@
         "husky": "^9.1.7",
         "lint-staged": "^16.2.7",
         "markdownlint-cli2": "^0.20.0",
+        "nx": "^22.5.1",
         "prettier": "^3.8.1",
         "prettier-plugin-jsdoc": "^1.8.0",
         "prettier-plugin-pkg": "^0.21.2",
@@ -117,7 +117,7 @@
         "url": "https://github.com/gbtunney/gbt-boilerplate"
     },
     "homepage": "https://github.com/gbtunney/gbt-boilerplate",
-    "packageManager": "pnpm@10.29.1+sha512.48dae233635a645768a3028d19545cacc1688639eeb1f3734e42d6d6b971afbf22aa1ac9af52a173d9c3a20c15857cfa400f19994d79a2f626fcc73fccda9bbc",
+    "packageManager": "pnpm@10.30.0+sha512.2b5753de015d480eeb88f5b5b61e0051f05b4301808a82ec8b840c9d2adf7748eb352c83f5c1593ca703ff1017295bc3fdd3119abb9686efc96b9fcb18200937",
     "engines": {
         "node": ">=20.x"
     },

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+node_version="22"
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo_root"
 
 node -v
-npm -v
 
 # NOTE: `nvm` is a shell function defined by `nvm.sh`.
 # It is usually loaded in interactive shells via ~/.bashrc, but scripts run in a
@@ -24,10 +24,12 @@ else
 fi
 
 nvm -v
-nvm install 21
-nvm use 21
-
-npm install -g pnpm
+nvm install "$node_version"
+nvm use "$node_version"
+corepack enable
+corepack prepare pnpm@latest --activate
+corepack up
 node -v
 pnpm -v
 pnpm install
+pnpm build

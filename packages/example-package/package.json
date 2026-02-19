@@ -70,11 +70,6 @@
         "url": "https://github.com/gbtunney/gbt-boilerplate"
     },
     "homepage": "https://github.com/gbtunney/gbt-boilerplate",
-    "packageManager": "pnpm@10.9.0",
-    "engines": {
-        "node": ">=22.0.0",
-        "pnpm": ">=9.0.0"
-    },
     "files": [
         "CHANGELOG.md",
         "dist",

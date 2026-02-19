@@ -15,9 +15,6 @@ importers:
             '@gbt/root':
                 specifier: 'link:'
                 version: 'link:'
-            nx:
-                specifier: ^22.5.1
-                version: 22.5.1
         devDependencies:
             '@changesets/cli':
                 specifier: ^2.29.8
@@ -79,6 +76,9 @@ importers:
             markdownlint-cli2:
                 specifier: ^0.20.0
                 version: 0.20.0
+            nx:
+                specifier: ^22.5.1
+                version: 22.5.1
             prettier:
                 specifier: ^3.8.1
                 version: 3.8.1
