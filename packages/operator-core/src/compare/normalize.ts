@@ -1,17 +1,22 @@
 import type { JsonValue } from '../json/json-value.js'
 
 /**
- * normalizePointerValue
+ * NormalizePointerValue
  *
- * v1 normalization rules:
+ * V1 normalization rules:
+ *
  * - Trim strings
  * - Empty string -> null
  *
  * Notes:
+ *
  * - `pointer` is accepted for future path-specific normalization rules.
  * - For non-strings, the value is returned unchanged.
  */
-export function normalizePointerValue(pointer: string, value: JsonValue): JsonValue {
+export function normalizePointerValue(
+    pointer: string,
+    value: JsonValue,
+): JsonValue {
     void pointer
 
     if (typeof value !== 'string') return value

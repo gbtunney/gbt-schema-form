@@ -13,7 +13,9 @@ export default defineConfig([
             format: 'es',
             sourcemap: true,
         },
-        plugins: [esbuild({ minify: false, sourceMap: true, target: 'es2019' })],
+        plugins: [
+            esbuild({ minify: false, sourceMap: true, target: 'es2019' }),
+        ],
     },
     {
         input: 'dist/dts/index.d.ts',

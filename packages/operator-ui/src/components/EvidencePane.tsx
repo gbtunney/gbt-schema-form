@@ -8,14 +8,17 @@ export type EvidencePaneProps = {
     onItemSelect?: (item: EvidenceItem) => void
 }
 
-/**
- * Evidence management panel.
- * Lists evidence groups for an owner, allows creating groups and adding text evidence items.
- */
-export function EvidencePane({ onItemSelect, owner, store }: EvidencePaneProps): ReactElement {
+/** Evidence management panel. Lists evidence groups for an owner, allows creating groups and adding text evidence items. */
+export function EvidencePane({
+    onItemSelect,
+    owner,
+    store,
+}: EvidencePaneProps): ReactElement {
     const [groups, setGroups] = useState<Array<EvidenceGroup>>([])
     const [expandedGroupId, setExpandedGroupId] = useState<string | null>(null)
-    const [itemsByGroup, setItemsByGroup] = useState<Record<string, Array<EvidenceItem>>>({})
+    const [itemsByGroup, setItemsByGroup] = useState<
+        Record<string, Array<EvidenceItem>>
+    >({})
     const [newGroupTitle, setNewGroupTitle] = useState('')
     const [newItemTitle, setNewItemTitle] = useState('')
     const [newItemText, setNewItemText] = useState('')
@@ -28,23 +31,32 @@ export function EvidencePane({ onItemSelect, owner, store }: EvidencePaneProps):
     /** Load items when a group is expanded */
     useEffect(() => {
         if (expandedGroupId) {
-            void store.evidenceItems.list(expandedGroupId).then((loadedItems: Array<EvidenceItem>) => {
-                setItemsByGroup((prev) => ({ ...prev, [expandedGroupId]: loadedItems }))
-            })
+            void store.evidenceItems
+                .list(expandedGroupId)
+                .then((loadedItems: Array<EvidenceItem>) => {
+                    setItemsByGroup((prev) => ({
+                        ...prev,
+                        [expandedGroupId]: loadedItems,
+                    }))
+                })
         }
     }, [store, expandedGroupId])
 
     const handleCreateGroup = useCallback(async () => {
         const trimmed = newGroupTitle.trim()
         if (!trimmed) return
-        const group = await store.evidenceGroups.create({ owner, title: trimmed })
+        const group = await store.evidenceGroups.create({
+            owner,
+            title: trimmed,
+        })
         setGroups((prev) => [...prev, group])
         setNewGroupTitle('')
         setExpandedGroupId(group.id)
     }, [store, owner, newGroupTitle])
 
     const handleCreateItem = useCallback(async () => {
-        if (!expandedGroupId || !newItemTitle.trim() || !newItemText.trim()) return
+        if (!expandedGroupId || !newItemTitle.trim() || !newItemText.trim())
+            return
         const item = await store.evidenceItems.create({
             groupId: expandedGroupId,
             text: newItemText.trim(),
@@ -95,7 +107,9 @@ export function EvidencePane({ onItemSelect, owner, store }: EvidencePaneProps):
         [store, onItemSelect],
     )
 
-    const currentItems = expandedGroupId ? (itemsByGroup[expandedGroupId] ?? []) : []
+    const currentItems = expandedGroupId
+        ? (itemsByGroup[expandedGroupId] ?? [])
+        : []
 
     return (
         <div className="evidence-pane">
@@ -110,14 +124,21 @@ export function EvidencePane({ onItemSelect, owner, store }: EvidencePaneProps):
                         <button
                             className={`evidence-group__toggle ${expandedGroupId === group.id ? 'evidence-group__toggle--active' : ''}`}
                             onClick={() => {
-                                setExpandedGroupId(expandedGroupId === group.id ? null : group.id)
+                                setExpandedGroupId(
+                                    expandedGroupId === group.id
+                                        ? null
+                                        : group.id,
+                                )
                             }}
-                            type="button"
-                        >
+                            type="button">
                             <span className="evidence-group__arrow">
-                                {expandedGroupId === group.id ? '\u25BC' : '\u25B6'}
+                                {expandedGroupId === group.id
+                                    ? '\u25BC'
+                                    : '\u25B6'}
                             </span>
-                            <span className="evidence-group__title">{group.title}</span>
+                            <span className="evidence-group__title">
+                                {group.title}
+                            </span>
                             <span className="evidence-group__count">
                                 {(itemsByGroup[group.id] ?? []).length}
                             </span>
@@ -129,30 +150,51 @@ export function EvidencePane({ onItemSelect, owner, store }: EvidencePaneProps):
                                 {currentItems.map((item) => (
                                     <div
                                         key={item.id}
-                                        className={`evidence-item ${item.selected ? 'evidence-item--selected' : ''}`}
-                                    >
+                                        className={`evidence-item ${item.selected ? 'evidence-item--selected' : ''}`}>
                                         <div className="evidence-item__header">
-                                            <span className="evidence-item__title">{item.title}</span>
+                                            <span className="evidence-item__title">
+                                                {item.title}
+                                            </span>
                                             <div className="evidence-item__actions">
                                                 <button
                                                     className={`evidence-item__btn ${item.pinned ? 'evidence-item__btn--active' : ''}`}
-                                                    onClick={() => void handleTogglePin(item)}
-                                                    title={item.pinned ? 'Unpin' : 'Pin'}
-                                                    type="button"
-                                                >
-                                                    {item.pinned ? '\u2605' : '\u2606'}
+                                                    onClick={() =>
+                                                        void handleTogglePin(
+                                                            item,
+                                                        )
+                                                    }
+                                                    title={
+                                                        item.pinned
+                                                            ? 'Unpin'
+                                                            : 'Pin'
+                                                    }
+                                                    type="button">
+                                                    {item.pinned
+                                                        ? '\u2605'
+                                                        : '\u2606'}
                                                 </button>
                                                 <button
                                                     className={`evidence-item__btn ${item.selected ? 'evidence-item__btn--active' : ''}`}
-                                                    onClick={() => void handleToggleSelect(item)}
-                                                    title={item.selected ? 'Deselect' : 'Select'}
-                                                    type="button"
-                                                >
-                                                    {item.selected ? '\u2713' : '\u25CB'}
+                                                    onClick={() =>
+                                                        void handleToggleSelect(
+                                                            item,
+                                                        )
+                                                    }
+                                                    title={
+                                                        item.selected
+                                                            ? 'Deselect'
+                                                            : 'Select'
+                                                    }
+                                                    type="button">
+                                                    {item.selected
+                                                        ? '\u2713'
+                                                        : '\u25CB'}
                                                 </button>
                                             </div>
                                         </div>
-                                        <p className="evidence-item__text">{item.text}</p>
+                                        <p className="evidence-item__text">
+                                            {item.text}
+                                        </p>
                                     </div>
                                 ))}
 
@@ -178,10 +220,12 @@ export function EvidencePane({ onItemSelect, owner, store }: EvidencePaneProps):
                                     />
                                     <button
                                         className="evidence-pane__btn"
-                                        disabled={!newItemTitle.trim() || !newItemText.trim()}
+                                        disabled={
+                                            !newItemTitle.trim() ||
+                                            !newItemText.trim()
+                                        }
                                         onClick={() => void handleCreateItem()}
-                                        type="button"
-                                    >
+                                        type="button">
                                         + Add Evidence
                                     </button>
                                 </div>
@@ -209,8 +253,7 @@ export function EvidencePane({ onItemSelect, owner, store }: EvidencePaneProps):
                     className="evidence-pane__btn"
                     disabled={!newGroupTitle.trim()}
                     onClick={() => void handleCreateGroup()}
-                    type="button"
-                >
+                    type="button">
                     + New Group
                 </button>
             </div>

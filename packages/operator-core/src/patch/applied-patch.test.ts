@@ -1,6 +1,10 @@
 import { describe, expect, test } from 'vitest'
 
-import { applyAppliedPatch, invertAppliedPatch, makeAppliedPatch } from './applied-patch.js'
+import {
+    applyAppliedPatch,
+    invertAppliedPatch,
+    makeAppliedPatch,
+} from './applied-patch.js'
 import type { JsonValue } from '../json/json-value.js'
 import { getPointer } from '../pointer/pointer.js'
 

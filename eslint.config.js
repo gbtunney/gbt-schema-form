@@ -50,7 +50,10 @@ export default [
                     selector: 'function',
                 },
             ],
-            'filenames-simple/naming-convention': ['error', { rule: 'PascalCase' }],
+            'filenames-simple/naming-convention': [
+                'error',
+                { rule: 'PascalCase' },
+            ],
         },
     }),
     {
@@ -66,8 +69,14 @@ export default [
                     selector: 'function',
                 },
             ],
-            'filenames-simple/naming-convention': ['error', { rule: 'PascalCase' }],
-            'sort/destructuring-properties': ['error', { caseSensitive: false, natural: true }],
+            'filenames-simple/naming-convention': [
+                'error',
+                { rule: 'PascalCase' },
+            ],
+            'sort/destructuring-properties': [
+                'error',
+                { caseSensitive: false, natural: true },
+            ],
         },
     },
     {
@@ -75,7 +84,10 @@ export default [
         ...reactHooks.configs.flat.recommended,
         ...reactRefresh.configs.vite,
         rules: {
-            'filenames-simple/naming-convention': ['error', { rule: 'camelCase' }],
+            'filenames-simple/naming-convention': [
+                'error',
+                { rule: 'camelCase' },
+            ],
         },
     },
 ]

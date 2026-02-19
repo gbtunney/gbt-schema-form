@@ -4,15 +4,23 @@ import type { JsonValue } from '../json/json-value.js'
 export type Pointer = string
 
 export type Container = Json.Object | Json.Array
-function isContainer(jsonValue: JsonValue): jsonValue is Json.Object | Json.Array {
-    return objectUtils.isJsonifiableObject(jsonValue) || objectUtils.isJsonifiableArray(jsonValue)
+function isContainer(
+    jsonValue: JsonValue,
+): jsonValue is Json.Object | Json.Array {
+    return (
+        objectUtils.isJsonifiableObject(jsonValue) ||
+        objectUtils.isJsonifiableArray(jsonValue)
+    )
 }
 
 /**
- * Enforce strict JSON Pointer array behavior:
- * when traversing through an array, the next segment must be a base-10 integer.
+ * Enforce strict JSON Pointer array behavior: when traversing through an array, the next segment must be a base-10
+ * integer.
  */
-function assertPointerDoesNotUseArrayProperties(document: JsonValue, pointer: Pointer): void {
+function assertPointerDoesNotUseArrayProperties(
+    document: JsonValue,
+    pointer: Pointer,
+): void {
     if (pointer === '') return
 
     const segments = pointer.split('/').slice(1)
@@ -21,7 +29,9 @@ function assertPointerDoesNotUseArrayProperties(document: JsonValue, pointer: Po
     for (const segment of segments) {
         if (objectUtils.isJsonifiableArray(current)) {
             if (!/^\d+$/.test(segment)) {
-                throw new Error(`Invalid array index segment for pointer: ${pointer}`)
+                throw new Error(
+                    `Invalid array index segment for pointer: ${pointer}`,
+                )
             }
 
             const index = Number(segment)
@@ -42,23 +52,30 @@ function cloneContainer<Type extends Container>(value: Type): JsonValue {
     return structuredClone(value)
 }
 
-/**
- * Get value at JSON Pointer.
- */
-export function getPointer(document: JsonValue, pointer: Pointer): JsonValue | undefined {
+/** Get value at JSON Pointer. */
+export function getPointer(
+    document: JsonValue,
+    pointer: Pointer,
+): JsonValue | undefined {
     if (pointer === '') return document
 
-    return jp.get(document as unknown as object, pointer) as JsonValue | undefined
+    return jp.get(document as unknown as object, pointer) as
+        | JsonValue
+        | undefined
 }
 
-/**
- * Set value at JSON Pointer (immutable).
- */
-export function setPointer(document: JsonValue, pointer: Pointer, value: JsonValue): JsonValue {
+/** Set value at JSON Pointer (immutable). */
+export function setPointer(
+    document: JsonValue,
+    pointer: Pointer,
+    value: JsonValue,
+): JsonValue {
     if (pointer === '') return value
 
     if (!isContainer(document)) {
-        throw new Error(`Cannot set non-root pointer on non-container root: ${pointer}`)
+        throw new Error(
+            `Cannot set non-root pointer on non-container root: ${pointer}`,
+        )
     }
 
     assertPointerDoesNotUseArrayProperties(document, pointer)
@@ -70,10 +87,11 @@ export function setPointer(document: JsonValue, pointer: Pointer, value: JsonVal
     return clone
 }
 
-/**
- * Remove value at JSON Pointer (immutable).
- */
-export function removePointer(document: JsonValue, pointer: Pointer): JsonValue {
+/** Remove value at JSON Pointer (immutable). */
+export function removePointer(
+    document: JsonValue,
+    pointer: Pointer,
+): JsonValue {
     if (pointer === '') {
         throw new Error('Refusing to delete root document')
     }

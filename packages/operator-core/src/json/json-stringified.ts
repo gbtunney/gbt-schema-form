@@ -5,18 +5,20 @@ import { z } from 'zod'
 export type JsonStringified<Type> = string & { readonly __json_of: Type }
 
 /** Input value type for serialization (raw object value). This is BEFORE JSON.stringify. */
-export type InferJsonSchemaInput<TStringifiedSchema> = TStringifiedSchema extends {
-    inputValue(input: any): infer In
-}
-    ? In
-    : never
+export type InferJsonSchemaInput<TStringifiedSchema> =
+    TStringifiedSchema extends {
+        inputValue(input: any): infer In
+    }
+        ? In
+        : never
 
 /** Output value type (after deserialization back to object). */
-export type InferStringifiedOutput<TStringifiedSchema> = TStringifiedSchema extends {
-    outputValue(output: any): infer Out
-}
-    ? Out
-    : never
+export type InferStringifiedOutput<TStringifiedSchema> =
+    TStringifiedSchema extends {
+        outputValue(output: any): infer Out
+    }
+        ? Out
+        : never
 
 export type JsonStringifiedAPI<TSchema extends z.ZodType> = {
     serialize(value: z.output<TSchema>): JsonStringified<z.output<TSchema>>
@@ -34,7 +36,9 @@ export type JsonStringifiedSchema<TSchema extends z.ZodType> = z.ZodType<
     JsonStringifiedAPI<TSchema>
 
 /** WIP TODO - some other day */
-export const jsonLooseCodec = <TSchema extends z.ZodType<Exclude<Jsonifiable, null | number | boolean>>>(
+export const jsonLooseCodec = <
+    TSchema extends z.ZodType<Exclude<Jsonifiable, null | number | boolean>>,
+>(
     schema: TSchema,
 ): z.ZodType<z.output<TSchema> | string> => {
     const jsonStringSchema = z.string().brand('JsonEncoded')
@@ -43,45 +47,56 @@ export const jsonLooseCodec = <TSchema extends z.ZodType<Exclude<Jsonifiable, nu
     const userSchema = schema.brand('Jsonifiable')
     type BrandedSchema = z.input<typeof userSchema>
 
-    const JsonCodec: z.ZodType<z.infer<TSchema>, z.input<typeof jsonStringSchema>> = z.codec(
-        jsonStringSchema,
-        userSchema,
-        {
-            decode: (jsonString: BrandedString, ctx): z.input<typeof userSchema> => {
-                try {
-                    const _data = JSON.parse(jsonString) as z.input<typeof userSchema>
-                    const myresult: z.output<typeof userSchema> = userSchema.parse(_data)
-                    return _data
-                } catch (err: any) {
-                    ctx.issues.push({
-                        code: 'invalid_format',
-                        format: 'json',
-                        input: jsonString,
-                        message: err?.message ?? 'Invalid JSON',
-                    })
-                    return z.NEVER
-                }
-            },
-            encode: (value: BrandedSchema, ctx): z.infer<typeof jsonStringSchema> => {
-                try {
-                    const parseResult = userSchema.parse(value)
-                    return JSON.stringify(value) as z.infer<typeof jsonStringSchema>
-                } catch (err: unknown) {
-                    ctx.issues.push({
-                        code: 'invalid_format',
-                        format: 'json',
-                        input: 'fff',
-                        // input:// value.toString(),
-                        message: 'Data could not be encoded to JSON',
-                    })
-                    return z.NEVER
-                }
-            },
+    const JsonCodec: z.ZodType<
+        z.infer<TSchema>,
+        z.input<typeof jsonStringSchema>
+    > = z.codec(jsonStringSchema, userSchema, {
+        decode: (
+            jsonString: BrandedString,
+            ctx,
+        ): z.input<typeof userSchema> => {
+            try {
+                const _data = JSON.parse(jsonString) as z.input<
+                    typeof userSchema
+                >
+                const myresult: z.output<typeof userSchema> =
+                    userSchema.parse(_data)
+                return _data
+            } catch (err: any) {
+                ctx.issues.push({
+                    code: 'invalid_format',
+                    format: 'json',
+                    input: jsonString,
+                    message: err?.message ?? 'Invalid JSON',
+                })
+                return z.NEVER
+            }
         },
-    )
+        encode: (
+            value: BrandedSchema,
+            ctx,
+        ): z.infer<typeof jsonStringSchema> => {
+            try {
+                const parseResult = userSchema.parse(value)
+                return JSON.stringify(value) as z.infer<typeof jsonStringSchema>
+            } catch (err: unknown) {
+                ctx.issues.push({
+                    code: 'invalid_format',
+                    format: 'json',
+                    input: 'fff',
+                    // input:// value.toString(),
+                    message: 'Data could not be encoded to JSON',
+                })
+                return z.NEVER
+            }
+        },
+    })
 
     // Allow both JSON string and raw object
-    const _result: z.ZodType<z.output<typeof userSchema> | string> = z.union([JsonCodec, schema])
+    const _result: z.ZodType<z.output<typeof userSchema> | string> = z.union([
+        JsonCodec,
+        schema,
+    ])
     return _result //z.union([JsonCodec, schema]) //.transform(val => val);
 }
 
@@ -113,7 +128,10 @@ export const makeJsonStringifiedSchema = <TSchema extends z.ZodType>(
         }
     })
 
-    const brandedSchema: z.ZodType<JsonStringified<Output>, z.infer<typeof base>> = base.transform(
+    const brandedSchema: z.ZodType<
+        JsonStringified<Output>,
+        z.infer<typeof base>
+    > = base.transform(
         (s): JsonStringified<Output> => s as JsonStringified<Output>,
     )
     const _api: JsonStringifiedAPI<TSchema> = {
@@ -148,15 +166,17 @@ export const makeJsonStringifiedSchema = <TSchema extends z.ZodType>(
             }
         },
     }
-    const _result: z.ZodType<JsonStringified<z.infer<TSchema>>, string> & JsonStringifiedAPI<TSchema> =
-        Object.assign(brandedSchema, _api)
+    const _result: z.ZodType<JsonStringified<z.infer<TSchema>>, string> &
+        JsonStringifiedAPI<TSchema> = Object.assign(brandedSchema, _api)
     return _result
 }
 export const jsonParser = <TSchema extends z.ZodType = z.ZodJSONSchema>(
     schema?: TSchema,
 ): JsonStringifiedSchema<TSchema> => {
-    const _schema: TSchema = schema === undefined ? (z.json() as unknown as TSchema) : schema
+    const _schema: TSchema =
+        schema === undefined ? (z.json() as unknown as TSchema) : schema
     return makeJsonStringifiedSchema<TSchema>(_schema)
 }
-export const jsonStringified = <TSchema extends z.ZodType>(schema: TSchema): JsonStringifiedSchema<TSchema> =>
-    makeJsonStringifiedSchema(schema)
+export const jsonStringified = <TSchema extends z.ZodType>(
+    schema: TSchema,
+): JsonStringifiedSchema<TSchema> => makeJsonStringifiedSchema(schema)

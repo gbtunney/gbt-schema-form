@@ -7,8 +7,8 @@ import { defaultEndpointsFactory as endPointsFactory } from 'express-zod-api'
 import { z } from 'zod'
 
 export const helloWorldEndpoint = endPointsFactory.build({
-    handler: async  ({ ctx, input: { name }, logger }) => {
-       await  logger.debug('Context:', ctx) // middlewares provide ctx
+    handler: async ({ ctx, input: { name }, logger }) => {
+        await logger.debug('Context:', ctx) // middlewares provide ctx
         return { greetings: `Hello, ${name || 'World'}. Happy coding!` }
     },
     // method: "get" (default) or array ["get", "post", ...]
@@ -17,7 +17,10 @@ export const helloWorldEndpoint = endPointsFactory.build({
         nickname: z
             .string()
             .min(1)
-            .refine((nick) => !/^\d.*$/.test(nick), 'Nickname cannot start with a digit'),
+            .refine(
+                (nick) => !/^\d.*$/.test(nick),
+                'Nickname cannot start with a digit',
+            ),
     }),
     output: z.object({
         greetings: z.string(),

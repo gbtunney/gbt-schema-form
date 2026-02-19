@@ -32,7 +32,9 @@ describe('json/json-stringified', () => {
         const result = schema.safeParse('nope')
         expect(result.success).toBe(false)
         if (!result.success) {
-            expect(result.error.issues[0]?.message).toBe('Value is not valid JSON')
+            expect(result.error.issues[0]?.message).toBe(
+                'Value is not valid JSON',
+            )
         }
     })
 

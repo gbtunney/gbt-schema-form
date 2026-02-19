@@ -59,13 +59,19 @@ describe('evidence/evidence-group evidenceGroupSchema', () => {
     })
 
     test('rejects evidence group with invalid owner', () => {
-        const group = { ...createValidGroup(validRecordOwner), owner: { kind: 'invalid' } }
+        const group = {
+            ...createValidGroup(validRecordOwner),
+            owner: { kind: 'invalid' },
+        }
         const result = evidenceGroupSchema.safeParse(group)
         expect(result.success).toBe(false)
     })
 
     test('rejects evidence group with invalid datetime format', () => {
-        const group = { ...createValidGroup(validRecordOwner), createdAt: '2024-01-15' }
+        const group = {
+            ...createValidGroup(validRecordOwner),
+            createdAt: '2024-01-15',
+        }
         const result = evidenceGroupSchema.safeParse(group)
         expect(result.success).toBe(false)
     })

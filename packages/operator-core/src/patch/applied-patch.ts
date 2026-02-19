@@ -15,7 +15,8 @@ export type AppliedPatch = {
 }
 
 export function makeAppliedPatch(
-    args: Omit<AppliedPatch, 'id' | 'createdAt'> & Partial<Pick<AppliedPatch, 'id' | 'createdAt'>>,
+    args: Omit<AppliedPatch, 'id' | 'createdAt'> &
+        Partial<Pick<AppliedPatch, 'id' | 'createdAt'>>,
 ): AppliedPatch {
     const id = args.id ?? crypto.randomUUID()
     const createdAt = args.createdAt ?? new Date().toISOString()

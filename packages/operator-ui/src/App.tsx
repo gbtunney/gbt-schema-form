@@ -18,7 +18,11 @@ const equipmentSchema = {
         manufacturer: { title: 'Manufacturer', type: 'string' },
         model: { title: 'Model', type: 'string' },
         notes: { title: 'Notes', type: 'string' },
-        purchaseDate: { format: 'date', title: 'Purchase Date', type: 'string' },
+        purchaseDate: {
+            format: 'date',
+            title: 'Purchase Date',
+            type: 'string',
+        },
         serialNumber: { title: 'Serial Number', type: 'string' },
         status: {
             enum: ['Active', 'In Repair', 'Retired'],
@@ -94,7 +98,9 @@ const store = createInMemoryStore({
 
 function App(): ReactElement {
     const [records, setRecords] = useState<Array<RecordDoc>>([])
-    const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null)
+    const [selectedRecordId, setSelectedRecordId] = useState<string | null>(
+        null,
+    )
     const [isCreatingNew, setIsCreatingNew] = useState(false)
 
     const loadRecords = useCallback(async (): Promise<void> => {
@@ -123,15 +129,25 @@ function App(): ReactElement {
 
     if (isCreatingNew || selectedRecordId) {
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-                <div style={{ borderBottom: '1px solid #ccc', padding: '1rem' }}>
-                    <button onClick={handleCloseEditor} style={{ cursor: 'pointer', padding: '0.5rem 1rem' }}>
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100vh',
+                }}>
+                <div
+                    style={{ borderBottom: '1px solid #ccc', padding: '1rem' }}>
+                    <button
+                        onClick={handleCloseEditor}
+                        style={{ cursor: 'pointer', padding: '0.5rem 1rem' }}>
                         ← Back to Records List
                     </button>
                 </div>
                 <div style={{ flex: 1, overflow: 'hidden' }}>
                     <OperatorEditor
-                        {...(selectedRecordId ? { recordId: selectedRecordId } : {})}
+                        {...(selectedRecordId
+                            ? { recordId: selectedRecordId }
+                            : {})}
                         schemaId="equipment.v1"
                         schemaResolver={mockSchemaResolver}
                         store={store}
@@ -149,8 +165,7 @@ function App(): ReactElement {
                     display: 'flex',
                     justifyContent: 'space-between',
                     marginBottom: '2rem',
-                }}
-            >
+                }}>
                 <h1>Equipment Records</h1>
                 <button
                     onClick={handleCreateNew}
@@ -162,28 +177,57 @@ function App(): ReactElement {
                         cursor: 'pointer',
                         fontSize: '1rem',
                         padding: '0.75rem 1.5rem',
-                    }}
-                >
+                    }}>
                     + New Record
                 </button>
             </div>
 
-            <table style={{ border: '1px solid #ddd', borderCollapse: 'collapse', width: '100%' }}>
+            <table
+                style={{
+                    border: '1px solid #ddd',
+                    borderCollapse: 'collapse',
+                    width: '100%',
+                }}>
                 <thead>
                     <tr style={{ background: '#f5f5f5' }}>
-                        <th style={{ borderBottom: '2px solid #ddd', padding: '1rem', textAlign: 'left' }}>
+                        <th
+                            style={{
+                                borderBottom: '2px solid #ddd',
+                                padding: '1rem',
+                                textAlign: 'left',
+                            }}>
                             Serial Number
                         </th>
-                        <th style={{ borderBottom: '2px solid #ddd', padding: '1rem', textAlign: 'left' }}>
+                        <th
+                            style={{
+                                borderBottom: '2px solid #ddd',
+                                padding: '1rem',
+                                textAlign: 'left',
+                            }}>
                             Category
                         </th>
-                        <th style={{ borderBottom: '2px solid #ddd', padding: '1rem', textAlign: 'left' }}>
+                        <th
+                            style={{
+                                borderBottom: '2px solid #ddd',
+                                padding: '1rem',
+                                textAlign: 'left',
+                            }}>
                             Manufacturer
                         </th>
-                        <th style={{ borderBottom: '2px solid #ddd', padding: '1rem', textAlign: 'left' }}>
+                        <th
+                            style={{
+                                borderBottom: '2px solid #ddd',
+                                padding: '1rem',
+                                textAlign: 'left',
+                            }}>
                             Status
                         </th>
-                        <th style={{ borderBottom: '2px solid #ddd', padding: '1rem', textAlign: 'left' }}>
+                        <th
+                            style={{
+                                borderBottom: '2px solid #ddd',
+                                padding: '1rem',
+                                textAlign: 'left',
+                            }}>
                             Actions
                         </th>
                     </tr>
@@ -192,36 +236,43 @@ function App(): ReactElement {
                     {records.map((record) => (
                         <tr
                             key={record.id}
-                            style={{ borderBottom: '1px solid #eee', cursor: 'pointer' }}
+                            style={{
+                                borderBottom: '1px solid #eee',
+                                cursor: 'pointer',
+                            }}
                             onClick={() => {
                                 setSelectedRecordId(record.id)
-                            }}
-                        >
+                            }}>
                             <td style={{ padding: '1rem' }}>
-                                {(record.data as { serialNumber?: string })?.serialNumber ?? '-'}
+                                {(record.data as { serialNumber?: string })
+                                    ?.serialNumber ?? '-'}
                             </td>
                             <td style={{ padding: '1rem' }}>
-                                {(record.data as { category?: string })?.category ?? '-'}
+                                {(record.data as { category?: string })
+                                    ?.category ?? '-'}
                             </td>
                             <td style={{ padding: '1rem' }}>
-                                {(record.data as { manufacturer?: string })?.manufacturer ?? '-'}
+                                {(record.data as { manufacturer?: string })
+                                    ?.manufacturer ?? '-'}
                             </td>
                             <td style={{ padding: '1rem' }}>
                                 <span
                                     style={{
                                         background:
-                                            (record.data as { status?: string })?.status === 'Active'
+                                            (record.data as { status?: string })
+                                                ?.status === 'Active'
                                                 ? '#e8f5e9'
                                                 : '#fff3e0',
                                         borderRadius: '12px',
                                         color:
-                                            (record.data as { status?: string })?.status === 'Active'
+                                            (record.data as { status?: string })
+                                                ?.status === 'Active'
                                                 ? '#2e7d32'
                                                 : '#e65100',
                                         padding: '0.25rem 0.75rem',
-                                    }}
-                                >
-                                    {(record.data as { status?: string })?.status ?? '-'}
+                                    }}>
+                                    {(record.data as { status?: string })
+                                        ?.status ?? '-'}
                                 </span>
                             </td>
                             <td style={{ padding: '1rem' }}>
@@ -236,8 +287,7 @@ function App(): ReactElement {
                                         borderRadius: '4px',
                                         cursor: 'pointer',
                                         padding: '0.5rem 1rem',
-                                    }}
-                                >
+                                    }}>
                                     Edit
                                 </button>
                             </td>
@@ -247,7 +297,12 @@ function App(): ReactElement {
             </table>
 
             {records.length === 0 && (
-                <div style={{ color: '#666', padding: '3rem', textAlign: 'center' }}>
+                <div
+                    style={{
+                        color: '#666',
+                        padding: '3rem',
+                        textAlign: 'center',
+                    }}>
                     <p>No records found. Click "New Record" to create one.</p>
                 </div>
             )}

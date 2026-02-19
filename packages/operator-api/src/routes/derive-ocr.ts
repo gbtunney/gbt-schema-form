@@ -1,10 +1,14 @@
- /* Defines the OCR derivation endpoint. Accepts either an image URL or base64‑encoded image data and returns extracted text. Request structure: one of imageUrl or base64 must be provided.*/
+// Defines the OCR derivation endpoint. Accepts either an image URL or base64‑encoded image data and returns extracted text. Request structure: one of imageUrl or base64 must be provided.
 
 import { defaultEndpointsFactory as endPointsFactory } from 'express-zod-api'
-import { createOcrService } from './../services/ocr-service.js'
-import Tesseract, { type ImageLike, type Page, type RecognizeResult } from 'tesseract.js'
+import Tesseract, {
+    type ImageLike,
+    type Page,
+    type RecognizeResult,
+} from 'tesseract.js'
 import type { Merge } from 'type-fest'
 import { z } from 'zod'
+import { createOcrService } from './../services/ocr-service.js'
 
 export const ocrInitialSchema = z
     .object({
@@ -17,7 +21,10 @@ export const ocrInitialSchema = z
         path: ['base64'],
     })
 
-type InnerOutput = Merge<{ image: ImageLike }, Pick<z.output<typeof ocrInitialSchema>, 'langs'>>
+type InnerOutput = Merge<
+    { image: ImageLike },
+    Pick<z.output<typeof ocrInitialSchema>, 'langs'>
+>
 
 export const ocrInputInnerSchema: z.ZodType<
     InnerOutput,
@@ -57,7 +64,10 @@ const newSchema = z
         lang: z.union([z.string(), z.array(z.string())]).default('eng'),
         otherThing: z.string().optional(),
     })
-    .refine((inputs) => Object.keys(inputs).length >= 1, 'Please provide at least one property')
+    .refine(
+        (inputs) => Object.keys(inputs).length >= 1,
+        'Please provide at least one property',
+    )
 //type MYTYPE = EndpointsFactory<z.infer<typeof ocrOutputSchema>, z.infer<typeof ocrInputSchema>>
 export const deriveOcrEndpoint = endPointsFactory.build({
     handler: async ({ ctx, input: { image, langs }, logger }) => {
@@ -70,4 +80,4 @@ export const deriveOcrEndpoint = endPointsFactory.build({
     },
     input: ocrInputInnerSchema,
     output: ocrOutputSchema,
-    })
+})

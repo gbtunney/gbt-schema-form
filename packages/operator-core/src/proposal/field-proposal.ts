@@ -2,10 +2,7 @@ import { z } from 'zod'
 import { evidenceItemIdSchema } from '../evidence/ids.js'
 import { jsonValueSchema } from '../json/json-value.js'
 
-/**
- * AI-generated proposal for filling a specific field.
- * Derived from an evidence item.
- */
+/** AI-generated proposal for filling a specific field. Derived from an evidence item. */
 export const fieldProposalSchema = z.object({
     confidence: z.enum(['High', 'Medium', 'Low']),
     evidenceItemId: evidenceItemIdSchema,

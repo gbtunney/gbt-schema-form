@@ -11,9 +11,7 @@ import { env, type Env } from './config/env.js'
 import { routes } from './routes.js'
 import { createOcrService } from './services/ocr-service.js'
 
-/**
- *Number(process.env.PORT || 3000)
- */
+/** Number(process.env.PORT || 3000) */
 const port = env.port
 
 /*
@@ -33,15 +31,15 @@ export const getConfig = (environment: Env = env): ServerConfig => {
     return config
 }
 /**
- * Create and configure an Express application. Injects the provided
- * services and binds routes to handlers. If no services are passed
- * explicitly, the default mock services are used.
+ * Create and configure an Express application. Injects the provided services and binds routes to handlers. If no
+ * services are passed explicitly, the default mock services are used.
  */
 
-export const buildServer = async (/*services: Services = buildServices()*/): Promise<Express> => {
-    const _server = await createServer(getConfig(), routes)
-    return _server.app
-}
+export const buildServer =
+    async (/*services: Services = buildServices()*/): Promise<Express> => {
+        const _server = await createServer(getConfig(), routes)
+        return _server.app
+    }
 /*start().catch((err) => {
     console.error('Failed to start API server:', err)
     process.exit(1)
@@ -56,26 +54,22 @@ export type Services = {
     //proposals: ReturnType<typeof createProposalService>
 
     /**
-     * Perform OCR on an image attachment. Accepts either an image URL or
-     * base64‑encoded image data and returns extracted text.
+     * Perform OCR on an image attachment. Accepts either an image URL or base64‑encoded image data and returns
+     * extracted text.
      */
     ocr: ReturnType<typeof createOcrService>
 
     /**
-     * Transcribe an audio attachment. Accepts either an audio URL or
-     * base64‑encoded audio data and returns transcribed text.
+     * Transcribe an audio attachment. Accepts either an audio URL or base64‑encoded audio data and returns transcribed
+     * text.
      */
     // whisper: ReturnType<typeof createWhisperService>
 
-    /**
-     * Scrape text from a remote URL. Should return the extracted text.
-     */
+    /** Scrape text from a remote URL. Should return the extracted text. */
     //scrape: ReturnType<typeof createScrapeService>
 }
 // Assemble the default set of services. This factory can be replaced
-/**
- * during testing or when integrating real implementations.
- */
+/** During testing or when integrating real implementations. */
 /*
 export function buildServices(): Services {
     return {
@@ -87,9 +81,8 @@ export function buildServices(): Services {
 }*/
 
 /**
- * Create and configure an Express application. Injects the provided
- * services and binds routes to handlers. If no services are passed
- * explicitly, the default mock services are used.
+ * Create and configure an Express application. Injects the provided services and binds routes to handlers. If no
+ * services are passed explicitly, the default mock services are used.
  */
 /*
 export function buildServer(services: Services = buildServices()): express.Express {

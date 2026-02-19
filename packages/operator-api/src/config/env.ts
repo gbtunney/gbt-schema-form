@@ -22,18 +22,17 @@ declare namespace NodeJS {
 dotenv.config({ path: path.resolve(`${process.cwd()}/.env`) })
 
 if (!process.env['OPENAI_API_KEY'])
-    throw new Error('OPENAI_API_KEY is required but not set in environment variables')
+    throw new Error(
+        'OPENAI_API_KEY is required but not set in environment variables',
+    )
 export const env = {
     cwd: process.cwd(),
 
-    /**
-     * API key for the OpenAI client. Required when real proposals are
-     * implemented. Leave empty for the mock service.
-     */
+    /** API key for the OpenAI client. Required when real proposals are implemented. Leave empty for the mock service. */
     openAiApiKey: process.env['OPENAI_API_KEY'],
     /**
-     * Port number the server will listen on. Falls back to 3001 when not
-     * provided. Use strings here because environment variables are strings.
+     * Port number the server will listen on. Falls back to 3001 when not provided. Use strings here because environment
+     * variables are strings.
      */
     port: process.env['PORT'] ? parseInt(process.env['PORT']) : 3001,
 }

@@ -13,11 +13,13 @@ export type FormPaneProps = {
     onChange?: (formData: Record<string, JsonSchemaType>) => void
 }
 
-/**
- * JSON Schema form panel powered by RJSF.
- * Renders a form from a JSON Schema and manages form data changes.
- */
-export function FormPane({ formData, onChange, schema, uiSchema }: FormPaneProps): ReactElement {
+/** JSON Schema form panel powered by RJSF. Renders a form from a JSON Schema and manages form data changes. */
+export function FormPane({
+    formData,
+    onChange,
+    schema,
+    uiSchema,
+}: FormPaneProps): ReactElement {
     const handleChange = useCallback(
         (event: IChangeEvent) => {
             if (onChange && event.formData !== undefined) {
@@ -38,8 +40,7 @@ export function FormPane({ formData, onChange, schema, uiSchema }: FormPaneProps
                     onChange={handleChange}
                     schema={schema}
                     validator={validator}
-                    {...(uiSchema ? { uiSchema } : {})}
-                >
+                    {...(uiSchema ? { uiSchema } : {})}>
                     {/* Hide default submit button */}
                     <></>
                 </Form>
@@ -55,8 +56,7 @@ export function FormPane({ formData, onChange, schema, uiSchema }: FormPaneProps
                             maxHeight: '300px',
                             overflow: 'auto',
                             padding: '1rem',
-                        }}
-                    >
+                        }}>
                         {JSON.stringify(formData, null, 2)}
                     </pre>
                 </details>

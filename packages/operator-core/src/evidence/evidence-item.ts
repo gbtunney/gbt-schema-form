@@ -2,10 +2,7 @@ import { z } from 'zod'
 import { evidenceGroupIdSchema, evidenceItemIdSchema } from './ids.js'
 import { isoDateTimeStringSchema } from '../shared.js'
 
-/**
- * A single piece of evidence within a group.
- * Can contain text, attachments, and generate proposals.
- */
+/** A single piece of evidence within a group. Can contain text, attachments, and generate proposals. */
 export const evidenceItemSchema = z.object({
     createdAt: isoDateTimeStringSchema,
     groupId: evidenceGroupIdSchema,

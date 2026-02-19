@@ -128,9 +128,7 @@ describe('operator-store/ports proposalRequestSchema', () => {
 
 describe('operator-store/ports type contracts', () => {
     test('SchemaResolver type allows async schema resolution', () => {
-        /**
-         * Type-only test - verifying contract structure
-         */
+        /** Type-only test - verifying contract structure */
         const mockResolver = (
             schemaId: string,
         ): Promise<{
@@ -147,9 +145,7 @@ describe('operator-store/ports type contracts', () => {
     })
 
     test('ProposalClient type allows async proposal generation', () => {
-        /**
-         * Type-only test - verifying contract structure
-         */
+        /** Type-only test - verifying contract structure */
         const mockClient = (): Promise<
             Array<{
                 id: string

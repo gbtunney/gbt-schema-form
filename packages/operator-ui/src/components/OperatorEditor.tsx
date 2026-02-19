@@ -1,4 +1,8 @@
-import { type EvidenceItem, JsonSchemaType, type RecordDoc } from '@operator/core'
+import {
+    type EvidenceItem,
+    JsonSchemaType,
+    type RecordDoc,
+} from '@operator/core'
 
 import type { OperatorStore, SchemaResolver } from '@operator/store'
 import type { RJSFSchema } from '@rjsf/utils'
@@ -16,9 +20,8 @@ export type OperatorEditorProps = {
 }
 
 /**
- * Main editor layout.
- * Two-pane view: EvidencePane on the left, FormPane on the right.
- * Manages record loading/saving and schema resolution.
+ * Main editor layout. Two-pane view: EvidencePane on the left, FormPane on the right. Manages record loading/saving and
+ * schema resolution.
  */
 export function OperatorEditor({
     recordId,
@@ -29,14 +32,18 @@ export function OperatorEditor({
     const [schema, setSchema] = useState<RJSFSchema | null>(null)
     const [record, setRecord] = useState<RecordDoc | null>(null)
     const [formData, setFormData] = useState<Record<string, JsonSchemaType>>({})
-    const [activeRecordId, setActiveRecordId] = useState<string | undefined>(recordId)
+    const [activeRecordId, setActiveRecordId] = useState<string | undefined>(
+        recordId,
+    )
     const [statusMessage, setStatusMessage] = useState('')
 
     /** Resolve the JSON Schema on mount */
     useEffect(() => {
-        void schemaResolver(schemaId).then((resolved: { schemaId: string; jsonSchema: unknown }) => {
-            setSchema(resolved.jsonSchema as RJSFSchema)
-        })
+        void schemaResolver(schemaId).then(
+            (resolved: { schemaId: string; jsonSchema: unknown }) => {
+                setSchema(resolved.jsonSchema as RJSFSchema)
+            },
+        )
     }, [schemaResolver, schemaId])
 
     /** Load existing record if recordId provided */
@@ -45,7 +52,9 @@ export function OperatorEditor({
             void store.records.load(activeRecordId).then((loaded) => {
                 if (loaded) {
                     setRecord(loaded)
-                    setFormData((loaded.data ?? {}) as Record<string, JsonSchemaType>)
+                    setFormData(
+                        (loaded.data ?? {}) as Record<string, JsonSchemaType>,
+                    )
                 }
             })
         }
@@ -60,7 +69,12 @@ export function OperatorEditor({
             if (!activeRecordId) {
                 setActiveRecordId(currentRecordId)
             }
-            console.log('currentRecordId', currentRecordId, 'updatedData', updatedData)
+            console.log(
+                'currentRecordId',
+                currentRecordId,
+                'updatedData',
+                updatedData,
+            )
             const now = new Date().toISOString()
             const recordToSave: RecordDoc = {
                 createdAt: record?.createdAt ?? now,
@@ -84,8 +98,8 @@ export function OperatorEditor({
     /** Handle evidence item selection (for future proposal integration) */
     const handleItemSelect = useCallback((_item: EvidenceItem) => {
         /**
-         * Placeholder for proposal generation. When AI is integrated, selected
-         * evidence items will trigger the ProposalClient to generate field proposals.
+         * Placeholder for proposal generation. When AI is integrated, selected evidence items will trigger the
+         * ProposalClient to generate field proposals.
          */
     }, [])
 
@@ -95,17 +109,33 @@ export function OperatorEditor({
         : { kind: 'draft' as const }
 
     if (!schema) {
-        return <div className="operator-editor operator-editor--loading">Loading schema...</div>
+        return (
+            <div className="operator-editor operator-editor--loading">
+                Loading schema...
+            </div>
+        )
     }
 
     return (
         <div className="operator-editor">
             <div className="operator-editor__sidebar">
-                <EvidencePane onItemSelect={handleItemSelect} owner={evidenceOwner} store={store} />
+                <EvidencePane
+                    onItemSelect={handleItemSelect}
+                    owner={evidenceOwner}
+                    store={store}
+                />
             </div>
             <div className="operator-editor__main">
-                {statusMessage && <div className="operator-editor__status">{statusMessage}</div>}
-                <FormPane formData={formData} onChange={handleFormChange} schema={schema} />
+                {statusMessage && (
+                    <div className="operator-editor__status">
+                        {statusMessage}
+                    </div>
+                )}
+                <FormPane
+                    formData={formData}
+                    onChange={handleFormChange}
+                    schema={schema}
+                />
             </div>
         </div>
     )

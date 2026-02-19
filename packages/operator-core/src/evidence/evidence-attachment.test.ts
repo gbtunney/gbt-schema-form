@@ -16,7 +16,9 @@ describe('evidence/evidence-attachment evidenceAttachmentSchema', () => {
         if (result.success) {
             expect(result.data.id).toBe('attach-123')
             expect(result.data.itemId).toBe('item-456')
-            expect(result.data.url).toBe('https://example.com/files/document.pdf')
+            expect(result.data.url).toBe(
+                'https://example.com/files/document.pdf',
+            )
             expect(result.data.mimeType).toBe('application/pdf')
         }
     })
@@ -37,7 +39,12 @@ describe('evidence/evidence-attachment evidenceAttachmentSchema', () => {
     })
 
     test('rejects invalid URL formats', () => {
-        const invalidUrls = ['not-a-url', 'example.com/file', '/relative/path', '']
+        const invalidUrls = [
+            'not-a-url',
+            'example.com/file',
+            '/relative/path',
+            '',
+        ]
 
         invalidUrls.forEach((url) => {
             const attachment = { ...validAttachment, url }

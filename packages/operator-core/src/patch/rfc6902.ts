@@ -9,12 +9,15 @@ function cloneJson(value: JsonValue): JsonValue {
     return JSON.parse(JSON.stringify(value)) as JsonValue
 }
 
-export function applyRfc6902Patch(doc: JsonValue, ops: Array<JsonPatchOp>): JsonValue {
+export function applyRfc6902Patch(
+    doc: JsonValue,
+    ops: Array<JsonPatchOp>,
+): JsonValue {
     const cloned = cloneJson(doc)
 
     /**
-     * `rfc6902.applyPatch` mutates the passed document in-place.
-     * Return shapes vary by version; handle the common cases.
+     * `rfc6902.applyPatch` mutates the passed document in-place. Return shapes vary by version; handle the common
+     * cases.
      */
     const result = applyPatch(cloned as unknown as object, ops) as unknown
 
