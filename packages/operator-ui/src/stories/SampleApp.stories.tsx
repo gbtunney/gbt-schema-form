@@ -7,21 +7,21 @@ import { type ReactElement, useCallback, useEffect, useMemo, useState } from 're
 import { OperatorEditor } from '../components/OperatorEditor.tsx'
 
 const petSchema = {
+    properties: {
+        birthday: { format: 'date', title: 'Birthday', type: 'string' },
+        name: { minLength: 1, title: 'Name', type: 'string' },
+        notes: { title: 'Notes', type: 'string' },
+        species: { enum: ['cat', 'dog', 'lizard', 'fish'], title: 'Species', type: 'string' },
+    },
+    required: ['name', 'species'],
     title: 'Pet Record',
     type: 'object',
-    required: ['name', 'species'],
-    properties: {
-        name: { title: 'Name', type: 'string', minLength: 1 },
-        species: { title: 'Species', type: 'string', enum: ['cat', 'dog', 'lizard', 'fish'] },
-        birthday: { title: 'Birthday', type: 'string', format: 'date' },
-        notes: { title: 'Notes', type: 'string' },
-    },
 } satisfies JsonSchema
 
 const schemaResolver: SchemaResolver = async (schemaId: string) =>
     Promise.resolve({
-        schemaId,
         jsonSchema: petSchema,
+        schemaId,
     })
 
 function SampleApp(): ReactElement {
@@ -32,21 +32,21 @@ function SampleApp(): ReactElement {
                     [
                         'pet-001',
                         {
+                            createdAt: '2026-02-01T12:00:00.000Z',
+                            data: { name: 'Pickles', notes: '55g tank', species: 'fish' },
                             id: 'pet-001',
                             schemaId: 'pet.v1',
-                            createdAt: '2026-02-01T12:00:00.000Z',
                             updatedAt: '2026-02-01T12:00:00.000Z',
-                            data: { name: 'Pickles', species: 'fish', notes: '55g tank' },
                         },
                     ],
                     [
                         'pet-002',
                         {
+                            createdAt: '2026-02-02T12:00:00.000Z',
+                            data: { name: 'Seafood', notes: 'Reptile room', species: 'lizard' },
                             id: 'pet-002',
                             schemaId: 'pet.v1',
-                            createdAt: '2026-02-02T12:00:00.000Z',
                             updatedAt: '2026-02-02T12:00:00.000Z',
-                            data: { name: 'Seafood', species: 'lizard', notes: 'Reptile room' },
                         },
                     ],
                 ]),
@@ -95,8 +95,15 @@ function SampleApp(): ReactElement {
     }
 
     return (
-        <div style={{ maxWidth: 980, margin: '0 auto', padding: 24 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div style={{ margin: '0 auto', maxWidth: 980, padding: 24 }}>
+            <div
+                style={{
+                    alignItems: 'center',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginBottom: 16,
+                }}
+            >
                 <h1 style={{ margin: 0 }}>Pets</h1>
                 <button
                     onClick={() => {
@@ -113,9 +120,9 @@ function SampleApp(): ReactElement {
                 <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                     <thead>
                         <tr style={{ background: '#f6f6f6', borderBottom: '1px solid #ddd' }}>
-                            <th style={{ textAlign: 'left', padding: 12 }}>Name</th>
-                            <th style={{ textAlign: 'left', padding: 12 }}>Species</th>
-                            <th style={{ textAlign: 'left', padding: 12 }}>Action</th>
+                            <th style={{ padding: 12, textAlign: 'left' }}>Name</th>
+                            <th style={{ padding: 12, textAlign: 'left' }}>Species</th>
+                            <th style={{ padding: 12, textAlign: 'left' }}>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -123,13 +130,17 @@ function SampleApp(): ReactElement {
                             const d = r.data as Record<string, unknown>
                             return (
                                 <tr key={r.id} style={{ borderBottom: '1px solid #eee' }}>
-                                    <td style={{ padding: 12 }}>{typeof d['name'] === 'string' ? d['name'] : '—'}</td>
+                                    <td style={{ padding: 12 }}>
+                                        {typeof d['name'] === 'string' ? d['name'] : '—'}
+                                    </td>
                                     <td style={{ padding: 12 }}>
                                         {typeof d['species'] === 'string' ? d['species'] : '—'}
                                     </td>
                                     <td style={{ padding: 12 }}>
                                         <button
-                                            onClick={() => setSelectedRecordId(r.id)}
+                                            onClick={() => {
+                                                setSelectedRecordId(r.id)
+                                            }}
                                             style={{ padding: '8px 12px' }}
                                         >
                                             Edit
@@ -146,11 +157,11 @@ function SampleApp(): ReactElement {
 }
 
 const meta: Meta<typeof SampleApp> = {
-    title: 'Playground/SampleApp',
     component: SampleApp,
     parameters: {
         layout: 'fullscreen',
     },
+    title: 'Playground/SampleApp',
 }
 
 export default meta

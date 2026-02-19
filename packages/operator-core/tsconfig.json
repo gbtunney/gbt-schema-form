@@ -6,6 +6,6 @@
     },
     "exclude": ["./node_modules"],
     "files": ["package.json"],
-    "include": ["./*.ts", "./*.cts", "./**/*.mts"],
+    "include": ["./*.ts", "./*.cts", "./*.mts"],
     "references": [{ "path": "./src" }]
 }

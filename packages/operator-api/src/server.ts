@@ -4,26 +4,56 @@
 // to provide service implementations. The default services are mock/fake
 // implementations suitable for local development and testing.
 
-import { fieldProposalSchema } from '@operator/core'
-import { operatorContract } from '@operator/contract'
-import { proposalRequestSchema } from '@operator/store'
-import { createExpressEndpoints } from '@ts-rest/express'
-import express from 'express'
-import { z } from 'zod'
+import { type Express } from 'express'
 
+import { createConfig, createServer, ServerConfig } from 'express-zod-api'
+import { env, type Env } from './config/env.js'
+import { routes } from './routes.js'
 import { createOcrService } from './services/ocr-service.js'
-import { createProposalService } from './services/proposal-service.js'
-import { createScrapeService } from './services/scrape-service.js'
-import { createWhisperService } from './services/whisper-service.js'
+
+/**
+ *Number(process.env.PORT || 3000)
+ */
+const port = env.port
+
+/*
+async function start() {
+
+   const mmm : Express = myserver.app 
+}?
+*/
+console.log('THE ENV  IS ', env)
+export const getConfig = (environment: Env = env): ServerConfig => {
+    console.log('THE OPENAI KEY IS ', environment.openAiApiKey)
+    const config: ServerConfig = createConfig({
+        cors: true,
+        http: { listen: port },
+        logger: { color: true, ctx: {}, depth: 2, level: 'info' },
+    })
+    return config
+}
+/**
+ * Create and configure an Express application. Injects the provided
+ * services and binds routes to handlers. If no services are passed
+ * explicitly, the default mock services are used.
+ */
+
+export const buildServer = async (/*services: Services = buildServices()*/): Promise<Express> => {
+    const _server = await createServer(getConfig(), routes)
+    return _server.app
+}
+/*start().catch((err) => {
+    console.error('Failed to start API server:', err)
+    process.exit(1)
+})*/
 
 // Service interface definitions for dependency injection. Each property
 // corresponds to a function implementing part of the API surface.
 export type Services = {
-    /**
-     * Generate field proposals from a proposal request. Should return
-     * an array of FieldProposal objects.
-     */
-    proposals: ReturnType<typeof createProposalService>
+    //Generate field proposals from a proposal request. Should return
+    // an array of FieldProposal objects.
+
+    //proposals: ReturnType<typeof createProposalService>
 
     /**
      * Perform OCR on an image attachment. Accepts either an image URL or
@@ -35,18 +65,18 @@ export type Services = {
      * Transcribe an audio attachment. Accepts either an audio URL or
      * base64‑encoded audio data and returns transcribed text.
      */
-    whisper: ReturnType<typeof createWhisperService>
+    // whisper: ReturnType<typeof createWhisperService>
 
     /**
      * Scrape text from a remote URL. Should return the extracted text.
      */
-    scrape: ReturnType<typeof createScrapeService>
+    //scrape: ReturnType<typeof createScrapeService>
 }
-
 // Assemble the default set of services. This factory can be replaced
 /**
  * during testing or when integrating real implementations.
  */
+/*
 export function buildServices(): Services {
     return {
         ocr: createOcrService(),
@@ -54,13 +84,14 @@ export function buildServices(): Services {
         scrape: createScrapeService(),
         whisper: createWhisperService(),
     }
-}
+}*/
 
 /**
  * Create and configure an Express application. Injects the provided
  * services and binds routes to handlers. If no services are passed
  * explicitly, the default mock services are used.
  */
+/*
 export function buildServer(services: Services = buildServices()): express.Express {
     const app = express()
     app.use(express.json())
@@ -111,10 +142,7 @@ export function buildServer(services: Services = buildServices()): express.Expre
             res.status(400).json({ error: (err && err.message) || 'Invalid request' })
         }
     })
-
-    /**
-     * Generic helper to validate derivation inputs and return text
-     */
+    
     function deriveEndpoint(
         inputSchema: z.ZodType,
         handler: (args: any) => Promise<string>,
@@ -158,7 +186,7 @@ export function buildServer(services: Services = buildServices()): express.Expre
 
     return app
 }
-
+*/
 
 /*
 import dotenv from 'dotenv'

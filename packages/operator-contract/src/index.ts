@@ -5,17 +5,26 @@ import { z } from 'zod'
 const c = initContract()
 
 export const proposalsFromTextRequestSchema = z.object({
-    schemaId: schemaIdSchema,
     recordData: z.unknown().optional(),
+    schemaId: schemaIdSchema,
     text: z.string().min(1),
 })
 
 export const operatorContract = c.router({
+    getPokemon: {
+        method: 'GET',
+        path: '/pokemon/:id',
+        responses: {
+            200: z.object({
+                name: z.string(),
+            }),
+        },
+    },
     proposals: {
         fromText: {
+            body: proposalsFromTextRequestSchema,
             method: 'POST',
             path: '/proposals/from-text',
-            body: proposalsFromTextRequestSchema,
             responses: {
                 200: z.object({ proposals: z.array(fieldProposalSchema) }),
                 400: z.object({ error: z.string() }),

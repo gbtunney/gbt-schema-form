@@ -1,28 +1,29 @@
-import * as React from 'react'
+import { operatorContract } from '@operator/contract'
 import type { Meta, StoryObj } from '@storybook/react'
 import { initClient } from '@ts-rest/core'
+import * as React from 'react'
+import {type ReactElement} from 'react'
 
-import { operatorContract } from '@operator/contract'
 
 type Props = {
     baseUrl: string
     schemaId: string
     text: string
 }
-
-const client = (baseUrl: string) =>
+type ClientType = ReturnType<typeof initClient>
+const client = (baseUrl: string) :ClientType =>
     initClient(operatorContract, {
-        baseUrl,
         baseHeaders: {},
+        baseUrl,
     })
 
-const TsRestTextToProposalDemo = ({ baseUrl, schemaId, text }: Props) => {
+const TsRestTextToProposalDemo = ({ baseUrl, schemaId, text }: Props):ReactElement => {
     const [currentText, setCurrentText] = React.useState(text)
     const [result, setResult] = React.useState<any>(null)
     const [error, setError] = React.useState<string | null>(null)
     const [isLoading, setIsLoading] = React.useState(false)
 
-    const run = async () => {
+    const run = async ():Promise<void  > => {
         setIsLoading(true)
         setError(null)
         try {
@@ -43,27 +44,25 @@ const TsRestTextToProposalDemo = ({ baseUrl, schemaId, text }: Props) => {
     }
 
     return (
-        <div style={{ padding: 16, maxWidth: 900 }}>
+        <div style={{ maxWidth: 900, padding: 16 }}>
             <h3>ts-rest: /proposals/from-text</h3>
-            <p style={{ marginTop: 0 }}>
-                Requires the API running separately (default baseUrl: {baseUrl}).
-            </p>
+            <p style={{ marginTop: 0 }}>Requires the API running separately (default baseUrl: {baseUrl}).</p>
 
-            <label style={{ display: 'block', fontWeight: 600, marginBottom: 8 }}>
-                Text blob
-            </label>
+            <label style={{ display: 'block', fontWeight: 600, marginBottom: 8 }}>Text blob</label>
             <textarea
                 value={currentText}
-                onChange={(e) => setCurrentText(e.target.value)}
+                onChange={(e) => {
+                    setCurrentText(e.target.value)
+                }}
                 rows={6}
-                style={{ width: '100%', fontFamily: 'monospace' }}
+                style={{ fontFamily: 'monospace', width: '100%' }}
             />
 
             <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
                 <button onClick={run} disabled={isLoading || currentText.trim().length === 0}>
                     {isLoading ? 'Generating…' : 'Generate proposals'}
                 </button>
-                <div style={{ opacity: 0.7, alignSelf: 'center' }}>
+                <div style={{ alignSelf: 'center', opacity: 0.7 }}>
                     schemaId: <code>{schemaId}</code>
                 </div>
             </div>
@@ -86,18 +85,18 @@ const TsRestTextToProposalDemo = ({ baseUrl, schemaId, text }: Props) => {
 }
 
 const meta: Meta<typeof TsRestTextToProposalDemo> = {
-    title: 'Playground/ts-rest Text → Proposals',
-    component: TsRestTextToProposalDemo,
     args: {
         baseUrl: 'http://localhost:3001',
         schemaId: 'schema-1',
         text: 'This is about a model Eheim 2211',
     },
     argTypes: {
-        text: { control: { type: 'text' } },
         baseUrl: { control: { type: 'text' } },
         schemaId: { control: { type: 'text' } },
+        text: { control: { type: 'text' } },
     },
+    component: TsRestTextToProposalDemo,
+    title: 'Playground/ts-rest Text → Proposals',
 }
 
 export default meta

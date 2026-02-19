@@ -8,5 +8,6 @@
         "declarationMap": true,
         "lib": ["ESNext", "DOM"]
     },
+    "exclude": ["./backup/*"],
     "include": ["**/*.ts", "**/*.cts", "**/*.mts"]
 }
