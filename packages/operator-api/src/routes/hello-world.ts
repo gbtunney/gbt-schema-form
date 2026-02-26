@@ -22,6 +22,7 @@ export const helloWorldEndpoint = endPointsFactory.build({
                 'Nickname cannot start with a digit',
             ),
     }),
+    method: ['get', 'post'],
     output: z.object({
         greetings: z.string(),
     }),

@@ -5,6 +5,6 @@ export const routes: Routing = {
     // flat syntax — /v1/users
     // v1: {
     '/derive/ocr': deriveOcrEndpoint,
-    'hello': helloWorldEndpoint,
+    '/hello': helloWorldEndpoint,
     // },
 }

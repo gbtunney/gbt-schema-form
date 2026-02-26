@@ -5,8 +5,8 @@
     "description": "Server-side API for AI proposals and derivations.",
     "scripts": {
         "\n========== START >> ==========": "",
-        "start": "pnpm run build && node dist/index.js",
-        "gen:client": "pnpm build:client:ts && pnpm exec node ./src/client.integration.js && pnpm build:client:ts --clean",
+        "start": "pnpm run build:nx && node dist/start-server.js",
+        "gen:client": "pnpm build:client:ts && pnpm exec node ./src/client/generator.js && pnpm build:client:ts --clean",
         "\n========== DEVELOPMENT >> ==========": "",
         "dev": "pnpm build:ts --watch",
         "dev:ts": "pnpm build:ts --watch",
@@ -21,6 +21,7 @@
         "build:vite": "pnpm exec vite build --config ./vite.config.ts",
         "\n========== TEST >> ==========": "",
         "test": "vitest run",
+        "test:api":" pnpm --filter @operator/ui exec tsc  ./src/test.mts && pnpm --filter @operator/ui exec  node ./src/test.mjs",
         "test:nx": "cross-var nx run $npm_package_name:test",
         "test:watch": "vitest watch",
         "test:repo": "pnpm exec ls $(git rev-parse --show-toplevel)",
