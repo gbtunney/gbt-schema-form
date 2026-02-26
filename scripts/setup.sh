@@ -32,4 +32,4 @@ corepack up
 node -v
 pnpm -v
 pnpm install
-pnpm build
+#pnpm build
