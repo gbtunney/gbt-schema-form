@@ -9,6 +9,6 @@
         "lib": ["ESNext", "DOM"],
         "exactOptionalPropertyTypes": false
     },
-    "exclude": ["./backup/*"],
+    "exclude": ["./scratch/*"],
     "include": ["**/*.ts", "**/*.cts", "**/*.mts"]
 }
