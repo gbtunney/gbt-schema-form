@@ -9,7 +9,6 @@ const directory_paths = {
     output_dir: './dist/',
     source_dir: './src/',
 }
-
 const CONFIG_OBJ = [
     ...rollup.getConfigEntries(
         directory_paths,
@@ -19,11 +18,6 @@ const CONFIG_OBJ = [
                 export_types: ['default', 'import', 'require', 'types'],
                 library_name: 'gbtBoilerplate',
             },
-           /* {
-                export_key: 'client',
-                export_types: ['default', 'import',  'types'],
-                library_name: 'gbtClient',
-            },*/
         ],
         rollup.DEFAULT_PLUGINS_BUNDLED,
         pkg,

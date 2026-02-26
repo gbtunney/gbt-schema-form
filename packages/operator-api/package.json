@@ -5,7 +5,8 @@
     "description": "Server-side API for AI proposals and derivations.",
     "scripts": {
         "\n========== START >> ==========": "",
-        "start":"pnpm run build && node dist/index.js",
+        "start": "pnpm run build && node dist/index.js",
+        "gen:client": "pnpm build:client:ts && pnpm exec node ./src/client.integration.js && pnpm build:client:ts --clean",
         "\n========== DEVELOPMENT >> ==========": "",
         "dev": "pnpm build:ts --watch",
         "dev:ts": "pnpm build:ts --watch",
@@ -14,6 +15,7 @@
         "\n========== BUILD >> ==========": "",
         "build": "pnpm build:ts && pnpm build:rollup",
         "build:ts": "pnpm exec tsc --build",
+        "build:client:ts": "pnpm exec tsc  --build ./src/tsconfig.client.json",
         "build:nx": "cross-var nx run $npm_package_name:build",
         "build:rollup": "rollup --config ./rollup.config.mjs",
         "build:vite": "pnpm exec vite build --config ./vite.config.ts",
@@ -42,8 +44,10 @@
         "lint": "pnpm exec eslint .",
         "lint:md": "pnpm exec markdownlint-cli2 '{./*,./**/*}.md' '#**/node_modules/**' '#packages/test-package/**/*' "
     },
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
     "dependencies": {
-        "@operator/contract": "workspace:*",
         "@operator/core": "workspace:*",
         "@operator/store": "workspace:*",
         "@snailicide/g-library": "^1.2.2",
@@ -71,9 +75,6 @@
         "vitest": "^4.0.18"
     },
     "type": "module",
-    "main": "dist/index.js",
-    "module": "dist/index.js",
-    "types": "dist/index.d.ts",
     "exports": {
         ".": {
             "import": "./dist/index.js",

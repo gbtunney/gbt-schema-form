@@ -6,7 +6,8 @@
         "declaration": true,
         "declarationDir": "./../types",
         "declarationMap": true,
-        "lib": ["ESNext", "DOM"]
+        "lib": ["ESNext", "DOM"],
+        "exactOptionalPropertyTypes": false
     },
     "exclude": ["./backup/*"],
     "include": ["**/*.ts", "**/*.cts", "**/*.mts"]

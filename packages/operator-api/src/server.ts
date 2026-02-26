@@ -14,13 +14,11 @@ import { createOcrService } from './services/ocr-service.js'
 /** Number(process.env.PORT || 3000) */
 const port = env.port
 
-/*
-async function start() {
-
-   const mmm : Express = myserver.app 
-}?
-*/
-console.log('THE ENV  IS ', env)
+/**
+ * Async function start() {
+ *
+ * Const mmm : Express = myserver.app }?
+ */
 export const getConfig = (environment: Env = env): ServerConfig => {
     console.log('THE OPENAI KEY IS ', environment.openAiApiKey)
     const config: ServerConfig = createConfig({

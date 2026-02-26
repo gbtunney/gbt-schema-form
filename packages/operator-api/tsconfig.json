@@ -2,7 +2,8 @@
     "extends": "@snailicide/build-config/tsconfig-base",
     "compilerOptions": {
         "rootDir": ".",
-        "types": ["node"]
+        "types": ["node"],
+        "exactOptionalPropertyTypes": false
     },
     "exclude": ["./node_modules"],
     "files": ["package.json"],

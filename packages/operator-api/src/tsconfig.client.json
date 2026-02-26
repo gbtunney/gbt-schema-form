@@ -1,0 +1,16 @@
+{
+    "extends": "@snailicide/build-config/tsconfig-base",
+    "compilerOptions": {
+        // "outDir": "./../types" /* Specify an output folder for all emitted files. */,
+        "sourceMap": true,
+        "declaration": true,
+        //    "declarationDir": "./../types",
+        "declarationMap": true,
+        "lib": ["ESNext", "DOM"],
+        "exactOptionalPropertyTypes": false,
+        "skipLibCheck": true
+    },
+    ///  "files": ["./client.integration.ts"],
+    "include:[": ["./**/*.ts", "./client.integration.ts"],
+    "exclude": ["./backup/*", "./index.ts", "./*.test.ts", "node_modules"]
+}
