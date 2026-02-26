@@ -24,6 +24,7 @@ export default [
             '**/*.py', // ignore Python files
             //TODO:REMOVE
             '**/storybook-static/**',
+            './packages/operator-api/src/generated/api.ts',
         ],
     }, // Fix: Remove 'project' setting when 'projectService' is enabled
     {
