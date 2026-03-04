@@ -9,7 +9,12 @@
 // ProposalClient from @operator/api-client, which satisfies the ProposalClient
 // port type from @operator/store.
 
-import { fieldProposalSchema } from '@operator/core'
+import {
+    fieldProposalSchema,
+    jsonBoundarySchema,
+    jsonValueSchema,
+    recordDocSchema,
+} from '@operator/core'
 import { proposalRequestSchema } from '@operator/store'
 import { defaultEndpointsFactory as endpointsFactory } from 'express-zod-api'
 import { z } from 'zod'
@@ -29,17 +34,34 @@ export const proposalsFromEvidenceEndpoint = endpointsFactory.build({
             `Generating proposals for evidence item: ${input.evidenceItem.id} (schema: ${input.schemaId})`,
         )
 
-        const proposals = await proposalService(input)
+        const recordData = recordDocSchema.shape.data.parse(input.recordData)
+
+        const proposals = await proposalService({ ...input, recordData })
+
+        // optional: assert values are valid JSON
+        for (const p of proposals) {
+            jsonValueSchema.parse(p.value)
+        }
 
         const count = proposals.length
         logger.info(`Got ${String(count)} proposals`)
 
-        logger.info(`Generated ${proposals.length.toString()} proposals`)
+        logger.info(`Generated ${String(proposals.length)} proposals`)
         return { proposals }
     },
-    input: proposalRequestSchema,
+
+    // Avoid JsonValue recursion in generated client types:
+    input: proposalRequestSchema.extend({
+        recordData: z.unknown(),
+    }),
+
     method: 'post',
     output: z.object({
-        proposals: z.array(fieldProposalSchema),
+        proposals: z.array(
+            fieldProposalSchema.extend({
+                // prevent recursive JSON type in generated client
+                value: jsonBoundarySchema,
+            }),
+        ),
     }),
 })

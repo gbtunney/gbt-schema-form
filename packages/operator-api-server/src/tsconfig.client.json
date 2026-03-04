@@ -8,7 +8,7 @@
         "exactOptionalPropertyTypes": false,
         "skipLibCheck": true
     },
-    "include": ["./client/generator.ts"],
+    "include:[": ["./**/*.ts", "./client/generator.ts"],
     "exclude": [
         "./scratch/*",
         "./client/index.ts",
