@@ -20,23 +20,25 @@
 import { createInMemoryStore } from '@operator/adapter-local'
 import { createProposalClient } from '@operator/api-client'
 import type { FieldProposal } from '@operator/core'
-import type {
-    JsonSchema,
-    ProposalClient,
-    SchemaResolver,
-} from '@operator/store'
+import type { ProposalClient, SchemaResolver } from '@operator/store'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { z } from 'zod'
 
 import { OperatorEditor } from '../components/OperatorEditor.tsx'
 
 // ─── Equipment Schema ─────────────────────────────────────────────────────────
-// Mirrored in @domain/schemas/equipment.v1 — kept inline here so stories are
-// fully self-contained and don't require the domain package at dev time.
+// Defined in Zod so it can serve three purposes from one source of truth:
+//   1. z.toJSONSchema()  → RJSF form rendering (via schemaResolver)
+//   2. ProposalRequest   → sent to the AI so it knows valid paths + types
+//   3. schema.parse()    → runtime validation of record data
+//
+// In a real app this would live in your-app/src/schemas/equipment.ts
+// and be imported here. Stories stand in for that app layer.
 
-const equipmentSchema = {
-    properties: {
-        category: {
-            enum: [
+const equipmentSchema = z
+    .object({
+        category: z
+            .enum([
                 'Laptop',
                 'Monitor',
                 'Phone',
@@ -44,54 +46,43 @@ const equipmentSchema = {
                 'Server',
                 'Network',
                 'Other',
-            ],
-            title: 'Category',
-            type: 'string',
-        },
-        location: { title: 'Location', type: 'string' },
-        manufacturer: { title: 'Manufacturer', type: 'string' },
-        model: { title: 'Model', type: 'string' },
-        notes: { title: 'Notes', type: 'string' },
-        purchaseDate: {
-            format: 'date',
-            title: 'Purchase Date',
-            type: 'string',
-        },
-        serialNumber: { title: 'Serial Number', type: 'string' },
-        status: {
-            enum: ['Active', 'In Repair', 'Retired', 'In Storage'],
-            title: 'Status',
-            type: 'string',
-        },
-        warrantyExpiry: {
-            format: 'date',
-            title: 'Warranty Expiry',
-            type: 'string',
-        },
-    },
-    required: ['serialNumber', 'category'],
-    title: 'Equipment Record',
-    type: 'object',
-} as const
+            ])
+            .meta({ title: 'Category' }),
+        location: z.string().optional().meta({ title: 'Location' }),
+        manufacturer: z.string().optional().meta({ title: 'Manufacturer' }),
+        model: z.string().optional().meta({ title: 'Model' }),
+        notes: z.string().optional().meta({ title: 'Notes' }),
+        purchaseDate: z.iso.date().optional().meta({ title: 'Purchase Date' }),
+        serialNumber: z.string().meta({ title: 'Serial Number' }),
+        status: z
+            .enum(['Active', 'In Repair', 'Retired', 'In Storage'])
+            .optional()
+            .meta({ title: 'Status' }),
+        warrantyExpiry: z.iso
+            .date()
+            .optional()
+            .meta({ title: 'Warranty Expiry' }),
+    })
+    .meta({ title: 'Equipment Record' })
+
+export type EquipmentRecord = z.infer<typeof equipmentSchema>
+
+// z.toJSONSchema() produces the JSON Schema RJSF needs — same schema,
+// no duplication, no drift between the form and the AI prompt.
+const equipmentJsonSchema = z.toJSONSchema(equipmentSchema)
 
 const mockSchemaResolver: SchemaResolver = async (schemaId) =>
-    Promise.resolve({ jsonSchema: equipmentSchema as JsonSchema, schemaId })
+    Promise.resolve({ jsonSchema: equipmentJsonSchema, schemaId })
 
 // ─── Typed proposal factory ───────────────────────────────────────────────────
 // Valid pointer paths for this schema — the typed factory (operator-core/proposal/typed.ts)
 // would infer these from the Zod schema at compile time. Here we assert them manually
 // so the story is standalone.
 
-type EquipmentPath =
-    | '/serialNumber'
-    | '/manufacturer'
-    | '/model'
-    | '/category'
-    | '/status'
-    | '/location'
-    | '/purchaseDate'
-    | '/warrantyExpiry'
-    | '/notes'
+// Derive valid paths from the Zod schema keys — no manual list to maintain.
+// A full PathsOf<> implementation lives in operator-core/proposal/typed.ts
+// for nested schemas; flat schemas like this one can use a simpler keyof derivation.
+type EquipmentPath = `/${keyof EquipmentRecord}`
 
 type EquipmentProposal = FieldProposal & { path: EquipmentPath }
 
@@ -560,7 +551,8 @@ const meta = {
     title: 'Equipment/OperatorEditor',
 } satisfies Meta<typeof OperatorEditor>
 
-export default meta
+// Prefer named exports (eslint warning)
+export { meta }
 type Story = StoryObj<typeof meta>
 
 // ─── Stories ──────────────────────────────────────────────────────────────────
