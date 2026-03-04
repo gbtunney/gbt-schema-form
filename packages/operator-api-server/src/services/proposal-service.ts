@@ -1,84 +1,100 @@
 // packages/operator-api-server/src/services/proposal-service.ts
 //
-// Turns a single EvidenceItem (text blob) into an array of FieldProposals
-// using OpenAI structured output.
+// Turns a single EvidenceItem into an array of FieldProposals using
+// the OpenAI Responses API with Structured Outputs.
 //
-// Flow per the notes:
-//   evidence item text + current record data + schemaId
-//     → GPT-4o-mini (json_object mode)
-//       → FieldProposal[]
+// Uses zodResponseFormat() so fieldProposalSchema is the single source
+// of truth — no manually written JSON Schema, no drift.
 //
-// Rules enforced here (from DIRECTIONS.md):
-//   - AI suggests, never commits
-//   - Only suggest fields supported by the evidence — no invention
-//   - Return empty array rather than guess
+// Note: value uses a flat primitive union instead of z.json() because
+// OpenAI Structured Outputs does not support recursive schemas.
+// z.string() | z.number() | z.boolean() | z.null() covers all real
+// form field values. Nested object values are not expected from proposals.
 
 import type { FieldProposal } from '@operator/core'
-import { fieldProposalSchema } from '@operator/core'
 import type { ProposalRequest } from '@operator/store'
 import OpenAI from 'openai'
+import { zodResponseFormat } from 'openai/helpers/zod'
 import { z } from 'zod'
 
 import { env } from '../config/env.js'
 
-const proposalArraySchema = z.array(fieldProposalSchema)
+// -------------------------------------------------------
+// Response schema — Zod, used directly with zodResponseFormat()
+//
+// Kept separate from core FieldProposalSchema because:
+//   - value must be a flat primitive union (no recursive z.json())
+//   - excerpt is required here (optional in core) for better LLM output
+// -------------------------------------------------------
+
+const proposalResponseItemSchema = z.object({
+    confidence: z
+        .enum(['High', 'Medium', 'Low'])
+        .describe(
+            'High = explicitly stated, Medium = strongly implied, Low = loosely inferred',
+        ),
+    evidenceItemId: z
+        .string()
+        .describe('ID of the evidence item this proposal was derived from'),
+    excerpt: z
+        .string()
+        .describe(
+            'Short verbatim quote from the evidence text that supports this proposal',
+        ),
+    id: z.string().describe('Unique identifier for this proposal'),
+    path: z
+        .string()
+        .describe(
+            'JSON Pointer path to the field e.g. /model or /specs/weight',
+        ),
+    value: z
+        .union([z.string(), z.number(), z.boolean(), z.null()])
+        .describe(
+            'The proposed field value — must match the type expected by the field',
+        ),
+})
+
+const proposalResponseSchema = z.object({
+    proposals: z
+        .array(proposalResponseItemSchema)
+        .describe(
+            'List of proposed field values. Empty array if evidence supports nothing.',
+        ),
+})
+
+// ✅ Add an explicit inferred type because some openai SDK versions
+// don’t propagate the zodResponseFormat type into response.output_parsed.
+type ProposalResponse = z.infer<typeof proposalResponseSchema>
 
 // -------------------------------------------------------
-// Prompt helpers
+// Prompt helpers (exported for unit testing)
 // -------------------------------------------------------
 
 export function buildSystemPrompt(): string {
-    return `
-You are a data entry assistant helping fill in a structured record.
+    return `You are a data entry assistant helping fill in a structured record from unstructured evidence.
 
 You will receive:
-1. An evidence text blob (raw unstructured input — OCR, notes, audio transcription, etc.)
-2. The current state of the record's data (JSON)
-3. A schemaId identifying what kind of record this is
+1. The valid field paths for this record type (with types and allowed values)
+2. An evidence text blob (raw input — OCR, notes, transcription, etc.)
+3. The current state of the record's data
 
-Your job is to suggest field values that are **supported by the evidence text**.
+Your job is to suggest field values that are supported by the evidence text.
 
 Rules:
 - Only suggest fields where the evidence clearly supports a value.
-- Do not invent data that isn't in the evidence.
-- Prefer specific, verbatim excerpts over paraphrased excerpts.
-- If the evidence doesn't support any fields, return an empty array.
-- Confidence must be "High", "Medium", or "Low":
-    High   = explicitly stated in evidence
-    Medium = strongly implied
-    Low    = loosely inferred
-
-You MUST respond with valid JSON only — no explanation, no markdown, no code fences.
-The response must be a JSON object with a single key "proposals" containing an array.
-
-Each proposal must match this shape exactly:
-{
-  "id": "<unique string, e.g. uuid or short hash>",
-  "path": "<JSON pointer e.g. /model or /specs/flow_rate>",
-  "value": <the suggested value — string, number, boolean, or null>,
-  "confidence": "High" | "Medium" | "Low",
-  "evidenceItemId": "<the evidence item id provided>",
-  "excerpt": "<short supporting quote from the evidence text>"
-}
-
-Example output:
-{
-  "proposals": [
-    {
-      "id": "p1",
-      "path": "/model",
-      "value": "Eheim 2211",
-      "confidence": "High",
-      "evidenceItemId": "ev-123",
-      "excerpt": "Eheim 2211 canister filter"
-    }
-  ]
-}`
+- Do not invent data that is not in the evidence.
+- Only use paths from the provided field list — do not make up paths.
+- excerpt must be a short verbatim quote from the evidence text.
+- If the evidence does not support any fields, return an empty proposals array.
+- Confidence levels:
+    High   = value is explicitly stated in the evidence
+    Medium = value is strongly implied
+    Low    = value is loosely inferred`
 }
 
 /**
- * Flatten a JSON Schema object into a list of field descriptors for the prompt. Gives the LLM concrete path + type +
- * enum info so it doesn't hallucinate paths.
+ * Flatten a JSON Schema into readable field descriptors for the prompt. Gives the LLM concrete path + type + enum info
+ * so it uses valid paths only.
  */
 export function describeSchema(schema: unknown, prefix = ''): Array<string> {
     if (!schema || typeof schema !== 'object') return []
@@ -101,12 +117,12 @@ export function describeSchema(schema: unknown, prefix = ''): Array<string> {
         if (title) description += ` (${title})`
         if (type) description += ` — ${type}`
         if (format) description += ` [${format}]`
-        if (enumVals)
+        if (enumVals) {
             description += ` — one of: ${enumVals.map((v) => JSON.stringify(v)).join(', ')}`
+        }
 
         lines.push(description)
 
-        // Recurse into nested objects
         if (type === 'object' || fieldDef['properties']) {
             lines.push(...describeSchema(def, pointer))
         }
@@ -117,13 +133,11 @@ export function describeSchema(schema: unknown, prefix = ''): Array<string> {
 
 export function buildUserPrompt(request: ProposalRequest): string {
     const schemaSection = request.jsonSchema
-        ? `
-Valid field paths for schema "${request.schemaId}":
+        ? `Valid field paths for schema "${request.schemaId}":
 ${describeSchema(request.jsonSchema).join('\n') || '  (no properties found)'}
 
-Only suggest proposals using paths from the list above.`
-        : `
-Schema ID: ${request.schemaId} (no schema provided — infer paths from context)`
+Only use paths from the list above.`
+        : `Schema ID: ${request.schemaId} (no schema provided — infer paths from context)`
 
     return `${schemaSection}
 
@@ -152,44 +166,24 @@ export function createProposalService(): ProposalService {
     const client = new OpenAI({ apiKey: env.openAiApiKey })
 
     return async (request: ProposalRequest): Promise<Array<FieldProposal>> => {
-        const completion = await client.chat.completions.create({
-            messages: [
+        const response = await client.responses.parse({
+            input: [
                 { content: buildSystemPrompt(), role: 'system' },
                 { content: buildUserPrompt(request), role: 'user' },
             ],
-            // gpt-4o-mini is fast and cheap — good default for proposal generation.
-            // Swap for gpt-4o for higher accuracy on complex schemas.
             model: 'gpt-4o-mini',
-            response_format: { type: 'json_object' },
-            temperature: 0.2, // low temp = more consistent structured output
+            response_format: zodResponseFormat(
+                proposalResponseSchema,
+                'field_proposals',
+            ),
         })
 
-        const raw = completion.choices[0]?.message?.content
-        if (!raw) return []
+        const parsed = response.output_parsed as
+            | ProposalResponse
+            | null
+            | undefined
+        if (!parsed) return []
 
-        const parsed: unknown = JSON.parse(raw)
-
-        // GPT with json_object mode wraps arrays in an object.
-        // We told it to use { "proposals": [...] } but handle bare array too.
-        const arr = Array.isArray(parsed)
-            ? parsed
-            : ((parsed as Record<string, unknown>)['proposals'] ?? [])
-
-        // Validate each proposal against core schema — silently drop invalid ones
-        // rather than throwing, since partial results are better than none.
-        const validated: Array<FieldProposal> = []
-        for (const item of arr as Array<unknown>) {
-            const result = fieldProposalSchema.safeParse(item)
-            if (result.success) {
-                validated.push(result.data)
-            } else {
-                console.warn(
-                    'Dropping invalid proposal from LLM:',
-                    result.error.issues,
-                )
-            }
-        }
-
-        return validated
+        return parsed.proposals as Array<FieldProposal>
     }
 }

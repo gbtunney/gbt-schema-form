@@ -40,7 +40,9 @@ export function createScrapeService(): ScrapeService {
         url,
     }: ScrapeInput): Promise<string> => {
         const controller = new AbortController()
-        const timeout = setTimeout(() => { controller.abort(); }, timeoutMs)
+        const timeout = setTimeout(() => {
+            controller.abort()
+        }, timeoutMs)
 
         let response: Response
         try {
