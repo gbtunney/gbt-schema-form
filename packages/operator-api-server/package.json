@@ -24,6 +24,7 @@
         "test:api": " pnpm --filter @operator/ui exec tsc  ./src/test.mts && pnpm --filter @operator/ui exec  node ./src/test.mjs",
         "test:nx": "cross-var nx run $npm_package_name:test",
         "test:watch": "vitest watch",
+        "test:integration": "INTEGRATION=true vitest run --reporter=verbose",
         "test:repo": "pnpm exec ls $(git rev-parse --show-toplevel)",
         "\n========== CLEAN >> ==========": "",
         "clean": "pnpm clean:ts && pnpm clean:build",

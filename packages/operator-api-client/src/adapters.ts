@@ -26,7 +26,7 @@ export const createProposalClient = (ctx: ClientContext): ProposalClient => {
     const api = createApi(ctx)
 
     return async (request) => {
-        const result = await api.derive.ocr.get(request)
+        const result = await api.v1.proposals.fromEvidence.post(request)
 
         if (result === undefined || result.status === 'error') {
             const errorMessage: string =
