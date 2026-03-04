@@ -27,6 +27,12 @@ export type SchemaResolver = (schemaId: string) => Promise<{
 /** Proposals: one evidence item → many field proposals Request structure for generating AI proposals. */
 export const proposalRequestSchema = z.object({
     evidenceItem: evidenceItemSchema,
+    /**
+     * The resolved JSON Schema for this record. When provided, the proposal service uses it to enumerate valid field
+     * paths in the prompt — this significantly improves accuracy and prevents hallucinated paths. The UI should always
+     * pass this; it already has the schema in hand.
+     */
+    jsonSchema: z.unknown().optional(),
     recordData: recordDocSchema.shape.data,
     recordId: recordIdSchema.optional(),
     schemaId: schemaIdSchema,
