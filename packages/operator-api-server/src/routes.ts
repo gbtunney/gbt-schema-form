@@ -2,12 +2,14 @@
 import type { Routing } from 'express-zod-api'
 
 import { deriveOcrEndpoint } from './routes/derive-ocr.js'
+import { deriveScrapeEndpoint } from './routes/derive-scrape.js'
 import { deriveTranscribeEndpoint } from './routes/derive-transcribe.js'
 import { helloWorldEndpoint } from './routes/hello-world.js'
 import { proposalsFromEvidenceEndpoint } from './routes/proposals.js'
 
 export const routes: Routing = {
     '/derive/ocr': deriveOcrEndpoint,
+    '/derive/scrape': deriveScrapeEndpoint,
     '/derive/transcribe': deriveTranscribeEndpoint,
     '/hello': helloWorldEndpoint,
     '/v1/proposals/from-evidence': proposalsFromEvidenceEndpoint,

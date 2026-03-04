@@ -114,6 +114,7 @@ export function OperatorEditor({
             if (!activeRecordId) setActiveRecordId(currentRecordId)
             void proposalClient({
                 evidenceItem: item,
+                jsonSchema: schema ?? undefined,
                 recordData: formData,
                 recordId: currentRecordId,
                 schemaId,
