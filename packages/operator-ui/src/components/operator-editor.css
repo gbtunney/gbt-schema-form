@@ -623,3 +623,42 @@
     height: 1px;
     background: #e9ecef;
 }
+
+/* ── EvidencePane header button ────────────────────────────────────────────── */
+.evidence-pane__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.evidence-pane__header-btn {
+    background: none;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    color: #555;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    padding: 3px 8px;
+}
+
+.evidence-pane__header-btn:hover {
+    background: #f0f4f8;
+    border-color: #adb5bd;
+}
+
+/* ── Add group actions row ─────────────────────────────────────────────────── */
+.evidence-pane__add-group-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.evidence-pane__btn--ghost {
+    background: transparent;
+    border: 1px solid #ced4da;
+    color: #555;
+}
+
+.evidence-pane__btn--ghost:hover {
+    background: #f0f4f8;
+}

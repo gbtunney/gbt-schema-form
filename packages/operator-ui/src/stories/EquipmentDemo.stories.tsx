@@ -18,6 +18,7 @@
  */
 
 import { createInMemoryStore } from '@operator/adapter-local'
+import { createProposalClient } from '@operator/api-client'
 import type { FieldProposal } from '@operator/core'
 import type {
     JsonSchema,
@@ -627,5 +628,33 @@ export const EmptyNewRecord: Story = {
         schemaId: 'equipment.v1',
         schemaResolver: mockSchemaResolver,
         store: createInMemoryStore(),
+    },
+}
+
+/**
+ * Live API story — connects to a real running api-server via VITE_API_URL.
+ *
+ * How to use:
+ *
+ * 1. Cd packages/operator-api-server && pnpm dev (starts on port 3001)
+ * 2. Create .env in operator-ui: VITE_API_URL=http://localhost:3001
+ * 3. Restart Storybook
+ * 4. Open this story, expand an evidence group, add a text item
+ * 5. Click the item — real Whisper/GPT-4o-mini proposals appear in ~2s
+ *
+ * Falls back to http://localhost:3001 if VITE_API_URL is not set.
+ *
+ * Requires OPENAI_API_KEY in operator-api-server/.env
+ */
+export const LiveApi: Story = {
+    args: {
+        proposalClient: createProposalClient({
+            baseUrl: import.meta.env['VITE_API_URL'] ?? 'http://localhost:3001',
+        }),
+        schemaId: 'equipment.v1',
+        schemaResolver: mockSchemaResolver,
+        store: createInMemoryStore(),
+        transcribeUrl:
+            import.meta.env['VITE_API_URL'] ?? 'http://localhost:3001',
     },
 }
