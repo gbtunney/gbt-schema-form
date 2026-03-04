@@ -1,0 +1,75 @@
+{
+    "name": "@operator/store",
+    "version": "0.0.0",
+    "private": true,
+    "description": "Contracts and interfaces for plugging different operator persistence backends.",
+    "scripts": {
+        "\n========== DEVELOPMENT >> ==========": "",
+        "dev": "pnpm build:ts --watch",
+        "dev:ts": "pnpm build:ts --watch",
+        "dev:rollup": "rollup --watch --config ./rollup.config.mjs",
+        "dev:vite": "pnpm exec vite --config ./vite.config.ts",
+        "\n========== BUILD >> ==========": "",
+        "build": "pnpm build:ts && pnpm build:rollup",
+        "build:ts": "pnpm exec tsc --build",
+        "build:nx": "cross-var nx run $npm_package_name:build",
+        "build:rollup": "rollup --config ./rollup.config.mjs",
+        "build:vite": "pnpm exec vite build --config ./vite.config.ts",
+        "\n========== TEST >> ==========": "",
+        "test": "vitest run",
+        "test:watch": "vitest watch",
+        "test:nx": "cross-var nx run $npm_package_name:test",
+        "test:repo": "pnpm exec ls $(git rev-parse --show-toplevel)",
+        "\n========== CLEAN >> ==========": "",
+        "clean": "pnpm clean:ts && pnpm clean:build",
+        "clean:ts": "pnpm exec tsc --build --clean",
+        "clean:build": "pnpm exec rm -rf ./dist ./types",
+        "\n========== PUBLISH >> ==========": "",
+        "release": "pnpm run prerelease && pnpm changeset",
+        "prerelease": "pnpm run build && pnpm run fix && pnpm run check && pnpm test",
+        "\n========== CHECK >> ==========": "",
+        "check": "pnpm check:self",
+        "check:md": "pnpm run lint:md",
+        "check:self": "pnpm lint",
+        "\n========== FIX >> ==========": "",
+        "fix": "pnpm fix:self",
+        "fix:md": "pnpm run lint:md --fix",
+        "fix:self": "pnpm prettier --write && pnpm lint --fix",
+        "\n========== CODE STYLE >> ==========": "",
+        "prettier": "prettier --ignore-path ./.gitignore --no-error-on-unmatched-pattern .",
+        "lint": "pnpm exec eslint .",
+        "lint:md": "pnpm exec markdownlint-cli2 '{./*,./**/*}.md' '#**/node_modules/**' '#packages/test-package/**/*' "
+    },
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "dependencies": {
+        "@operator/core": "workspace:*",
+        "zod": "^4.3.6"
+    },
+    "devDependencies": {
+        "@snailicide/build-config": "^1.4.4",
+        "rollup": "^4.57.1",
+        "rollup-plugin-dts": "^6.3.0",
+        "rollup-plugin-esbuild": "^6.2.1",
+        "typescript": "^5.9.3",
+        "vitest": "^4.0.18"
+    },
+    "type": "module",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "require": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "author": {
+        "name": "Gillian Tunney",
+        "email": "gbtunney@mac.com"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/gbtunney/gbt-boilerplate"
+    }
+}

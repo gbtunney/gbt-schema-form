@@ -1,0 +1,5 @@
+{
+    "name": "@gbt/root",
+    "private": true,
+    "description": "Boilerplate for monorepo root"
+}

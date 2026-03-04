@@ -1,0 +1,21 @@
+{
+    "extends": "@snailicide/build-config/tsconfig-base",
+    "compilerOptions": {
+        "sourceMap": true,
+        "declaration": true,
+        "declarationMap": true,
+        "lib": ["ESNext", "DOM"],
+        "exactOptionalPropertyTypes": false,
+        "skipLibCheck": true
+    },
+    "include": ["./**/*.ts", "./client/generator.ts"],
+    "exclude": [
+        "./scratch/*",
+        "./client/index.ts",
+        "./client/runtime.ts",
+        "./client/api.ts",
+        "./index.ts",
+        "./*.test.ts",
+        "node_modules"
+    ]
+}

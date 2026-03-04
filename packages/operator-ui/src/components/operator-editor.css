@@ -1,0 +1,664 @@
+.operator-editor {
+    display: flex;
+    height: 100%;
+    min-height: 500px;
+    font-family:
+        system-ui,
+        -apple-system,
+        sans-serif;
+    color: #1a1a1a;
+    background: #f8f9fa;
+}
+
+.operator-editor--loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Sidebar (Evidence Pane) */
+.operator-editor__sidebar {
+    width: 360px;
+    min-width: 300px;
+    border-right: 1px solid #dee2e6;
+    background: #fff;
+    overflow-y: auto;
+}
+
+.operator-editor__main {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    position: relative;
+}
+
+.operator-editor__status {
+    position: absolute;
+    top: 12px;
+    right: 24px;
+    padding: 4px 12px;
+    background: #d4edda;
+    color: #155724;
+    border-radius: 4px;
+    font-size: 12px;
+    animation: status-fade 1.5s ease-in-out;
+}
+
+@keyframes status-fade {
+    0% {
+        opacity: 1;
+    }
+    70% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Evidence Pane */
+.evidence-pane {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.evidence-pane__header {
+    padding: 16px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.evidence-pane__header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.evidence-pane__groups {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.evidence-pane__add-group {
+    padding: 12px;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.evidence-pane__add-item {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-top: 1px dashed #dee2e6;
+}
+
+.evidence-pane__input {
+    padding: 6px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: inherit;
+}
+
+.evidence-pane__textarea {
+    padding: 6px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.evidence-pane__btn {
+    padding: 6px 12px;
+    background: #0d6efd;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    align-self: flex-start;
+}
+
+.evidence-pane__btn:hover {
+    background: #0b5ed7;
+}
+
+.evidence-pane__btn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Evidence Group */
+.evidence-group {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.evidence-group__toggle {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-size: 14px;
+    font-family: inherit;
+    gap: 8px;
+}
+
+.evidence-group__toggle:hover {
+    background: #f0f4f8;
+}
+
+.evidence-group__toggle--active {
+    background: #e8f0fe;
+}
+
+.evidence-group__arrow {
+    font-size: 10px;
+    color: #666;
+    width: 12px;
+}
+
+.evidence-group__title {
+    flex: 1;
+    font-weight: 500;
+}
+
+.evidence-group__count {
+    font-size: 12px;
+    color: #888;
+    background: #e9ecef;
+    padding: 1px 6px;
+    border-radius: 10px;
+}
+
+.evidence-group__items {
+    padding: 0 8px 8px 28px;
+}
+
+/* Evidence Item */
+.evidence-item {
+    padding: 8px 10px;
+    margin: 4px 0;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    background: #fff;
+}
+
+.evidence-item--selected {
+    border-color: #0d6efd;
+    background: #f0f6ff;
+}
+
+.evidence-item__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.evidence-item__title {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.evidence-item__actions {
+    display: flex;
+    gap: 4px;
+}
+
+.evidence-item__btn {
+    background: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 4px;
+    border-radius: 3px;
+    color: #aaa;
+}
+
+.evidence-item__btn:hover {
+    color: #333;
+    border-color: #ced4da;
+}
+
+.evidence-item__btn--active {
+    color: #0d6efd;
+}
+
+.evidence-item__text {
+    font-size: 12px;
+    color: #555;
+    margin: 0;
+    line-height: 1.4;
+    max-height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Form Pane */
+.form-pane__header {
+    margin-bottom: 16px;
+}
+
+.form-pane__header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.form-pane__body {
+    max-width: 640px;
+}
+
+/* RJSF form overrides for cleaner appearance */
+.form-pane__body .form-group {
+    margin-bottom: 16px;
+}
+
+.form-pane__body label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.form-pane__body input[type='text'],
+.form-pane__body input[type='number'],
+.form-pane__body input[type='email'],
+.form-pane__body input[type='date'],
+.form-pane__body select,
+.form-pane__body textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.form-pane__body input:focus,
+.form-pane__body select:focus,
+.form-pane__body textarea:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.15);
+}
+
+/* ── Three-pane layout ─────────────────────────────────────────────────────── */
+.operator-editor__proposals {
+    width: 300px;
+    min-width: 260px;
+    border-right: 1px solid #dee2e6;
+    background: #fafafa;
+    overflow-y: auto;
+}
+
+/* ── Proposals Pane ────────────────────────────────────────────────────────── */
+.proposals-pane {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.proposals-pane__header {
+    padding: 16px;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.proposals-pane__header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.proposals-pane__source {
+    font-size: 11px;
+    color: #888;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.proposals-pane__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.proposals-pane__loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    font-size: 13px;
+    padding: 12px 0;
+}
+
+.proposals-pane__spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #dee2e6;
+    border-top-color: #0d6efd;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.proposals-pane__empty {
+    padding: 16px 4px;
+    color: #888;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.proposals-pane__empty p {
+    margin: 0 0 4px;
+}
+
+.proposals-pane__hint {
+    font-size: 12px;
+    color: #aaa;
+}
+
+/* ── Proposal Card ─────────────────────────────────────────────────────────── */
+.proposal-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background: #fff;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.proposal-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.proposal-card__path {
+    font-size: 11px;
+    font-family: 'ui-monospace', 'Cascadia Code', 'Menlo', monospace;
+    color: #555;
+    background: #f3f4f6;
+    padding: 1px 5px;
+    border-radius: 3px;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.proposal-card__confidence {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.proposal-card__value {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1a1a1a;
+    line-height: 1.4;
+}
+
+.proposal-card__excerpt {
+    margin: 0;
+    padding: 4px 8px;
+    border-left: 2px solid #d0d7de;
+    font-size: 11px;
+    color: #777;
+    font-style: italic;
+    line-height: 1.4;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.proposal-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 2px;
+}
+
+.proposal-card__current {
+    font-size: 11px;
+    color: #999;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.proposal-card__current--empty {
+    color: #bbb;
+    font-style: italic;
+}
+
+.proposal-card__apply {
+    background: #0d6efd;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.proposal-card__apply:hover {
+    background: #0b5ed7;
+}
+
+/* ── Apply All button ──────────────────────────────────────────────────────── */
+.proposals-pane__apply-all {
+    width: 100%;
+    padding: 7px 12px;
+    background: #f0f6ff;
+    border: 1px solid #c8dffe;
+    border-radius: 5px;
+    color: #0d6efd;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.proposals-pane__apply-all:hover {
+    background: #dbeafe;
+}
+
+/* ── All-applied empty state ───────────────────────────────────────────────── */
+.proposals-pane__empty--done {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.proposals-pane__check {
+    font-size: 16px;
+    color: #1a7f37;
+}
+
+/* ── Voice Record Button ───────────────────────────────────────────────────── */
+.voice-record {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.voice-record__btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #f6f8fa;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    color: #444;
+    width: 100%;
+    justify-content: center;
+}
+
+.voice-record__btn:hover:not(:disabled) {
+    background: #eef1f5;
+}
+
+.voice-record__btn--recording {
+    background: #fff0f0;
+    border-color: #f5c6c6;
+    color: #c0392b;
+    animation: pulse-border 1.2s ease-in-out infinite;
+}
+
+.voice-record__btn--transcribing {
+    background: #f0f6ff;
+    border-color: #c8dffe;
+    color: #0d6efd;
+    cursor: default;
+}
+
+@keyframes pulse-border {
+    0%,
+    100% {
+        border-color: #f5c6c6;
+    }
+    50% {
+        border-color: #c0392b;
+    }
+}
+
+.voice-record__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #c0392b;
+    animation: blink 1s step-start infinite;
+    flex-shrink: 0;
+}
+
+@keyframes blink {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+
+.voice-record__mic {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.voice-record__spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid #c8dffe;
+    border-top-color: #0d6efd;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+}
+
+.voice-record__error {
+    font-size: 11px;
+    color: #c0392b;
+    margin: 0;
+}
+
+/* ── Evidence pane divider ─────────────────────────────────────────────────── */
+.evidence-pane__divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: #bbb;
+    margin: 2px 0;
+}
+
+.evidence-pane__divider::before,
+.evidence-pane__divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e9ecef;
+}
+
+/* ── EvidencePane header button ────────────────────────────────────────────── */
+.evidence-pane__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.evidence-pane__header-btn {
+    background: none;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    color: #555;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    padding: 3px 8px;
+}
+
+.evidence-pane__header-btn:hover {
+    background: #f0f4f8;
+    border-color: #adb5bd;
+}
+
+/* ── Add group actions row ─────────────────────────────────────────────────── */
+.evidence-pane__add-group-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.evidence-pane__btn--ghost {
+    background: transparent;
+    border: 1px solid #ced4da;
+    color: #555;
+}
+
+.evidence-pane__btn--ghost:hover {
+    background: #f0f4f8;
+}
