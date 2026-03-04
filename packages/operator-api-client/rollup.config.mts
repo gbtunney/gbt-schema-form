@@ -18,11 +18,6 @@ const CONFIG_OBJ = [
                 export_types: ['default', 'import', 'require', 'types'],
                 library_name: 'gbtBoilerplate',
             },
-            {
-                export_key: 'start-server',
-                export_types: ['default', 'import', 'require'],
-                library_name: 'gbtServer',
-            },
         ],
 
         rollup.DEFAULT_PLUGINS_BUNDLED,

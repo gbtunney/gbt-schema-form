@@ -8,6 +8,9 @@
 //     → POST /v1/proposals/from-evidence
 //       → FieldProposal[]
 
+// TODO : this needs to be properly fixed
+//  If you can’t add the proper endpoint yet, narrow the union:
+
 import type { ProposalClient } from '@operator/store'
 
 import { createApi } from './client/api.js'
@@ -25,12 +28,25 @@ export const createProposalClient = (ctx: ClientContext): ProposalClient => {
     return async (request) => {
         const result = await api.derive.ocr.get(request)
 
-        if (result.status === 'error') {
-            throw new Error(
-                `Proposal generation failed: ${result.error.message as unknown as string}`,
-            )
+        if (result === undefined || result.status === 'error') {
+            const errorMessage: string =
+                result === undefined
+                    ? 'Unknown error (no response)'
+                    : (result.error?.message ?? 'Unknown error')
+            throw new Error(`Proposal generation failed: ${errorMessage}`)
         }
 
-        return result.data.proposals
+        const data = result.data as unknown
+
+        if (
+            typeof data === 'object' &&
+            data !== null &&
+            'proposals' in data &&
+            Array.isArray((data as { proposals: unknown }).proposals)
+        ) {
+            return (data as { proposals: Array<unknown> }).proposals as any
+        }
+
+        throw new Error('Proposal generation failed: unexpected response shape')
     }
 }
