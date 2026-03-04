@@ -52,6 +52,8 @@ export * as JsonStringified from './json/json-stringified.js'
 
 /** JSON types and schemas */
 export {
+    type JsonBoundary,
+    jsonBoundarySchema,
     type JsonSchemaType,
     type JsonValue,
     jsonValueSchema,
