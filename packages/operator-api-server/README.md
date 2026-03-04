@@ -1,225 +1,149 @@
-<!-- Template-inspired header with badges and a succinct description. -->
+# @operator/api-server
 
-# @operator/api Operator API (Express Zod API)
+Express Zod API server for AI proposals and evidence derivations.
 
-> (Express Zod API) – Architecture & Build Plan: Server-side API for AI proposals and derivations
-
-This package scaffolds an Express-based API for integrating AI services such as proposal generation, OCR and
-transcription. It depends on `@operator/core` but otherwise remains backend agnostic.
-
-## Package Placement
-
-Create:
-
-`packages/operator-api`
-
-This package is the **only place** that talks to:
-
-- OpenAI (proposals + Whisper)
-- OCR provider (Tesseract, Google Vision, etc.)
-- Scraping services
-
-UI never calls OpenAI directly.  
-UI calls an injected `proposalClient` that points to this API.
+This is the **only package** that talks to OpenAI. The UI never calls OpenAI directly — it calls an injected
+`ProposalClient` or `DerivationClient` that points here.
 
 ---
 
-## Contract Alignment (Dependency Injection)
+## Endpoints
 
-`@operator/store` defines:
+| Method | Path                          | Description                                                       |
+| ------ | ----------------------------- | ----------------------------------------------------------------- |
+| `POST` | `/v1/proposals/from-evidence` | Generate `FieldProposal[]` from one evidence item via GPT-4o-mini |
+| `POST` | `/derive/ocr`                 | Extract text from an image via Tesseract                          |
+| `POST` | `/derive/transcribe`          | Transcribe audio via OpenAI Whisper                               |
+| `GET`  | `/hello`                      | Health check                                                      |
 
-- `ProposalRequestSchema`
-- `FieldProposalSchema`
+### POST `/v1/proposals/from-evidence`
 
-`operator-api` should **import those schemas** and use them directly for request/response validation.
-
-That guarantees:
-
-- API and UI stay in sync
-- No duplicated schemas
-- No drift
-
----
-
-## Minimal API Surface (v0)
-
-## 1️⃣ Proposals (Core Loop)
-
-### POST /proposals
-
-Input:
+Input (`ProposalRequest` from `@operator/store`):
 
 ```ts
-ProposalRequest
+{
+    evidenceItem: EvidenceItem   // the text blob to analyse
+    recordData:   JsonValue      // current form data
+    schemaId:     string
+    recordId?:    string
+}
 ```
 
 Output:
 
 ```ts
-FieldProposal[]
+{ proposals: FieldProposal[] }
 ```
 
----
+### POST `/derive/transcribe`
 
-## 2️⃣ Evidence Derivations
-
-These convert attachments into text for EvidenceItems.
-
-- `POST /derive/ocr` → `{ text }`
-- `POST /derive/whisper` → `{ text }`
-- `POST /derive/scrape` → `{ text }`
-
-These do NOT apply patches.  
-They only generate text blobs.
-
----
-
-## API (This Package)
-
-Implements:
-
-- `createProposalClient()`
-- `createOcrClient()`
-- `createTranscriptionClient()`
-
-UI receives these via DI:
-
-```tsx
-<OperatorEditor store={store} schemaResolver={resolver} proposalClient={proposalClient} />
-```
-
----
-
-# Correct Architecture Flow
-
-```sh
-UI → proposalClient (injected)
-proposalClient → operator-api
-operator-api → OpenAI / OCR / Whisper
-operator-api → returns structured proposals
-UI → core helpers
-UI → store
-```
-
----
-
-# Recommended Folder Structure
-
-```sh
-packages/operator-api/
-src/
-index.ts
-server.ts
-routes/
-proposals.ts
-derive-ocr.ts
-derive-whisper.ts
-derive-scrape.ts
-services/
-proposal-service.ts
-ocr-service.ts
-whisper-service.ts
-scrape-service.ts
-config/
-env.ts
-```
-
-If using OpenAI later, install it only in `@operator/api`.
-
----
-
-## Express Zod API Endpoint Shape
-
-Example conceptual route definition:
+Input:
 
 ```ts
-import { z } from 'zod'
-import { ProposalRequestSchema, FieldProposalSchema } from '@operator/store'
-
-export const proposalsEndpoint = {
-  input: ProposalRequestSchema,
-  output: z.array(FieldProposalSchema),
-  handler: async ({ input, ctx }) => {
-    return ctx.services.proposals(input)
-  },
-}
-```
-
-Services are injected via `ctx.services`.
-
----
-
-## Service Injection Pattern
-
-In `server.ts`:
-
-- `services.proposals`
-- `services.ocr`
-- `services.whisper`
-- `services.scrape`
-
-Routes never call OpenAI directly.  
-They call injected services.
-
----
-
-### File Upload Strategy (v0)
-
-Do NOT implement multipart first.
-
-Instead:
-
-- OCR: `{ imageUrl }` or `{ base64 }`
-- Whisper: `{ audioUrl }` or `{ base64 }`
-- Scrape: `{ url }`
-
-Later add:
-
-- `POST /uploads`
-- attachment storage
-
----
-
-## Development Order
-
-1. Finish `@operator/store` types
-2. Build `@operator/adapter-local`
-3. Build demo app
-4. Implement mock proposal service in API
-5. Wire UI → mock proposals
-6. Only then integrate real OpenAI
-
----
-
-## Fake Proposal Service (Recommended First Step)
-
-Before real OpenAI:
-
-Return one deterministic proposal.
-
-Example:
-
-If evidence contains "model", propose:
-
-```json
 {
-  "path": "/model",
-  "value": "Eheim 2211",
-  "confidence": 0.9
+    audioBase64: string   // base64-encoded audio from MediaRecorder
+    mimeType:    string   // "audio/webm", "audio/mp4", etc.
+    language?:   string   // BCP-47 hint e.g. "en" — Whisper auto-detects if omitted
 }
 ```
 
-Get apply/undo working first.
+Output:
+
+```ts
+{
+  text: string
+}
+```
+
+### POST `/derive/ocr`
+
+Input: `{ base64?: string, imageUrl?: string, langs?: string }`  
+Output: `{ text: string, confidence: number }`
 
 ---
 
-## Final Endpoint List
+## Environment
 
-- `POST /proposals`
-- `POST /derive/ocr`
-- `POST /derive/whisper`
-- `POST /derive/scrape`
-- (later) `POST /uploads`
-- (later) `GET /attachments/:id`
+Copy `.env.example` to `.env` and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
+```env
+OPENAI_API_KEY=sk-... # required
+PORT=3001             # optional, defaults to 3001
+```
+
+`.env` is gitignored. Never commit real keys.
 
 ---
+
+## Development
+
+```bash
+# Start dev server
+pnpm dev
+
+# Regenerate the typed client in @operator/api-client
+pnpm gen:client
+```
+
+### Client regeneration
+
+`gen:client` runs three steps automatically:
+
+1. `build:client:ts` — compiles only `src/client/generator.ts`
+2. `node src/client/generator.js` — reads routes + config, writes to
+   `../operator-api-client/src/generated/api.ts`
+3. `build:client:ts --clean` — removes the compiled generator artifact
+
+Re-run whenever you add or change a route schema. You do **not** need to re-run it for changes to services or
+internal logic.
+
+---
+
+## Structure
+
+```sh
+src/
+routes/
+proposals.ts         # POST /v1/proposals/from-evidence
+derive-ocr.ts        # POST /derive/ocr
+derive-transcribe.ts # POST /derive/transcribe
+hello-world.ts       # GET  /hello
+services/
+proposal-service.ts # GPT-4o-mini → FieldProposal[]
+whisper-service.ts  # Whisper → transcript string
+ocr-service.ts      # Tesseract → text + confidence
+client/
+generator.ts # build-time script, writes to @operator/api-client
+config/
+env.ts
+routes.ts       # routing table
+server.ts       # getConfig() + buildServer()
+start-server.ts # entrypoint
+```
+
+---
+
+## Dependency graph
+
+```text
+@operator/core
+      ↑
+@operator/store
+      ↑
+@operator/api-server   →(type-only at build time)→   @operator/api-client
+```
+
+The client package has a **dev/type-only** dependency on this package for the router types. At runtime it only
+makes fetch calls — no server code is bundled into the client.
+
+---
+
+## TODO
+
+- `POST /derive/scrape` — URL → extracted text
+- `POST /derive/pdf` — PDF → extracted text
+- Extract shared `createDerivationEndpoint()` factory once 3+ derivation routes exist

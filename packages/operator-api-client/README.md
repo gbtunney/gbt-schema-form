@@ -1,225 +1,133 @@
-<!-- Template-inspired header with badges and a succinct description. -->
+# @operator/api-client
 
-# @operator/api Operator API (Express Zod API)
-
-> (Express Zod API) – Architecture & Build Plan: Server-side API for AI proposals and derivations
-
-This package scaffolds an Express-based API for integrating AI services such as proposal generation, OCR and
-transcription. It depends on `@operator/core` but otherwise remains backend agnostic.
-
-## Package Placement
-
-Create:
-
-`packages/operator-api`
-
-This package is the **only place** that talks to:
-
-- OpenAI (proposals + Whisper)
-- OCR provider (Tesseract, Google Vision, etc.)
-- Scraping services
-
-UI never calls OpenAI directly.  
-UI calls an injected `proposalClient` that points to this API.
+Typed HTTP client for `@operator/api-server`. Implements the port types from `@operator/store` so the UI can
+call the server without knowing anything about HTTP.
 
 ---
 
-## Contract Alignment (Dependency Injection)
+## Usage
 
-`@operator/store` defines:
-
-- `ProposalRequestSchema`
-- `FieldProposalSchema`
-
-`operator-api` should **import those schemas** and use them directly for request/response validation.
-
-That guarantees:
-
-- API and UI stay in sync
-- No duplicated schemas
-- No drift
-
----
-
-## Minimal API Surface (v0)
-
-## 1️⃣ Proposals (Core Loop)
-
-### POST /proposals
-
-Input:
-
-```ts
-ProposalRequest
-```
-
-Output:
-
-```ts
-FieldProposal[]
-```
-
----
-
-## 2️⃣ Evidence Derivations
-
-These convert attachments into text for EvidenceItems.
-
-- `POST /derive/ocr` → `{ text }`
-- `POST /derive/whisper` → `{ text }`
-- `POST /derive/scrape` → `{ text }`
-
-These do NOT apply patches.  
-They only generate text blobs.
-
----
-
-## API (This Package)
-
-Implements:
-
-- `createProposalClient()`
-- `createOcrClient()`
-- `createTranscriptionClient()`
-
-UI receives these via DI:
+The consuming app (e.g. `operator-ui`) owns the server URL via a Vite env var:
 
 ```tsx
-<OperatorEditor store={store} schemaResolver={resolver} proposalClient={proposalClient} />
+// apps/your-app/src/main.tsx
+import { createProposalClient } from '@operator/api-client'
+
+const proposalClient = createProposalClient({
+    baseUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:3001'
+})
+
+// Pass to OperatorEditor — satisfies the ProposalClient port from @operator/store
+<OperatorEditor
+    store={store}
+    schemaResolver={resolver}
+    proposalClient={proposalClient}
+/>
 ```
+
+The UI receives a `ProposalClient` function type. It has no idea whether the implementation is HTTP, a mock,
+or anything else — that's the point.
 
 ---
 
-# Correct Architecture Flow
+## Environment
+
+The server URL is set by the **consuming app**, not this package. Copy `.env.example` to `.env` in whichever
+app imports this package:
 
 ```sh
-UI → proposalClient (injected)
-proposalClient → operator-api
-operator-api → OpenAI / OCR / Whisper
-operator-api → returns structured proposals
-UI → core helpers
-UI → store
+cp .env.example .env
 ```
-
----
-
-# Recommended Folder Structure
 
 ```sh
-packages/operator-api/
-src/
-index.ts
-server.ts
-routes/
-proposals.ts
-derive-ocr.ts
-derive-whisper.ts
-derive-scrape.ts
-services/
-proposal-service.ts
-ocr-service.ts
-whisper-service.ts
-scrape-service.ts
-config/
-env.ts
+VITE_API_URL=http://localhost:3001 # development
+# VITE_API_URL=https://api.yourapp.com  # production
 ```
 
-If using OpenAI later, install it only in `@operator/api`.
+`VITE_API_URL` is baked in at Vite build time via `import.meta.env.VITE_API_URL`. If it's not set, the client
+falls back to `http://localhost:3001`.
 
 ---
 
-## Express Zod API Endpoint Shape
-
-Example conceptual route definition:
+## Exports
 
 ```ts
-import { z } from 'zod'
-import { ProposalRequestSchema, FieldProposalSchema } from '@operator/store'
-
-export const proposalsEndpoint = {
-  input: ProposalRequestSchema,
-  output: z.array(FieldProposalSchema),
-  handler: async ({ input, ctx }) => {
-    return ctx.services.proposals(input)
-  },
-}
+import { createProposalClient } from '@operator/api-client'
+import { createApi } from '@operator/api-client'
+import type { Api } from '@operator/api-client'
+import type { ClientContext } from '@operator/api-client'
 ```
 
-Services are injected via `ctx.services`.
+### `createProposalClient(ctx)`
 
----
+Creates a `ProposalClient` (from `@operator/store`) backed by `POST /v1/proposals/from-evidence`.
 
-## Service Injection Pattern
+```ts
+const client = createProposalClient({
+  baseUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:3001',
+})
 
-In `server.ts`:
-
-- `services.proposals`
-- `services.ocr`
-- `services.whisper`
-- `services.scrape`
-
-Routes never call OpenAI directly.  
-They call injected services.
-
----
-
-### File Upload Strategy (v0)
-
-Do NOT implement multipart first.
-
-Instead:
-
-- OCR: `{ imageUrl }` or `{ base64 }`
-- Whisper: `{ audioUrl }` or `{ base64 }`
-- Scrape: `{ url }`
-
-Later add:
-
-- `POST /uploads`
-- attachment storage
-
----
-
-## Development Order
-
-1. Finish `@operator/store` types
-2. Build `@operator/adapter-local`
-3. Build demo app
-4. Implement mock proposal service in API
-5. Wire UI → mock proposals
-6. Only then integrate real OpenAI
-
----
-
-## Fake Proposal Service (Recommended First Step)
-
-Before real OpenAI:
-
-Return one deterministic proposal.
-
-Example:
-
-If evidence contains "model", propose:
-
-```json
-{
-  "path": "/model",
-  "value": "Eheim 2211",
-  "confidence": 0.9
-}
+const proposals = await client({ evidenceItem, recordData, schemaId })
+// → FieldProposal[]
 ```
 
-Get apply/undo working first.
+### `createApi(ctx)`
+
+Lower-level typed API object if you need direct access to any endpoint:
+
+```ts
+const api = createApi({
+  baseUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:3001',
+})
+
+const result = await api.v1.proposals.fromEvidence.post(request)
+const transcript = await api.derive.transcribe.post({ audioBase64, mimeType })
+```
 
 ---
 
-## Final Endpoint List
+## Client regeneration
 
-- `POST /proposals`
-- `POST /derive/ocr`
-- `POST /derive/whisper`
-- `POST /derive/scrape`
-- (later) `POST /uploads`
-- (later) `GET /attachments/:id`
+`src/generated/api.ts` is **auto-generated** — do not edit it manually.
+
+To regenerate after changing server routes:
+
+```sh
+pnpm --filter @operator/api-server gen:client
+```
+
+This reads the server's routes and writes a fresh typed client directly into this package's
+`src/generated/api.ts`.
 
 ---
+
+## Structure
+
+```sh
+src/
+generated/
+api.ts # AUTO-GENERATED — do not edit
+client/
+api.ts     # buildApi() / createApi() — wraps generated types
+runtime.ts # fetch implementation
+index.ts
+adapters.ts # createProposalClient() — implements ProposalClient port
+index.ts
+```
+
+---
+
+## Dependency graph
+
+```text
+@operator/core
+      ↑
+@operator/store        ← ProposalClient port lives here
+      ↑
+@operator/api-client   ← implements the port over HTTP
+      ↑
+@operator/ui           ← injects it, never sees HTTP
+```
+
+`@operator/api-server` is a **dev/type-only** dependency — used at build time to type the generated client.
+Zero server code runs in the browser.
