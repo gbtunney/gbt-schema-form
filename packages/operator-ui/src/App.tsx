@@ -43,7 +43,7 @@ const mockSchemaResolver: SchemaResolver = async (schemaId: string) =>
 
 /** Initialize store with sample records */
 const store = createInMemoryStore({
-    recordsById: new Map([
+    recordsById: new Map<string, RecordDoc>([
         [
             'rec-001',
             {
@@ -54,6 +54,7 @@ const store = createInMemoryStore({
                     model: 'XPS 15',
                     serialNumber: 'DL-2024-1001',
                     status: 'Active',
+                    // omit location (do not set to undefined)
                 },
                 id: 'rec-001',
                 schemaId: 'equipment.v1',
@@ -70,6 +71,7 @@ const store = createInMemoryStore({
                     model: 'UltraWide 34"',
                     serialNumber: 'LG-2024-2002',
                     status: 'Active',
+                    // omit location
                 },
                 id: 'rec-002',
                 schemaId: 'equipment.v1',
