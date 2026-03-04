@@ -27,8 +27,9 @@ const proposalArraySchema = z.array(fieldProposalSchema)
 // Prompt helpers
 // -------------------------------------------------------
 
-function buildSystemPrompt(): string {
-    return `You are a data entry assistant helping fill in a structured record.
+export function buildSystemPrompt(): string {
+    return `
+You are a data entry assistant helping fill in a structured record.
 
 You will receive:
 1. An evidence text blob (raw unstructured input — OCR, notes, audio transcription, etc.)
@@ -75,8 +76,56 @@ Example output:
 }`
 }
 
-function buildUserPrompt(request: ProposalRequest): string {
-    return `Schema ID: ${request.schemaId}
+/**
+ * Flatten a JSON Schema object into a list of field descriptors for the prompt. Gives the LLM concrete path + type +
+ * enum info so it doesn't hallucinate paths.
+ */
+export function describeSchema(schema: unknown, prefix = ''): Array<string> {
+    if (!schema || typeof schema !== 'object') return []
+
+    const obj = schema as Record<string, unknown>
+    const properties = obj['properties'] as Record<string, unknown> | undefined
+    if (!properties) return []
+
+    const lines: Array<string> = []
+
+    for (const [key, def] of Object.entries(properties)) {
+        const fieldDef = def as Record<string, unknown>
+        const pointer = `${prefix}/${key}`
+        const type = fieldDef['type'] as string | undefined
+        const title = fieldDef['title'] as string | undefined
+        const enumVals = fieldDef['enum'] as Array<unknown> | undefined
+        const format = fieldDef['format'] as string | undefined
+
+        let description = `  ${pointer}`
+        if (title) description += ` (${title})`
+        if (type) description += ` — ${type}`
+        if (format) description += ` [${format}]`
+        if (enumVals)
+            description += ` — one of: ${enumVals.map((v) => JSON.stringify(v)).join(', ')}`
+
+        lines.push(description)
+
+        // Recurse into nested objects
+        if (type === 'object' || fieldDef['properties']) {
+            lines.push(...describeSchema(def, pointer))
+        }
+    }
+
+    return lines
+}
+
+export function buildUserPrompt(request: ProposalRequest): string {
+    const schemaSection = request.jsonSchema
+        ? `
+Valid field paths for schema "${request.schemaId}":
+${describeSchema(request.jsonSchema).join('\n') || '  (no properties found)'}
+
+Only suggest proposals using paths from the list above.`
+        : `
+Schema ID: ${request.schemaId} (no schema provided — infer paths from context)`
+
+    return `${schemaSection}
 
 Evidence item ID: ${request.evidenceItem.id}
 Evidence title: ${request.evidenceItem.title}
