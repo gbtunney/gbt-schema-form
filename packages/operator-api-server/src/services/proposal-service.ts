@@ -86,6 +86,8 @@ Rules:
 - Only use paths from the provided field list — do not make up paths.
 - excerpt must be a short verbatim quote from the evidence text.
 - If the evidence does not support any fields, return an empty proposals array.
+- Return valid JSON only.
+- Wrap all proposals in a "proposals" array.
 - Confidence levels:
     High   = value is explicitly stated in the evidence
     Medium = value is strongly implied
@@ -136,7 +138,7 @@ export function buildUserPrompt(request: ProposalRequest): string {
         ? `Valid field paths for schema "${request.schemaId}":
 ${describeSchema(request.jsonSchema).join('\n') || '  (no properties found)'}
 
-Only use paths from the list above.`
+Only suggest proposals using paths from the list above.`
         : `Schema ID: ${request.schemaId} (no schema provided — infer paths from context)`
 
     return `${schemaSection}
