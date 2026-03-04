@@ -15,7 +15,6 @@ const Configuration: CommitlintUserConfig = commitlint.configuration([
     'adapter-local',
     'adapter-drizzle',
     'notes',
-    '@gbt/example-package',
     'todo:fix disable scope',
 ])
 
