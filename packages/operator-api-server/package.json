@@ -1,0 +1,92 @@
+{
+    "name": "@operator/api-server",
+    "version": "0.0.0",
+    "private": true,
+    "description": "Express-zod-api HTTP server — routes, services, and client code generator.",
+    "scripts": {
+        "\n========== START >> ==========": "",
+        "start": "pnpm run build:nx && node dist/start-server.js",
+        "gen:client": "pnpm build:client:ts && pnpm exec node ./src/client/generator.js && pnpm build:client:ts --clean",
+        "\n========== DEVELOPMENT >> ==========": "",
+        "dev": "pnpm build:ts --watch",
+        "dev:ts": "pnpm build:ts --watch",
+        "dev:rollup": "rollup --watch --config ./rollup.config.mjs",
+        "dev:vite": "pnpm exec vite --config ./vite.config.ts",
+        "\n========== BUILD >> ==========": "",
+        "build": "pnpm build:ts && pnpm build:rollup",
+        "build:ts": "pnpm exec tsc --build",
+        "build:client:ts": "pnpm exec tsc  --build ./src/tsconfig.client.json",
+        "build:nx": "cross-var nx run $npm_package_name:build",
+        "build:rollup": "rollup --config ./rollup.config.mjs",
+        "build:vite": "pnpm exec vite build --config ./vite.config.ts",
+        "\n========== TEST >> ==========": "",
+        "test": "vitest run",
+        "test:api": " pnpm --filter @operator/ui exec tsc  ./src/test.mts && pnpm --filter @operator/ui exec  node ./src/test.mjs",
+        "test:nx": "cross-var nx run $npm_package_name:test",
+        "test:watch": "vitest watch",
+        "test:repo": "pnpm exec ls $(git rev-parse --show-toplevel)",
+        "\n========== CLEAN >> ==========": "",
+        "clean": "pnpm clean:ts && pnpm clean:build",
+        "clean:ts": "pnpm exec tsc --build --clean",
+        "clean:build": "pnpm exec rm -rf ./dist ./types",
+        "\n========== PUBLISH >> ==========": "",
+        "release": "pnpm run prerelease && pnpm changeset",
+        "prerelease": "pnpm run build && pnpm run fix && pnpm run check && pnpm test",
+        "\n========== CHECK >> ==========": "",
+        "check": "pnpm check:self",
+        "check:md": "pnpm run lint:md",
+        "check:self": "pnpm lint",
+        "\n========== FIX >> ==========": "",
+        "fix": "pnpm fix:self",
+        "fix:md": "pnpm run lint:md --fix",
+        "fix:self": "pnpm prettier --write && pnpm lint --fix",
+        "\n========== CODE STYLE >> ==========": "",
+        "prettier": "prettier --ignore-path ./.gitignore --no-error-on-unmatched-pattern .",
+        "lint": "pnpm exec eslint .",
+        "lint:md": "pnpm exec markdownlint-cli2 '{./*,./**/*}.md' '#**/node_modules/**' '#packages/test-package/**/*' "
+    },
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "dependencies": {
+        "@operator/core": "workspace:*",
+        "@operator/store": "workspace:*",
+        "@snailicide/g-library": "^1.2.2",
+        "dotenv": "^17.3.1",
+        "express": "^5.2.1",
+        "express-zod-api": "^27.0.1",
+        "openai": "^6.22.0",
+        "tesseract.js": "^7.0.0",
+        "type-fest": "^5.4.4",
+        "zod": "^4.3.6"
+    },
+    "devDependencies": {
+        "@express-zod-api/zod-plugin": "^4.0.1",
+        "@snailicide/build-config": "^1.4.4",
+        "@types/express": "^5.0.6",
+        "@types/node": "^25.3.0",
+        "@types/supertest": "^6.0.3",
+        "rollup": "^4.57.1",
+        "rollup-plugin-dts": "^6.3.0",
+        "rollup-plugin-esbuild": "^6.2.1",
+        "supertest": "^7.2.2",
+        "typescript": "^5.9.3",
+        "vitest": "^4.0.18"
+    },
+    "type": "module",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "require": "./dist/index.js"
+        }
+    },
+    "author": {
+        "name": "Gillian Tunney",
+        "email": "gbtunney@mac.com"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/gbtunney/gbt-boilerplate"
+    }
+}
