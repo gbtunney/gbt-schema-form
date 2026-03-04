@@ -413,6 +413,9 @@ importers:
                 specifier: ^4.3.6
                 version: 4.3.6
         devDependencies:
+            '@chromatic-com/storybook':
+                specifier: ^5.0.1
+                version: 5.0.1(storybook@10.2.14(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
             '@operator/adapter-local':
                 specifier: workspace:*
                 version: link:../operator-adapter-local
@@ -870,6 +873,15 @@ packages:
             {
                 integrity: sha512-CdTLvIOPiCNuH71pyDu3rA+Q0n65cmAbXnwWH84rKGiFumFzkmHNT8KHTMEchcxN+Kl8I54xGUhJ7l3E7X396Q==,
             }
+
+    '@chromatic-com/storybook@5.0.1':
+        resolution:
+            {
+                integrity: sha512-v80QBwVd8W6acH5NtDgFlUevIBaMZAh1pYpBiB40tuNzS242NTHeQHBDGYwIAbWKDnt1qfjJpcpL6pj5kAr4LA==,
+            }
+        engines: { node: '>=20.0.0', yarn: '>=1.22.18' }
+        peerDependencies:
+            storybook: ^0.0.0-0 || ^10.1.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0
 
     '@commitlint/cli@20.4.3':
         resolution:
@@ -1761,6 +1773,12 @@ packages:
         resolution:
             {
                 integrity: sha512-9zESzOO5aDByvhIAsOy9TbpZ0Ur2AJbUI7UT73kcUTS2mxAMHOBaa1st/jAymNoCtvrit99kkzT1FZuXVcgfIQ==,
+            }
+
+    '@neoconfetti/react@1.0.0':
+        resolution:
+            {
+                integrity: sha512-klcSooChXXOzIm+SE5IISIAn3bYzYfPjbX7D7HoqZL84oAfgREeSg5vSIaSFH+DaGzzvImTyWe1OyrJ67vik4A==,
             }
 
     '@noble/hashes@1.8.0':
@@ -4685,6 +4703,21 @@ packages:
                 integrity: sha512-0FOQiB6LaiOwoyaxP+a4d3sCIOSf7YvBKj3TfeQM4ZBb2yskRxe4FlT2P4YNpHz7kIB5rXsfmpyniyrYRRyVHw==,
             }
 
+    chromatic@13.3.5:
+        resolution:
+            {
+                integrity: sha512-MzPhxpl838qJUo0A55osCF2ifwPbjcIPeElr1d4SHcjnHoIcg7l1syJDrAYK/a+PcCBrOGi06jPNpQAln5hWgw==,
+            }
+        hasBin: true
+        peerDependencies:
+            '@chromatic-com/cypress': ^0.*.* || ^1.0.0
+            '@chromatic-com/playwright': ^0.*.* || ^1.0.0
+        peerDependenciesMeta:
+            '@chromatic-com/cypress':
+                optional: true
+            '@chromatic-com/playwright':
+                optional: true
+
     cli-cursor@3.1.0:
         resolution:
             {
@@ -6130,6 +6163,13 @@ packages:
             {
                 integrity: sha512-5giy2PkLYY1cP39p17Ech+2xlpTRL9HLspOfEgm0L6CwBXBTgsK5ou0JtzYuepxkaQ/tvhCFIJ5uXo0OrM2DxA==,
             }
+
+    filesize@10.1.6:
+        resolution:
+            {
+                integrity: sha512-sJslQKU2uM33qH5nqewAwVB2QgR6w1aMNsYUp3aN5rMRyXEwJGmZvaWzeJFNTOXWlHQyBFCWrdj3fV/fsTOX8w==,
+            }
+        engines: { node: '>= 10.4.0' }
 
     fill-range@7.1.1:
         resolution:
@@ -11968,6 +12008,18 @@ snapshots:
             human-id: 4.1.3
             prettier: 2.8.8
 
+    '@chromatic-com/storybook@5.0.1(storybook@10.2.14(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))':
+        dependencies:
+            '@neoconfetti/react': 1.0.0
+            chromatic: 13.3.5
+            filesize: 10.1.6
+            jsonfile: 6.2.0
+            storybook: 10.2.14(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+            strip-ansi: 7.2.0
+        transitivePeerDependencies:
+            - '@chromatic-com/cypress'
+            - '@chromatic-com/playwright'
+
     '@commitlint/cli@20.4.3(@types/node@25.3.3)(typescript@5.9.3)':
         dependencies:
             '@commitlint/format': 20.4.3
@@ -12478,6 +12530,8 @@ snapshots:
             '@emnapi/core': 1.8.1
             '@emnapi/runtime': 1.8.1
             '@tybys/wasm-util': 0.9.0
+
+    '@neoconfetti/react@1.0.0': {}
 
     '@noble/hashes@1.8.0': {}
 
@@ -14829,6 +14883,8 @@ snapshots:
 
     chroma.ts@1.0.10: {}
 
+    chromatic@13.3.5: {}
+
     cli-cursor@3.1.0:
         dependencies:
             restore-cursor: 3.1.0
@@ -15815,6 +15871,8 @@ snapshots:
     filelist@1.0.6:
         dependencies:
             minimatch: 5.1.9
+
+    filesize@10.1.6: {}
 
     fill-range@7.1.1:
         dependencies:
