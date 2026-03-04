@@ -42,6 +42,9 @@
         "lint": "pnpm exec eslint .",
         "lint:md": "pnpm exec markdownlint-cli2 '{./*,./**/*}.md' '#**/node_modules/**' '#packages/test-package/**/*' "
     },
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
     "dependencies": {
         "@snailicide/g-library": "^1.2.2",
         "@types/json-pointer": "^1.0.34",
@@ -59,9 +62,6 @@
         "vitest": "^4.0.18"
     },
     "type": "module",
-    "main": "dist/index.js",
-    "module": "dist/index.js",
-    "types": "dist/index.d.ts",
     "exports": {
         ".": {
             "import": "./dist/index.js",

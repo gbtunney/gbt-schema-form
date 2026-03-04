@@ -2,7 +2,6 @@
     "name": "@operator/store",
     "version": "0.0.0",
     "private": true,
-    "type": "module",
     "description": "Contracts and interfaces for plugging different operator persistence backends.",
     "scripts": {
         "\n========== DEVELOPMENT >> ==========": "",
@@ -41,6 +40,9 @@
         "lint": "pnpm exec eslint .",
         "lint:md": "pnpm exec markdownlint-cli2 '{./*,./**/*}.md' '#**/node_modules/**' '#packages/test-package/**/*' "
     },
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
     "dependencies": {
         "@operator/core": "workspace:*",
         "zod": "^4.3.6"
@@ -53,9 +55,7 @@
         "typescript": "^5.9.3",
         "vitest": "^4.0.18"
     },
-    "main": "dist/index.js",
-    "module": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "type": "module",
     "exports": {
         ".": {
             "import": "./dist/index.js",
