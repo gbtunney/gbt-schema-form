@@ -21,10 +21,13 @@ declare namespace NodeJS {
 
 dotenv.config({ path: path.resolve(`${process.cwd()}/.env`) })
 
-if (!process.env['OPENAI_API_KEY'])
-    throw new Error(
+if (!process.env['OPENAI_API_KEY']) {
+    //    throw new Error(
+    console.warn(
         'OPENAI_API_KEY is required but not set in environment variables',
     )
+}
+
 export const env = {
     cwd: process.cwd(),
 

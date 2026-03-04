@@ -36,7 +36,7 @@ export type TranscribeInput = z.infer<typeof transcribeInputSchema>
 export type TranscribeOutput = z.infer<typeof transcribeOutputSchema>
 
 // Instantiate once — holds the OpenAI client
-const whisperService = createWhisperService()
+let whisperService: ReturnType<typeof createWhisperService> | null = null
 
 export const deriveTranscribeEndpoint = endpointsFactory.build({
     description:
@@ -47,6 +47,11 @@ export const deriveTranscribeEndpoint = endpointsFactory.build({
         logger.info(
             `Transcribing audio (${input.mimeType}, lang: ${input.language ?? 'auto'})`,
         )
+
+        /** Lazy initialization — only instantiate when handler runs */
+        if (!whisperService) {
+            whisperService = createWhisperService()
+        }
 
         const text = await whisperService({
             audioBase64: input.audioBase64,

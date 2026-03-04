@@ -21,8 +21,7 @@ import { z } from 'zod'
 
 import { createProposalService } from '../services/proposal-service.js'
 
-// Instantiate once — the service holds the OpenAI client
-const proposalService = createProposalService()
+let proposalService: ReturnType<typeof createProposalService> | null = null
 
 export const proposalsFromEvidenceEndpoint = endpointsFactory.build({
     description:
@@ -35,6 +34,11 @@ export const proposalsFromEvidenceEndpoint = endpointsFactory.build({
         )
 
         const recordData = recordDocSchema.shape.data.parse(input.recordData)
+
+        /** Lazy initialization — only instantiate when handler runs */
+        if (!proposalService) {
+            proposalService = createProposalService()
+        }
 
         const proposals = await proposalService({ ...input, recordData })
 
