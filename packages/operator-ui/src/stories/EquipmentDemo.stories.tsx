@@ -551,8 +551,7 @@ const meta = {
     title: 'Equipment/OperatorEditor',
 } satisfies Meta<typeof OperatorEditor>
 
-// Prefer named exports (eslint warning)
-export { meta }
+export default meta
 type Story = StoryObj<typeof meta>
 
 // ─── Stories ──────────────────────────────────────────────────────────────────

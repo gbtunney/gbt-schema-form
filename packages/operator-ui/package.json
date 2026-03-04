@@ -15,7 +15,7 @@
         "build:sb": "pnpm build:storybook",
         "build:ts": "pnpm exec tsc --build",
         "build:nx": "cross-var nx run $npm_package_name:build",
-        "build:storybook": "storybook build",
+        "build:storybook": "pnpm exec storybook build",
         "build:vite": "pnpm exec vite build --config ./vite.config.ts",
         "\n========== TEST >> ==========": "",
         "test:nx": "cross-var nx run $npm_package_name:test",

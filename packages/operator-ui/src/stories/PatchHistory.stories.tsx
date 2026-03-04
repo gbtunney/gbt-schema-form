@@ -23,6 +23,7 @@ import {
     type FieldProposal,
     invertAppliedPatch,
     type JsonValue,
+    recordDocSchema,
 } from '@operator/core'
 import type {
     JsonSchema,
@@ -33,6 +34,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
 import { z } from 'zod'
 import { OperatorEditor } from '../components/OperatorEditor.tsx'
+
+type RecordData = z.infer<typeof recordDocSchema>['data']
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
@@ -54,9 +57,7 @@ const equipmentSchema = z
 
 const equipmentJsonSchema = z.toJSONSchema(equipmentSchema)
 
-/**
- * ✅ not async — still returns a Promise, but is no longer an "async function" passed to JSX
- */
+/** ✅ not async — still returns a Promise, but is no longer an "async function" passed to JSX */
 const schemaResolver: SchemaResolver = (schemaId) =>
     Promise.resolve({ jsonSchema: equipmentJsonSchema as JsonSchema, schemaId })
 
@@ -120,7 +121,7 @@ const SCENARIOS: Record<string, Array<FieldProposal>> = {
 }
 
 const mockProposalClient: ProposalClient = ({ evidenceItem }) => {
-    return SCENARIOS[evidenceItem.id] ?? []
+    return Promise.resolve(SCENARIOS[evidenceItem.id] ?? [])
 }
 
 // ─── Seed store ───────────────────────────────────────────────────────────────
@@ -198,7 +199,7 @@ function PatchLog({
     patches,
 }: {
     patches: Array<AppliedPatch>
-    onUndo: (patch: AppliedPatch) => void
+    onUndo: (patch: AppliedPatch) => void | Promise<void>
 }): ReactElement {
     return (
         <div className="patch-log">
@@ -246,7 +247,7 @@ function PatchLog({
                             <button
                                 className="patch-entry__undo"
                                 onClick={() => {
-                                    onUndo(patch)
+                                    void onUndo(patch)
                                 }}
                                 type="button">
                                 ↩ Undo
@@ -300,7 +301,7 @@ function PatchHistoryDemo(): ReactElement {
             // 3. Save the updated record
             await store.records.save({
                 ...record,
-                data: updated as Record<string, unknown>,
+                data: updated as RecordData,
                 updatedAt: new Date().toISOString(),
             })
 
@@ -451,7 +452,7 @@ const meta = {
     title: 'Testing/PatchHistory',
 } satisfies Meta<typeof PatchHistoryDemo>
 
-export { meta }
+export default meta
 type Story = StoryObj<typeof meta>
 
 /**
@@ -483,12 +484,18 @@ export const PreApplied: Story = {
                     const key = proposal.path.replace(/^\//, '')
                     const record = await store.records.load(RECORD_ID)
                     if (!record) return
+                    const previousData =
+                        record.data !== null &&
+                        typeof record.data === 'object' &&
+                        !Array.isArray(record.data)
+                            ? record.data
+                            : {}
                     await store.records.save({
                         ...record,
                         data: {
-                            ...(record.data as Record<string, unknown>),
+                            ...previousData,
                             [key]: proposal.value,
-                        },
+                        } as RecordData,
                         updatedAt: new Date().toISOString(),
                     })
                     await store.patches.append({
