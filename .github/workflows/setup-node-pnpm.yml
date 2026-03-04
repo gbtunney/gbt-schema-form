@@ -32,7 +32,7 @@ on:
                 default: 'node_modules,dist,docs,storybook-static,types'
             node_version:
                 type: string
-                default: '21.7.3'
+                default: '24.11.1'
 
         outputs:
             dirty:
@@ -60,7 +60,10 @@ jobs:
 
             - name: 📥 Install dependencies
               if: ${{ inputs.install }}
-              run: pnpm install --frozen-lockfile
+              run: |
+                  pnpm install --frozen-lockfile
+                  node -v
+                  pnpm -v
 
             - name: 🛠️ Build packages
               if: ${{ inputs.build }}

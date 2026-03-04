@@ -29,7 +29,14 @@ describe('record/record-snapshot recordSnapshotSchema', () => {
             { simple: 'value' },
             { nested: { deep: { structure: 'value' } } },
             { array: [1, 2, 3] },
-            { mixed: { booleans: true, nulls: null, numbers: 42, strings: 'text' } },
+            {
+                mixed: {
+                    booleans: true,
+                    nulls: null,
+                    numbers: 42,
+                    strings: 'text',
+                },
+            },
             { arrayOfObjects: [{ id: 1 }, { id: 2 }] },
             null,
             'simple string',

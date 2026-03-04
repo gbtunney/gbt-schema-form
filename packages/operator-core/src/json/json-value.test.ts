@@ -12,7 +12,16 @@ describe('json/json-value jsonValueSchema', () => {
     })
 
     test('accepts number primitives', () => {
-        const values = [0, 1, -1, 3.14, -3.14, 1e10, -1e-10, Number.MAX_SAFE_INTEGER]
+        const values = [
+            0,
+            1,
+            -1,
+            3.14,
+            -3.14,
+            1e10,
+            -1e-10,
+            Number.MAX_SAFE_INTEGER,
+        ]
 
         values.forEach((value) => {
             const result = jsonValueSchema.safeParse(value)

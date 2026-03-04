@@ -2,6 +2,7 @@
  * Pure core exports.
  *
  * Constraints:
+ *
  * - No classes
  * - No interface
  * - No any (use unknown only at true boundaries)
@@ -16,10 +17,22 @@ export { isEffectivelySame, jsonEquals } from './compare/equality.js'
 export { normalizePointerValue } from './compare/normalize.js'
 
 /** Evidence domain models (types + schemas) */
-export { type EvidenceAttachment, evidenceAttachmentSchema } from './evidence/evidence-attachment.js'
-export { type EvidenceGroup, evidenceGroupSchema } from './evidence/evidence-group.js'
-export { type EvidenceItem, evidenceItemSchema } from './evidence/evidence-item.js'
-export { type EvidenceOwner, evidenceOwnerSchema } from './evidence/evidence-owner.js'
+export {
+    type EvidenceAttachment,
+    evidenceAttachmentSchema,
+} from './evidence/evidence-attachment.js'
+export {
+    type EvidenceGroup,
+    evidenceGroupSchema,
+} from './evidence/evidence-group.js'
+export {
+    type EvidenceItem,
+    evidenceItemSchema,
+} from './evidence/evidence-item.js'
+export {
+    type EvidenceOwner,
+    evidenceOwnerSchema,
+} from './evidence/evidence-owner.js'
 
 /** ID types and schemas */
 export {
@@ -38,12 +51,22 @@ export {
 export * as JsonStringified from './json/json-stringified.js'
 
 /** JSON types and schemas */
-export { type JsonSchemaType, type JsonValue, jsonValueSchema } from './json/json-value.js'
+export {
+    type JsonBoundary,
+    jsonBoundarySchema,
+    type JsonSchemaType,
+    type JsonValue,
+    jsonValueSchema,
+} from './json/json-value.js'
 
 /** Patches */
 export type { AppliedPatch, PatchSource } from './patch/applied-patch.js'
 
-export { applyAppliedPatch, invertAppliedPatch, makeAppliedPatch } from './patch/applied-patch.js'
+export {
+    applyAppliedPatch,
+    invertAppliedPatch,
+    makeAppliedPatch,
+} from './patch/applied-patch.js'
 
 export type { JsonPatchOp } from './patch/rfc6902.js'
 export { applyRfc6902Patch } from './patch/rfc6902.js'
@@ -53,7 +76,10 @@ export type { Pointer } from './pointer/pointer.js'
 export { getPointer, setPointer } from './pointer/pointer.js'
 
 /** Proposals (types + schemas) */
-export { type FieldProposal, fieldProposalSchema } from './proposal/field-proposal.js'
+export {
+    type FieldProposal,
+    fieldProposalSchema,
+} from './proposal/field-proposal.js'
 
 /** Record snapshot (types + schemas) */
 export {

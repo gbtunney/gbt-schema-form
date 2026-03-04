@@ -1,9 +1,6 @@
 import { z } from 'zod'
 
-/**
- * Zod schemas for ID types.
- * All IDs are non-empty strings.
- */
+/** Zod schemas for ID types. All IDs are non-empty strings. */
 
 export const recordIdSchema = z.string().min(1)
 export const schemaIdSchema = z.string().min(1)

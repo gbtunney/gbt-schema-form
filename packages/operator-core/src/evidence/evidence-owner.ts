@@ -2,8 +2,8 @@ import { z } from 'zod'
 import { recordIdSchema } from './ids.js'
 
 /**
- * Zod schema and type for evidence ownership.
- * Discriminated union representing who owns an evidence group.
+ * Zod schema and type for evidence ownership. Discriminated union representing who owns an evidence group.
+ *
  * - 'record' kind: attached to a specific record
  * - 'draft' kind: not yet attached (floating evidence)
  */

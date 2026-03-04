@@ -11,18 +11,14 @@
         "nicscott.gitkraken-dark",
         "eamodio.gitlens",
         "xyz.local-history",
-        "shd101wyy.markdown-preview-enhanced",
         "nrwl.angular-console",
         "christian-kohler.path-intellisense",
         "xdebug.php-debug",
-        "esbenp.prettier-vscode",
         "ms-python.python",
         "ms-python.debugpy",
         "plibither8.remove-comments",
-        "syler.sass-indented",
         "sibiraj-s.vscode-scss-formatter",
         "gruntfuggly.todo-tree",
-        "misterj.vue-volar-extention-pack",
         "imekachi.webstorm-darcula",
         "linbudu.pnpm-vscode-helper",
         "jacano.vscode-pnpm",
@@ -33,7 +29,6 @@
         "github.copilot",
         "ms-vscode.vscode-speech",
         "alefragnani.project-manager",
-        "googlecloudtools.cloudcode",
-        "vitest.explorer"
+        "googlecloudtools.cloudcode"
     ]
 }

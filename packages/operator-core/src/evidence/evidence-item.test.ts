@@ -67,7 +67,11 @@ describe('evidence/evidence-item evidenceItemSchema', () => {
     })
 
     test('accepts empty strings for title and text', () => {
-        const itemWithEmptyStrings = { ...validEvidenceItem, text: '', title: '' }
+        const itemWithEmptyStrings = {
+            ...validEvidenceItem,
+            text: '',
+            title: '',
+        }
         const result = evidenceItemSchema.safeParse(itemWithEmptyStrings)
         expect(result.success).toBe(true)
     })

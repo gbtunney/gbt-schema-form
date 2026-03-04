@@ -101,7 +101,9 @@ const createSampleStore = (): ReturnType<typeof createInMemoryStore> =>
 function RecordsWorkflow(): ReactElement {
     const [store] = useState(createSampleStore)
     const [records, setRecords] = useState<Array<RecordDoc>>([])
-    const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null)
+    const [selectedRecordId, setSelectedRecordId] = useState<string | null>(
+        null,
+    )
     const [isCreatingNew, setIsCreatingNew] = useState(false)
 
     const loadRecords = useCallback(async (): Promise<void> => {
@@ -129,15 +131,29 @@ function RecordsWorkflow(): ReactElement {
     /** Render editor view */
     if (isCreatingNew || selectedRecordId) {
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-                <div style={{ background: '#f5f5f5', borderBottom: '1px solid #ccc', padding: '1rem' }}>
-                    <button onClick={handleCloseEditor} style={{ cursor: 'pointer', padding: '0.5rem 1rem' }}>
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100vh',
+                }}>
+                <div
+                    style={{
+                        background: '#f5f5f5',
+                        borderBottom: '1px solid #ccc',
+                        padding: '1rem',
+                    }}>
+                    <button
+                        onClick={handleCloseEditor}
+                        style={{ cursor: 'pointer', padding: '0.5rem 1rem' }}>
                         ← Back to Records
                     </button>
                 </div>
                 <div style={{ flex: 1, overflow: 'hidden' }}>
                     <OperatorEditor
-                        {...(selectedRecordId ? { recordId: selectedRecordId } : {})}
+                        {...(selectedRecordId
+                            ? { recordId: selectedRecordId }
+                            : {})}
                         schemaId="equipment.v1"
                         schemaResolver={mockSchemaResolver}
                         store={store}
@@ -156,8 +172,7 @@ function RecordsWorkflow(): ReactElement {
                     display: 'flex',
                     justifyContent: 'space-between',
                     marginBottom: '2rem',
-                }}
-            >
+                }}>
                 <h1 style={{ margin: 0 }}>Equipment Records</h1>
                 <button
                     onClick={handleCreateNew}
@@ -170,23 +185,64 @@ function RecordsWorkflow(): ReactElement {
                         fontSize: '1rem',
                         fontWeight: 500,
                         padding: '0.75rem 1.5rem',
-                    }}
-                >
+                    }}>
                     + Create New Record
                 </button>
             </div>
 
-            <div style={{ border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
+            <div
+                style={{
+                    border: '1px solid #ddd',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                }}>
                 <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                     <thead>
-                        <tr style={{ background: '#f8f9fa', borderBottom: '2px solid #ddd' }}>
-                            <th style={{ fontWeight: 600, padding: '1rem', textAlign: 'left' }}>Name</th>
-                            <th style={{ fontWeight: 600, padding: '1rem', textAlign: 'left' }}>Category</th>
-                            <th style={{ fontWeight: 600, padding: '1rem', textAlign: 'left' }}>
+                        <tr
+                            style={{
+                                background: '#f8f9fa',
+                                borderBottom: '2px solid #ddd',
+                            }}>
+                            <th
+                                style={{
+                                    fontWeight: 600,
+                                    padding: '1rem',
+                                    textAlign: 'left',
+                                }}>
+                                Name
+                            </th>
+                            <th
+                                style={{
+                                    fontWeight: 600,
+                                    padding: '1rem',
+                                    textAlign: 'left',
+                                }}>
+                                Category
+                            </th>
+                            <th
+                                style={{
+                                    fontWeight: 600,
+                                    padding: '1rem',
+                                    textAlign: 'left',
+                                }}>
                                 Manufacturer
                             </th>
-                            <th style={{ fontWeight: 600, padding: '1rem', textAlign: 'left' }}>Status</th>
-                            <th style={{ fontWeight: 600, padding: '1rem', textAlign: 'left' }}>Action</th>
+                            <th
+                                style={{
+                                    fontWeight: 600,
+                                    padding: '1rem',
+                                    textAlign: 'left',
+                                }}>
+                                Status
+                            </th>
+                            <th
+                                style={{
+                                    fontWeight: 600,
+                                    padding: '1rem',
+                                    textAlign: 'left',
+                                }}>
+                                Action
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -200,20 +256,26 @@ function RecordsWorkflow(): ReactElement {
                                         transition: 'background 0.2s',
                                     }}
                                     onMouseEnter={(e) => {
-                                        e.currentTarget.style.background = '#f8f9fa'
+                                        e.currentTarget.style.background =
+                                            '#f8f9fa'
                                     }}
                                     onMouseLeave={(e) => {
-                                        e.currentTarget.style.background = 'transparent'
-                                    }}
-                                >
+                                        e.currentTarget.style.background =
+                                            'transparent'
+                                    }}>
                                     <td style={{ padding: '1rem' }}>
-                                        {typeof data['name'] === 'string' ? data['name'] : '—'}
+                                        {typeof data['name'] === 'string'
+                                            ? data['name']
+                                            : '—'}
                                     </td>
                                     <td style={{ padding: '1rem' }}>
-                                        {typeof data['category'] === 'string' ? data['category'] : '—'}
+                                        {typeof data['category'] === 'string'
+                                            ? data['category']
+                                            : '—'}
                                     </td>
                                     <td style={{ padding: '1rem' }}>
-                                        {typeof data['manufacturer'] === 'string'
+                                        {typeof data['manufacturer'] ===
+                                        'string'
                                             ? data['manufacturer']
                                             : '—'}
                                     </td>
@@ -223,21 +285,24 @@ function RecordsWorkflow(): ReactElement {
                                                 background:
                                                     data['status'] === 'Active'
                                                         ? '#d4edda'
-                                                        : data['status'] === 'In Repair'
+                                                        : data['status'] ===
+                                                            'In Repair'
                                                           ? '#fff3cd'
                                                           : '#f8d7da',
                                                 borderRadius: '12px',
                                                 color:
                                                     data['status'] === 'Active'
                                                         ? '#155724'
-                                                        : data['status'] === 'In Repair'
+                                                        : data['status'] ===
+                                                            'In Repair'
                                                           ? '#856404'
                                                           : '#721c24',
                                                 fontSize: '0.875rem',
                                                 padding: '0.25rem 0.75rem',
-                                            }}
-                                        >
-                                            {typeof data['status'] === 'string' ? data['status'] : 'Unknown'}
+                                            }}>
+                                            {typeof data['status'] === 'string'
+                                                ? data['status']
+                                                : 'Unknown'}
                                         </span>
                                     </td>
                                     <td style={{ padding: '1rem' }}>
@@ -253,8 +318,7 @@ function RecordsWorkflow(): ReactElement {
                                                 cursor: 'pointer',
                                                 fontSize: '0.875rem',
                                                 padding: '0.5rem 1rem',
-                                            }}
-                                        >
+                                            }}>
                                             Edit
                                         </button>
                                     </td>
@@ -281,6 +345,7 @@ type Story = StoryObj<typeof meta>
 
 /**
  * Full workflow demonstrating:
+ *
  * - Records list with sample equipment data
  * - Create new record button
  * - Click to edit existing records

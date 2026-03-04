@@ -40,7 +40,14 @@ describe('proposal/field-proposal fieldProposalSchema', () => {
     })
 
     test('rejects invalid confidence levels', () => {
-        const invalidConfidences = ['high', 'MEDIUM', 'low', 'VeryHigh', '', 'Unknown']
+        const invalidConfidences = [
+            'high',
+            'MEDIUM',
+            'low',
+            'VeryHigh',
+            '',
+            'Unknown',
+        ]
 
         invalidConfidences.forEach((confidence) => {
             const proposal = { ...validProposal, confidence }
@@ -99,7 +106,12 @@ describe('proposal/field-proposal fieldProposalSchema', () => {
     })
 
     test('accepts JSON pointer paths', () => {
-        const validPaths = ['/contact/email', '/address/0/street', '/data/nested/field', '/']
+        const validPaths = [
+            '/contact/email',
+            '/address/0/street',
+            '/data/nested/field',
+            '/',
+        ]
 
         validPaths.forEach((path) => {
             const proposal = { ...validProposal, path }

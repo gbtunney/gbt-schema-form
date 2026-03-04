@@ -1,8 +1,8 @@
 {
     "name": "@operator/adapter-local",
     "version": "0.0.0",
-    "description": "Local (IndexedDB or in‑memory) persistence adapter implementing OperatorStore.",
     "private": true,
+    "description": "Local (IndexedDB or in‑memory) persistence adapter implementing OperatorStore.",
     "scripts": {
         "\n========== DEVELOPMENT >> ==========": "",
         "dev": "pnpm build:ts --watch",
@@ -40,6 +40,9 @@
         "lint": "pnpm exec eslint .",
         "lint:md": "pnpm exec markdownlint-cli2 '{./*,./**/*}.md' '#**/node_modules/**' '#packages/test-package/**/*'"
     },
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
     "dependencies": {
         "@operator/core": "workspace:*",
         "@operator/store": "workspace:*"
@@ -53,9 +56,6 @@
         "vitest": "^4.0.18"
     },
     "type": "module",
-    "main": "dist/index.js",
-    "module": "dist/index.js",
-    "types": "dist/index.d.ts",
     "exports": {
         ".": {
             "import": "./dist/index.js",

@@ -18,7 +18,13 @@ describe('evidence/ids schemas', () => {
 
     schemas.forEach(({ name, schema }) => {
         test(`${name} accepts valid non-empty string IDs`, () => {
-            const validIds = ['a', '123', 'uuid-1234-5678', 'record_id', 'Very Long ID String']
+            const validIds = [
+                'a',
+                '123',
+                'uuid-1234-5678',
+                'record_id',
+                'Very Long ID String',
+            ]
 
             validIds.forEach((id) => {
                 const result = schema.safeParse(id)

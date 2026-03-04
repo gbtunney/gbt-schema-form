@@ -20,13 +20,17 @@ describe('compare/equality jsonEquals', () => {
     test('array deep equality (order-sensitive)', () => {
         expect(jsonEquals([1, { a: 2 }], [1, { a: 2 }])).toBe(true)
         expect(jsonEquals([1, 2], [2, 1])).toBe(false)
-        expect(jsonEquals([1, 2], [1, 2, 3] as unknown as JsonValue)).toBe(false)
+        expect(jsonEquals([1, 2], [1, 2, 3] as unknown as JsonValue)).toBe(
+            false,
+        )
     })
 
     test('object deep equality (key order-insensitive)', () => {
         expect(jsonEquals({ a: 1, b: 2 }, { a: 1, b: 2 })).toBe(true)
         expect(jsonEquals({ a: { b: 1 } }, { a: { b: 2 } })).toBe(false)
-        expect(jsonEquals({ a: 1 }, { a: 1, b: 2 } as unknown as JsonValue)).toBe(false)
+        expect(
+            jsonEquals({ a: 1 }, { a: 1, b: 2 } as unknown as JsonValue),
+        ).toBe(false)
     })
 })
 

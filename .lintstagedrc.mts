@@ -20,7 +20,9 @@ const getLintStagedConfig = () => {
     const configExample = {
         /** Markdown */
         [`*.${mdExt.toString()}`]: (stagedFiles: string | Array<string>) => {
-            const files = Array.isArray(stagedFiles) ? stagedFiles.join(' ') : stagedFiles
+            const files = Array.isArray(stagedFiles)
+                ? stagedFiles.join(' ')
+                : stagedFiles
             return [
                 'pnpm prettier --write',
                 `pnpm exec markdownlint-cli2 ${files} ${mdIgnores.join(' ')}`,
@@ -29,7 +31,10 @@ const getLintStagedConfig = () => {
         },
 
         /** JS-Like Files */
-        [`*.{${jsExt.toString()}}`]: ['prettier --write', 'eslint --fix --debug'],
+        [`*.{${jsExt.toString()}}`]: [
+            'prettier --write',
+            'eslint --fix --debug',
+        ],
 
         /** Misc Prettier Files */
         [`*.{${prettierExt.toString()}}`]: 'prettier --write',

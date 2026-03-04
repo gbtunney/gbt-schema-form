@@ -7,28 +7,24 @@ import type {
     FieldProposal,
     RecordDoc,
 } from '@operator/core'
-import { evidenceItemSchema, recordDocSchema, recordIdSchema, schemaIdSchema } from '@operator/core'
+import {
+    evidenceItemSchema,
+    recordDocSchema,
+    recordIdSchema,
+    schemaIdSchema,
+} from '@operator/core'
 import { z } from 'zod'
 
-/**
- * JSON Schema payload for RJSF.
- * Keep boundary as unknown; UI/RJSF will interpret it.
- */
+/** JSON Schema payload for RJSF. Keep boundary as unknown; UI/RJSF will interpret it. */
 export type JsonSchema = unknown
 
-/**
- * schemaId → jsonSchema
- * Resolver for loading JSON schemas by ID.
- */
+/** SchemaId → jsonSchema Resolver for loading JSON schemas by ID. */
 export type SchemaResolver = (schemaId: string) => Promise<{
     schemaId: string
     jsonSchema: JsonSchema
 }>
 
-/**
- * Proposals: one evidence item → many field proposals
- * Request structure for generating AI proposals.
- */
+/** Proposals: one evidence item → many field proposals Request structure for generating AI proposals. */
 export const proposalRequestSchema = z.object({
     evidenceItem: evidenceItemSchema,
     recordData: recordDocSchema.shape.data,
@@ -37,12 +33,13 @@ export const proposalRequestSchema = z.object({
 })
 
 export type ProposalRequest = z.infer<typeof proposalRequestSchema>
-export type ProposalClient = (request: ProposalRequest) => Promise<Array<FieldProposal>>
+export type ProposalClient = (
+    request: ProposalRequest,
+) => Promise<Array<FieldProposal>>
 
 /**
- * Persistence port implemented by adapter-local / adapter-drizzle.
- * Plain TypeScript types for function contracts.
- * Zod schemas validate data structures only.
+ * Persistence port implemented by adapter-local / adapter-drizzle. Plain TypeScript types for function contracts. Zod
+ * schemas validate data structures only.
  */
 export type OperatorStore = {
     records: {
@@ -53,12 +50,19 @@ export type OperatorStore = {
 
     evidenceGroups: {
         list: (owner: EvidenceOwner) => Promise<Array<EvidenceGroup>>
-        create: (args: { owner: EvidenceOwner; title: string }) => Promise<EvidenceGroup>
+        create: (args: {
+            owner: EvidenceOwner
+            title: string
+        }) => Promise<EvidenceGroup>
     }
 
     evidenceItems: {
         list: (groupId: string) => Promise<Array<EvidenceItem>>
-        create: (args: { groupId: string; title: string; text: string }) => Promise<EvidenceItem>
+        create: (args: {
+            groupId: string
+            title: string
+            text: string
+        }) => Promise<EvidenceItem>
         update?: (args: {
             id: string
             patch: Partial<Omit<EvidenceItem, 'id' | 'groupId' | 'createdAt'>>

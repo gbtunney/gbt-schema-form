@@ -1,9 +1,12 @@
-import type { AppliedPatch, EvidenceGroup, EvidenceItem, RecordDoc } from '@operator/core'
+import type {
+    AppliedPatch,
+    EvidenceGroup,
+    EvidenceItem,
+    RecordDoc,
+} from '@operator/core'
 import type { OperatorStore } from '@operator/store'
 
-/**
- * In-memory state for the local adapter.
- */
+/** In-memory state for the local adapter. */
 export type InMemoryStoreState = {
     recordsById: Map<string, RecordDoc>
     evidenceGroupsById: Map<string, EvidenceGroup>
@@ -23,16 +26,25 @@ function generateId(): string {
  * In-memory `OperatorStore` for demos and offline development.
  *
  * Intentional constraints:
+ *
  * - JSON-only payloads.
  * - No persistence across reloads.
  * - All operations are synchronous wrapped in Promise.
  */
-export function createInMemoryStore(initialState?: Partial<InMemoryStoreState>): OperatorStore {
+export function createInMemoryStore(
+    initialState?: Partial<InMemoryStoreState>,
+): OperatorStore {
     const state: InMemoryStoreState = {
-        evidenceGroupsById: (initialState?.evidenceGroupsById ?? new Map()) as Map<string, EvidenceGroup>,
-        evidenceItemsById: (initialState?.evidenceItemsById ?? new Map()) as Map<string, EvidenceItem>,
-        patchesByRecordId: (initialState?.patchesByRecordId ?? new Map()) as Map<string, Array<AppliedPatch>>,
-        recordsById: (initialState?.recordsById ?? new Map()) as Map<string, RecordDoc>,
+        evidenceGroupsById: (initialState?.evidenceGroupsById ??
+            new Map()) as Map<string, EvidenceGroup>,
+        evidenceItemsById: (initialState?.evidenceItemsById ??
+            new Map()) as Map<string, EvidenceItem>,
+        patchesByRecordId: (initialState?.patchesByRecordId ??
+            new Map()) as Map<string, Array<AppliedPatch>>,
+        recordsById: (initialState?.recordsById ?? new Map()) as Map<
+            string,
+            RecordDoc
+        >,
     }
 
     return {
@@ -54,11 +66,17 @@ export function createInMemoryStore(initialState?: Partial<InMemoryStoreState>):
                 const allGroups = Array.from(state.evidenceGroupsById.values())
 
                 if (owner.kind === 'draft') {
-                    return Promise.resolve(allGroups.filter((g) => g.owner.kind === 'draft'))
+                    return Promise.resolve(
+                        allGroups.filter((g) => g.owner.kind === 'draft'),
+                    )
                 }
 
                 return Promise.resolve(
-                    allGroups.filter((g) => g.owner.kind === 'record' && g.owner.recordId === owner.recordId),
+                    allGroups.filter(
+                        (g) =>
+                            g.owner.kind === 'record' &&
+                            g.owner.recordId === owner.recordId,
+                    ),
                 )
             },
         },
@@ -82,17 +100,23 @@ export function createInMemoryStore(initialState?: Partial<InMemoryStoreState>):
 
             async list(groupId): Promise<Array<EvidenceItem>> {
                 return Promise.resolve(
-                    Array.from(state.evidenceItemsById.values()).filter((item) => item.groupId === groupId),
+                    Array.from(state.evidenceItemsById.values()).filter(
+                        (item) => item.groupId === groupId,
+                    ),
                 )
             },
 
             async update(args: {
                 id: string
-                patch: Partial<Omit<EvidenceItem, 'id' | 'groupId' | 'createdAt'>>
+                patch: Partial<
+                    Omit<EvidenceItem, 'id' | 'groupId' | 'createdAt'>
+                >
             }): Promise<EvidenceItem> {
                 const existing = state.evidenceItemsById.get(args.id)
                 if (!existing) {
-                    return Promise.reject(new Error(`EvidenceItem not found: ${args.id}`))
+                    return Promise.reject(
+                        new Error(`EvidenceItem not found: ${args.id}`),
+                    )
                 }
 
                 const updated: EvidenceItem = {
@@ -111,13 +135,19 @@ export function createInMemoryStore(initialState?: Partial<InMemoryStoreState>):
 
         patches: {
             async append(patch): Promise<void> {
-                const existing = state.patchesByRecordId.get(patch.recordId) ?? []
-                state.patchesByRecordId.set(patch.recordId, [...existing, patch])
+                const existing =
+                    state.patchesByRecordId.get(patch.recordId) ?? []
+                state.patchesByRecordId.set(patch.recordId, [
+                    ...existing,
+                    patch,
+                ])
                 return Promise.resolve()
             },
 
             async list(recordId): Promise<Array<AppliedPatch>> {
-                return Promise.resolve(state.patchesByRecordId.get(recordId) ?? [])
+                return Promise.resolve(
+                    state.patchesByRecordId.get(recordId) ?? [],
+                )
             },
         },
 
@@ -135,7 +165,10 @@ export function createInMemoryStore(initialState?: Partial<InMemoryStoreState>):
                 const existing = state.recordsById.get(record.id)
                 state.recordsById.set(record.id, {
                     ...record,
-                    createdAt: existing?.createdAt ?? record.createdAt ?? nowIsoString(),
+                    createdAt:
+                        existing?.createdAt ??
+                        record.createdAt ??
+                        nowIsoString(),
                     updatedAt: nowIsoString(),
                 })
                 return Promise.resolve()
