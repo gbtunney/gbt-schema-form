@@ -1,0 +1,47 @@
+name: 🔬 Integration Tests
+
+# Only runs when manually triggered or on PRs that touch the api-server.
+# Requires OPENAI_API_KEY to be set as a GitHub Actions secret.
+# Regular CI (workflow-build.yml) does NOT run this — unit tests only.
+
+on:
+    workflow_dispatch:
+        inputs:
+            packages:
+                description: 'Which package to test (default: operator-api-server)'
+                default: 'operator-api-server'
+                required: false
+    pull_request:
+        paths:
+            - 'packages/operator-api-server/**'
+            - 'packages/operator-api-client/**'
+
+jobs:
+    integration:
+        name: 🔬 Run integration tests
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: 🛎️ Checkout repository
+              uses: actions/checkout@v4
+
+            - name: 🧰 Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '24.11.1'
+
+            - name: 📦 Install pnpm
+              run: npm install -g pnpm
+
+            - name: 📥 Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: 🛠️ Build packages
+              run: pnpm build
+
+            - name: 🔬 Run integration tests
+              env:
+                  # Set OPENAI_API_KEY in GitHub repo settings:
+                  # Settings → Secrets and variables → Actions → New repository secret
+                  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+              run: pnpm --filter @operator/api-server test:integration

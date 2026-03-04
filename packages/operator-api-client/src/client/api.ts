@@ -1,4 +1,7 @@
 // src/client/api.ts
+// Typed API object — wraps the generated client with named methods.
+// Regenerate src/generated/api.ts via: pnpm --filter @operator/api-server gen:client
+
 import type { ClientContext } from './runtime.js'
 import { bind, createClient } from './runtime.js'
 
@@ -10,11 +13,24 @@ export type Api = {
             get: BoundCall
             head: BoundCall
         }
+        scrape: {
+            post: BoundCall
+        }
+        transcribe: {
+            post: BoundCall
+        }
     }
     hello: {
         get: BoundCall
         head: BoundCall
         post: BoundCall
+    }
+    v1: {
+        proposals: {
+            fromEvidence: {
+                post: BoundCall
+            }
+        }
     }
 }
 
@@ -28,11 +44,24 @@ function buildApi(ctx: ClientContext): Api {
                 get: call('get /derive/ocr'),
                 head: call('head /derive/ocr'),
             },
+            scrape: {
+                post: call('post /derive/scrape'),
+            },
+            transcribe: {
+                post: call('post /derive/transcribe'),
+            },
         },
         hello: {
             get: call('get /hello'),
             head: call('head /hello'),
             post: call('post /hello'),
+        },
+        v1: {
+            proposals: {
+                fromEvidence: {
+                    post: call('post /v1/proposals/from-evidence'),
+                },
+            },
         },
     }
 }

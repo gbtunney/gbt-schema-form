@@ -81,8 +81,6 @@ You will receive:
 Your job is to suggest field values that are supported by the evidence text.
 
 Rules:
-- Respond with valid JSON only.
-- The top-level response object must include the key "proposals".
 - Only suggest fields where the evidence clearly supports a value.
 - Do not invent data that is not in the evidence.
 - Only use paths from the provided field list — do not make up paths.
@@ -138,8 +136,7 @@ export function buildUserPrompt(request: ProposalRequest): string {
         ? `Valid field paths for schema "${request.schemaId}":
 ${describeSchema(request.jsonSchema).join('\n') || '  (no properties found)'}
 
-Only use paths from the list above.
-Only suggest proposals using paths from the list above.`
+Only use paths from the list above.`
         : `Schema ID: ${request.schemaId} (no schema provided — infer paths from context)`
 
     return `${schemaSection}
