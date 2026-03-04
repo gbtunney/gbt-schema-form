@@ -1,10 +1,13 @@
 import type { EvidenceGroup, EvidenceItem, EvidenceOwner } from '@operator/core'
 import type { OperatorStore } from '@operator/store'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
+import { VoiceRecordButton } from './VoiceRecordButton.tsx'
 
 export type EvidencePaneProps = {
     owner: EvidenceOwner
     store: OperatorStore
+    /** Pass to enable real Whisper transcription, e.g. "http://localhost:3001". Omit for mock mode. */
+    transcribeUrl?: string
     onItemSelect?: (item: EvidenceItem) => void
 }
 
@@ -13,6 +16,7 @@ export function EvidencePane({
     onItemSelect,
     owner,
     store,
+    transcribeUrl,
 }: EvidencePaneProps): ReactElement {
     const [groups, setGroups] = useState<Array<EvidenceGroup>>([])
     const [expandedGroupId, setExpandedGroupId] = useState<string | null>(null)
@@ -228,6 +232,28 @@ export function EvidencePane({
                                         type="button">
                                         + Add Evidence
                                     </button>
+
+                                    <div className="evidence-pane__divider">
+                                        or
+                                    </div>
+
+                                    <VoiceRecordButton
+                                        groupId={expandedGroupId}
+                                        owner={owner}
+                                        store={store}
+                                        transcribeUrl={transcribeUrl}
+                                        onCreated={() => {
+                                            void store.evidenceItems
+                                                .list(expandedGroupId)
+                                                .then((loaded) => {
+                                                    setItemsByGroup((prev) => ({
+                                                        ...prev,
+                                                        [expandedGroupId]:
+                                                            loaded,
+                                                    }))
+                                                })
+                                        }}
+                                    />
                                 </div>
                             </div>
                         )}

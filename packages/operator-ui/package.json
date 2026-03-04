@@ -46,7 +46,7 @@
         "build-storybook": "storybook build"
     },
     "dependencies": {
-        "@operator/api": "workspace:*",
+        "@operator/api-client": "workspace:*",
         "@operator/core": "workspace:*",
         "@operator/store": "workspace:*",
         "@rjsf/core": "^6.3.1",
