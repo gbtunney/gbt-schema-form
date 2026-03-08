@@ -131,6 +131,27 @@ importers:
                 specifier: ^4.0.18
                 version: 4.0.18(@types/node@25.3.3)(@vitest/browser-playwright@4.0.18)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
+    packages/example-package:
+        devDependencies:
+            '@snailicide/build-config':
+                specifier: ^1.4.4
+                version: 1.4.4(@babel/core@7.29.0)(@babel/runtime@7.28.6)(@typescript-eslint/eslint-plugin@8.56.1(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(prettier-plugin-jsdoc@1.8.0(prettier@3.8.1))(prettier-plugin-sh@0.18.0(prettier@3.8.1))(prettier@3.8.1)(rollup@4.59.0)(typescript@5.9.3)(vite@7.3.1(@types/node@25.3.3)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vitepress@1.6.4(@algolia/client-search@5.49.1)(@types/node@25.3.3)(axios@1.13.6)(fuse.js@7.1.0)(idb-keyval@6.2.2)(postcss@8.5.8)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(search-insights@2.17.3)(terser@5.46.0)(typescript@5.9.3))(vitest@4.0.18)
+            '@types/node':
+                specifier: ^25.2.2
+                version: 25.3.3
+            cross-var:
+                specifier: ^1.1.0
+                version: 1.1.0
+            rollup:
+                specifier: ^4.57.1
+                version: 4.59.0
+            typescript:
+                specifier: ^5.9.3
+                version: 5.9.3
+            vitest:
+                specifier: ^4.0.18
+                version: 4.0.18(@types/node@25.3.3)(@vitest/browser-playwright@4.0.18)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+
     packages/operator-adapter-drizzle:
         dependencies:
             '@operator/core':
@@ -171,6 +192,9 @@ importers:
             '@snailicide/build-config':
                 specifier: ^1.4.4
                 version: 1.4.4(@babel/core@7.29.0)(@babel/runtime@7.28.6)(@typescript-eslint/eslint-plugin@8.56.1(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(prettier-plugin-jsdoc@1.8.0(prettier@3.8.1))(prettier-plugin-sh@0.18.0(prettier@3.8.1))(prettier@3.8.1)(rollup@4.59.0)(typescript@5.9.3)(vite@7.3.1(@types/node@25.3.3)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vitepress@1.6.4(@algolia/client-search@5.49.1)(@types/node@25.3.3)(axios@1.13.6)(fuse.js@7.1.0)(idb-keyval@6.2.2)(postcss@8.5.8)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(search-insights@2.17.3)(terser@5.46.0)(typescript@5.9.3))(vitest@4.0.18)
+            '@vitest/coverage-v8':
+                specifier: ^4.0.18
+                version: 4.0.18(@vitest/browser@4.0.18(vite@7.3.1(@types/node@25.3.3)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vitest@4.0.18))(vitest@4.0.18)
             rollup:
                 specifier: ^4.57.1
                 version: 4.59.0
@@ -208,6 +232,9 @@ importers:
             '@types/node':
                 specifier: ^25.3.0
                 version: 25.3.3
+            '@vitest/coverage-v8':
+                specifier: ^4.0.18
+                version: 4.0.18(@vitest/browser@4.0.18(vite@7.3.1(@types/node@25.3.3)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vitest@4.0.18))(vitest@4.0.18)
             rollup:
                 specifier: ^4.57.1
                 version: 4.59.0
@@ -244,6 +271,12 @@ importers:
             express-zod-api:
                 specifier: ^27.0.1
                 version: 27.0.1(@types/express@5.0.6)(@types/http-errors@2.0.5)(@types/node@25.3.3)(compression@1.8.1)(express@5.2.1)(http-errors@2.0.1)(typescript@5.9.3)(zod@4.3.6)
+            html-entities:
+                specifier: ^2.5.2
+                version: 2.6.0
+            node-html-parser:
+                specifier: ^7.0.1
+                version: 7.1.0
             openai:
                 specifier: ^6.22.0
                 version: 6.25.0(ws@8.19.0)(zod@4.3.6)
@@ -272,6 +305,9 @@ importers:
             '@types/supertest':
                 specifier: ^6.0.3
                 version: 6.0.3
+            '@vitest/coverage-v8':
+                specifier: ^4.0.18
+                version: 4.0.18(@vitest/browser@4.0.18(vite@7.3.1(@types/node@25.3.3)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vitest@4.0.18))(vitest@4.0.18)
             rollup:
                 specifier: ^4.57.1
                 version: 4.59.0
@@ -315,6 +351,9 @@ importers:
             '@snailicide/build-config':
                 specifier: ^1.4.4
                 version: 1.4.4(@babel/core@7.29.0)(@babel/runtime@7.28.6)(@typescript-eslint/eslint-plugin@8.56.1(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(prettier-plugin-jsdoc@1.8.0(prettier@3.8.1))(prettier-plugin-sh@0.18.0(prettier@3.8.1))(prettier@3.8.1)(rollup@4.59.0)(typescript@5.9.3)(vite@7.3.1(@types/node@25.3.3)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vitepress@1.6.4(@algolia/client-search@5.49.1)(@types/node@25.3.3)(axios@1.13.6)(fuse.js@7.1.0)(idb-keyval@6.2.2)(postcss@8.5.8)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(search-insights@2.17.3)(terser@5.46.0)(typescript@5.9.3))(vitest@4.0.18)
+            '@vitest/coverage-v8':
+                specifier: ^4.0.18
+                version: 4.0.18(@vitest/browser@4.0.18(vite@7.3.1(@types/node@25.3.3)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vitest@4.0.18))(vitest@4.0.18)
             rollup:
                 specifier: ^4.57.1
                 version: 4.59.0
@@ -4411,6 +4450,12 @@ packages:
             }
         engines: { node: '>=18' }
 
+    boolbase@1.0.0:
+        resolution:
+            {
+                integrity: sha512-JZOSA7Mo9sNGB8+UjSgzdLtokWAky1zbztM3WRLCbZ70/3cTANmQmOdR7y2g+J0e2WXywy1yS468tY+IruqEww==,
+            }
+
     brace-expansion@1.1.12:
         resolution:
             {
@@ -5089,6 +5134,19 @@ packages:
                 integrity: sha512-ojKiDvcmByhwa8YYqbQI/hg7MEU0NC03+pSdEq4ZUnZR9xXpwk7E43SMNGkn+JxJGPFtNvQ48+vV2p+P1ml5PA==,
             }
 
+    css-select@5.2.2:
+        resolution:
+            {
+                integrity: sha512-TizTzUddG/xYLA3NXodFM0fSbNizXjOKhqiQQwvhlspadZokn1KDy0NZFS0wuEubIYAV5/c1/lAr0TaaFXEXzw==,
+            }
+
+    css-what@6.2.2:
+        resolution:
+            {
+                integrity: sha512-u/O3vwbptzhMs3L1fQE82ZSLHQQfto5gyZzwteVIEyeaY5Fc7R4dapF/BvRoSYFeqfBk4m0V1Vafq5Pjv25wvA==,
+            }
+        engines: { node: '>= 6' }
+
     css.escape@1.5.1:
         resolution:
             {
@@ -5414,6 +5472,31 @@ packages:
         resolution:
             {
                 integrity: sha512-7ZgogeTnjuHbo+ct10G9Ffp0mif17idi0IyWNVA/wcwcm7NPOD/WEHVP3n7n3MhXqxoIYm8d6MuZohYWIZ4T3w==,
+            }
+
+    dom-serializer@2.0.0:
+        resolution:
+            {
+                integrity: sha512-wIkAryiqt/nV5EQKqQpo3SToSOV9J0DnbJqwK7Wv/Trc92zIAYZ4FlMu+JPFW1DfGFt81ZTCGgDEabffXeLyJg==,
+            }
+
+    domelementtype@2.3.0:
+        resolution:
+            {
+                integrity: sha512-OLETBj6w0OsagBwdXnPdN0cnMfF9opN69co+7ZrbfPGrdpPVNBUj02spi6B1N7wChLQiPn4CSH/zJvXw56gmHw==,
+            }
+
+    domhandler@5.0.3:
+        resolution:
+            {
+                integrity: sha512-cgwlv/1iFQiFnU96XXgROh8xTeetsnJiDsTc7TYCLFd9+/WNkIqPTxiM/8pSd8VIrhXGTf1Ny1q1hquVqDJB5w==,
+            }
+        engines: { node: '>= 4' }
+
+    domutils@3.2.2:
+        resolution:
+            {
+                integrity: sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw==,
             }
 
     dot-prop@5.3.0:
@@ -6716,6 +6799,13 @@ packages:
                 integrity: sha512-88JUN06ipLwsnv+dVn+OIYOvAuvBMy/Qoi6O7mQHxdPXpjy+Cd6xRkWwux7DKO+4sYILtLBRIKgsdpS2gQc7qw==,
             }
 
+    he@1.2.0:
+        resolution:
+            {
+                integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==,
+            }
+        hasBin: true
+
     helpertypes@0.0.19:
         resolution:
             {
@@ -6753,6 +6843,12 @@ packages:
         resolution:
             {
                 integrity: sha512-Yc+BQe8SvoXH1643Qez1zqLRmbA5rCL+sSmk6TVos0LWVfNIB7PGncdlId77WzLGSIB5KaWgTaNTs2lNVEI6VQ==,
+            }
+
+    html-entities@2.6.0:
+        resolution:
+            {
+                integrity: sha512-kig+rMn/QOVRvr7c86gQ8lWXq+Hkv6CbAH1hLu+RG338StTpE8Z0b44SDVaqVu7HGKf27frdmUYEs9hTUX/cLQ==,
             }
 
     html-escaper@2.0.2:
@@ -8569,6 +8665,12 @@ packages:
             encoding:
                 optional: true
 
+    node-html-parser@7.1.0:
+        resolution:
+            {
+                integrity: sha512-iJo8b2uYGT40Y8BTyy5ufL6IVbN8rbm/1QK2xffXU/1a/v3AAa0d1YAoqBNYqaS4R/HajkWIpIfdE6KcyFh1AQ==,
+            }
+
     node-machine-id@1.1.12:
         resolution:
             {
@@ -8615,6 +8717,12 @@ packages:
                 integrity: sha512-S48WzZW777zhNIrn7gxOlISNAqi9ZC/uQFnRdbeIHhZhCA6UqpkOT8T1G7BvfdgP4Er8gF4sUbaS0i7QvIfCWw==,
             }
         engines: { node: '>=8' }
+
+    nth-check@2.1.1:
+        resolution:
+            {
+                integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==,
+            }
 
     nx@22.5.3:
         resolution:
@@ -13696,6 +13804,22 @@ snapshots:
         optionalDependencies:
             '@vitest/browser': 4.0.18(vite@7.3.1(@types/node@24.11.0)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vitest@4.0.18)
 
+    '@vitest/coverage-v8@4.0.18(@vitest/browser@4.0.18(vite@7.3.1(@types/node@25.3.3)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vitest@4.0.18))(vitest@4.0.18)':
+        dependencies:
+            '@bcoe/v8-coverage': 1.0.2
+            '@vitest/utils': 4.0.18
+            ast-v8-to-istanbul: 0.3.12
+            istanbul-lib-coverage: 3.2.2
+            istanbul-lib-report: 3.0.1
+            istanbul-reports: 3.2.0
+            magicast: 0.5.2
+            obug: 2.1.1
+            std-env: 3.10.0
+            tinyrainbow: 3.0.3
+            vitest: 4.0.18(@types/node@25.3.3)(@vitest/browser-playwright@4.0.18)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+        optionalDependencies:
+            '@vitest/browser': 4.0.18(vite@7.3.1(@types/node@25.3.3)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vitest@4.0.18)
+
     '@vitest/expect@3.2.4':
         dependencies:
             '@types/chai': 5.2.3
@@ -14701,6 +14825,8 @@ snapshots:
         transitivePeerDependencies:
             - supports-color
 
+    boolbase@1.0.0: {}
+
     brace-expansion@1.1.12:
         dependencies:
             balanced-match: 1.0.2
@@ -15085,6 +15211,16 @@ snapshots:
         dependencies:
             uncrypto: 0.1.3
 
+    css-select@5.2.2:
+        dependencies:
+            boolbase: 1.0.0
+            css-what: 6.2.2
+            domhandler: 5.0.3
+            domutils: 3.2.2
+            nth-check: 2.1.1
+
+    css-what@6.2.2: {}
+
     css.escape@1.5.1: {}
 
     csstype@3.2.3: {}
@@ -15240,6 +15376,24 @@ snapshots:
     dom-accessibility-api@0.5.16: {}
 
     dom-accessibility-api@0.6.3: {}
+
+    dom-serializer@2.0.0:
+        dependencies:
+            domelementtype: 2.3.0
+            domhandler: 5.0.3
+            entities: 4.5.0
+
+    domelementtype@2.3.0: {}
+
+    domhandler@5.0.3:
+        dependencies:
+            domelementtype: 2.3.0
+
+    domutils@3.2.2:
+        dependencies:
+            dom-serializer: 2.0.0
+            domelementtype: 2.3.0
+            domhandler: 5.0.3
 
     dot-prop@5.3.0:
         dependencies:
@@ -16236,6 +16390,8 @@ snapshots:
         dependencies:
             '@types/hast': 3.0.4
 
+    he@1.2.0: {}
+
     helpertypes@0.0.19: {}
 
     hermes-estree@0.25.1: {}
@@ -16254,6 +16410,8 @@ snapshots:
             parse-passwd: 1.0.0
 
     hookable@5.5.3: {}
+
+    html-entities@2.6.0: {}
 
     html-escaper@2.0.2: {}
 
@@ -17313,6 +17471,11 @@ snapshots:
         dependencies:
             whatwg-url: 5.0.0
 
+    node-html-parser@7.1.0:
+        dependencies:
+            css-select: 5.2.2
+            he: 1.2.0
+
     node-machine-id@1.1.12: {}
 
     node-mock-http@1.0.4: {}
@@ -17340,6 +17503,10 @@ snapshots:
     npm-run-path@4.0.1:
         dependencies:
             path-key: 3.1.1
+
+    nth-check@2.1.1:
+        dependencies:
+            boolbase: 1.0.0
 
     nx@22.5.3:
         dependencies:

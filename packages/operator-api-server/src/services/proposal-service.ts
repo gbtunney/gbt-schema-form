@@ -11,7 +11,7 @@
 // z.string() | z.number() | z.boolean() | z.null() covers all real
 // form field values. Nested object values are not expected from proposals.
 
-import type { FieldProposal } from '@operator/core'
+import { FieldProposal, fieldProposalSchema } from '@operator/core'
 import type { ProposalRequest } from '@operator/store'
 import OpenAI from 'openai'
 import { zodResponseFormat } from 'openai/helpers/zod'
@@ -26,37 +26,11 @@ import { env } from '../config/env.js'
 //   - value must be a flat primitive union (no recursive z.json())
 //   - excerpt is required here (optional in core) for better LLM output
 // -------------------------------------------------------
-
-const proposalResponseItemSchema = z.object({
-    confidence: z
-        .enum(['High', 'Medium', 'Low'])
-        .describe(
-            'High = explicitly stated, Medium = strongly implied, Low = loosely inferred',
-        ),
-    evidenceItemId: z
-        .string()
-        .describe('ID of the evidence item this proposal was derived from'),
-    excerpt: z
-        .string()
-        .describe(
-            'Short verbatim quote from the evidence text that supports this proposal',
-        ),
-    id: z.string().describe('Unique identifier for this proposal'),
-    path: z
-        .string()
-        .describe(
-            'JSON Pointer path to the field e.g. /model or /specs/weight',
-        ),
-    value: z
-        .union([z.string(), z.number(), z.boolean(), z.null()])
-        .describe(
-            'The proposed field value — must match the type expected by the field',
-        ),
-})
+//const testy = fieldProposalSchema
 
 const proposalResponseSchema = z.object({
     proposals: z
-        .array(proposalResponseItemSchema)
+        .array(fieldProposalSchema)
         .describe(
             'List of proposed field values. Empty array if evidence supports nothing.',
         ),
@@ -186,6 +160,8 @@ export function createProposalService(): ProposalService {
             | undefined
         if (!parsed) return []
 
-        return parsed.proposals as Array<FieldProposal>
+        ///NEEDS TO PARSE ACCORDING TP REAL SCHEMA IN HANDLER TOO
+
+        return parsed.proposals
     }
 }
