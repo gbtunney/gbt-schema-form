@@ -95,7 +95,7 @@ export function createScrapeService(): ScrapeService {
             raw: responseText,
             // todo: someday- maybe change json to yaml
             text:
-                contentType === null && contentType === 'text/plain'
+                contentType === 'text/plain'
                     ? responseText.trim()
                     : htmlToText(responseText),
             url: response.url,
