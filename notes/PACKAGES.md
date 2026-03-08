@@ -24,7 +24,7 @@ operator-store/
 operator-ui/
 operator-adapter-drizzle/
 operator-adapter-local/
-operator-api/
+operator-api-server/
 domain-schemas/
 apps/
 operator-demo/
@@ -50,7 +50,7 @@ Allowed imports:
 - `operator-store` → `operator-core` (types only, no runtime deps)
 - `operator-ui` → `operator-core` (schemas/types), `operator-store` (ports)
 - `operator-adapter-*` → `operator-core` (schemas/types), `operator-store` (ports), DB libs
-- `operator-api` → `operator-core` (schemas), `domain-schemas` (optional)
+- `operator-api-server` → `operator-core` (schemas), `domain-schemas` (optional)
 - `domain-schemas` → `zod` + schema generator deps only
 - `apps/*` → everything needed
 
@@ -218,7 +218,7 @@ Dependencies: `@operator/core`, `@operator/store`, `dexie` (optional)
 
 ---
 
-## 6) `@operator/api`
+## 6) `@operator/api-server`
 
 Server-side API for AI + derivations.
 

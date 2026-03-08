@@ -1,5 +1,5 @@
-// Tests for scrape-service — uses vi.stubGlobal to mock fetch
-// No network calls are made.
+// Tests for scrape-service
+// Uses vi.stubGlobal to mock fetch — no network calls made.
 
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import { createScrapeService } from './scrape-service.js'
@@ -7,9 +7,10 @@ import { createScrapeService } from './scrape-service.js'
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function mockFetch(
-    html: string,
+    body: string,
     status = 200,
     contentType = 'text/html',
+    resolvedUrl = 'https://example.com/resolved',
 ): void {
     vi.stubGlobal(
         'fetch',
@@ -17,113 +18,83 @@ function mockFetch(
             headers: { get: () => contentType },
             ok: status >= 200 && status < 300,
             status,
-            statusText: status === 200 ? 'OK' : 'Not Found',
-            text: () => Promise.resolve(html),
+            statusText: status === 200 ? 'OK' : 'Error',
+            text: () => Promise.resolve(body),
+            url: resolvedUrl,
         }),
     )
 }
 
-// ─── Tests ────────────────────────────────────────────────────────────────────
+// ─── createScrapeService integration tests ────────────────────────────────────
 
-describe('scrape-service', () => {
+describe('createScrapeService', () => {
     const scrape = createScrapeService()
 
     afterEach(() => {
         vi.unstubAllGlobals()
     })
 
-    describe('HTML stripping', () => {
-        test('strips tags and returns readable text', async () => {
-            mockFetch('<html><body><h1>Hello</h1><p>World</p></body></html>')
-            const text = await scrape({ url: 'https://example.com' })
-            expect(text).toBe('Hello World')
-        })
+    test('returns structured scrape output from HTML page', async () => {
+        mockFetch(
+            '<h1>Title</h1><ul><li>Item</li></ul>',
+            200,
+            'text/html',
+            'https://example.com/final',
+        )
+        const result = await scrape({ url: 'https://example.com' })
 
-        test('removes script tags and their content', async () => {
-            mockFetch('<body><script>alert("xss")</script><p>Clean</p></body>')
-            const text = await scrape({ url: 'https://example.com' })
-            expect(text).toBe('Clean')
-        })
-
-        test('removes style tags and their content', async () => {
-            mockFetch(
-                '<body><style>.foo { color: red }</style><p>Visible</p></body>',
-            )
-            const text = await scrape({ url: 'https://example.com' })
-            expect(text).toBe('Visible')
-        })
-
-        test('decodes common HTML entities', async () => {
-            mockFetch('<p>AT&amp;T &lt;3 &quot;quotes&quot;</p>')
-            const text = await scrape({ url: 'https://example.com' })
-            expect(text).toBe('AT&T <3 "quotes"')
-        })
-
-        test('collapses whitespace', async () => {
-            mockFetch('<p>too   many    spaces</p>\n\n<p>and newlines</p>')
-            const text = await scrape({ url: 'https://example.com' })
-            expect(text).toBe('too many spaces and newlines')
-        })
+        expect(result.text).toContain('# Title')
+        expect(result.text).toContain('• Item')
+        expect(result.raw).toBe('<h1>Title</h1><ul><li>Item</li></ul>')
+        expect(result.url).toBe('https://example.com/final')
+        expect(result.content_type).toBe('text/html')
     })
 
-    describe('content-type handling', () => {
-        test('returns plain text directly without stripping', async () => {
-            mockFetch('raw text content here', 200, 'text/plain')
-            const text = await scrape({ url: 'https://example.com/file.txt' })
-            expect(text).toBe('raw text content here')
-        })
+    test('returns plain text directly without HTML parsing', async () => {
+        mockFetch(
+            'raw text content',
+            200,
+            'text/plain',
+            'https://example.com/file.txt',
+        )
+        const result = await scrape({ url: 'https://example.com/file.txt' })
+
+        expect(result.text).toBe('raw text content')
+        expect(result.raw).toBe('raw text content')
+        expect(result.url).toBe('https://example.com/file.txt')
+        expect(result.content_type).toBe('text/plain')
     })
 
-    describe('error handling', () => {
-        test('throws on non-2xx response', async () => {
-            mockFetch('Not Found', 404)
-            await expect(
-                scrape({ url: 'https://example.com/missing' }),
-            ).rejects.toThrow('404')
-        })
-
-        test('throws on 500 response', async () => {
-            mockFetch('Server Error', 500)
-            await expect(
-                scrape({ url: 'https://example.com' }),
-            ).rejects.toThrow('500')
-        })
-
-        test('propagates fetch network errors', async () => {
-            vi.stubGlobal(
-                'fetch',
-                vi.fn().mockRejectedValue(new Error('ECONNREFUSED')),
-            )
-            await expect(
-                scrape({ url: 'https://unreachable.local' }),
-            ).rejects.toThrow('ECONNREFUSED')
-        })
+    test('throws on 404', async () => {
+        mockFetch('Not Found', 404)
+        await expect(
+            scrape({ url: 'https://example.com/missing' }),
+        ).rejects.toThrow('404')
     })
 
-    describe('real-world HTML shapes', () => {
-        test('extracts readable text from a typical article page', async () => {
-            mockFetch(`
-                <html>
-                <head>
-                    <title>Article Title</title>
-                    <style>body { font-size: 16px }</style>
-                </head>
-                <body>
-                    <nav><a href="/">Home</a></nav>
-                    <main>
-                        <h1>Equipment Inventory Guide</h1>
-                        <p>The Dell Latitude 7440 ships with a serial number on the base label.</p>
-                        <p>Warranty expires 3 years from purchase date.</p>
-                    </main>
-                    <script>window.analytics = {}</script>
-                </body>
-                </html>
-            `)
-            const text = await scrape({ url: 'https://example.com/article' })
-            expect(text).toContain('Equipment Inventory Guide')
-            expect(text).toContain('Dell Latitude 7440')
-            expect(text).not.toContain('window.analytics')
-            expect(text).not.toContain('font-size')
-        })
+    test('throws on 500', async () => {
+        mockFetch('Server Error', 500)
+        await expect(scrape({ url: 'https://example.com' })).rejects.toThrow(
+            '500',
+        )
+    })
+
+    test('propagates network errors', async () => {
+        vi.stubGlobal(
+            'fetch',
+            vi.fn().mockRejectedValue(new Error('ECONNREFUSED')),
+        )
+        await expect(
+            scrape({ url: 'https://unreachable.local' }),
+        ).rejects.toThrow('ECONNREFUSED')
+    })
+
+    test('sends correct user-agent header', async () => {
+        mockFetch('<p>ok</p>')
+        await scrape({ url: 'https://example.com' })
+        const call = vi.mocked(fetch).mock.calls[0] as [string, RequestInit]
+        expect(
+            (call[1].headers as Record<string, string>)['User-Agent'],
+        ).toContain('operator-scraper')
     })
 })

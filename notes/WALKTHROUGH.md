@@ -43,7 +43,7 @@ From `@operator/core` you will repeatedly call:
 
 Call:
 
-- `store.loadRecord(recordId)` → `RecordSnapshot | null`
+- `store.records.load(recordId)` → `RecordSnapshot | null`
 
 If null:
 
@@ -66,11 +66,11 @@ The editor does not need Zod at runtime. Zod is authoring; JSON Schema is runtim
 
 Call:
 
-- `store.listEvidenceGroups(recordId)` → `EvidenceGroup[]`
+- `store.evidenceGroups.list({ kind: 'record', recordId })` → `EvidenceGroup[]`
 
 For each group:
 
-- `store.listEvidenceItems(group.id)` → `EvidenceItem[]`
+- `store.evidenceItems.list(group.id)` → `EvidenceItem[]`
 - for each item: `store.listAttachments(item.id)` → `EvidenceAttachment[]`
 
 ### 1.4 Render panes
@@ -89,13 +89,13 @@ You now render:
 
 UI constructs `EvidenceGroup` and calls:
 
-- `store.upsertEvidenceGroup(group)`
+- `store.evidenceGroups.create({ owner, title })`
 
 ### 2.2 Create item
 
 UI constructs `EvidenceItem` and calls:
 
-- `store.upsertEvidenceItem(item)`
+- `store.evidenceItems.create({ groupId, title, text })`
 
 Note:
 
@@ -111,7 +111,7 @@ Note:
 - user uploads image/pdf or enters url or starts audio recording
 - UI creates an attachment object and calls:
 
-`store.upsertAttachment(attachment)`
+`// attachment storage not yet in OperatorStore`
 
 ### 3.2 Derive text
 
@@ -127,7 +127,7 @@ After derived text returns:
 1. update attachment:
    - `attachment.derivedText = derived`
    - `attachment.status = "done"`
-   - `store.upsertAttachment(attachment)`
+   - `// attachment storage not yet in OperatorStore`
 
 2. update evidence item text (policy decision):
    - append derived text into `EvidenceItem.text` (common default)
@@ -208,8 +208,8 @@ If `isEffectivelySame(path, before, after)`:
 
 Call in order:
 
-1. `store.appendPatch(patch)`
-2. `store.saveRecord({ recordId, schemaId, data })`
+1. `store.patches.append(patch)`
+2. `store.records.save(record)`
 
 Adapters should do this transactionally if they can.
 
@@ -264,12 +264,12 @@ Patches are the source of truth for history.
 ### Undo (basic)
 
 1. load patches:
-   - `patches = await store.listPatches(recordId)`
+   - `patches = await store.patches.list(recordId)`
 2. take last patch `p`
 3. apply inverse to data:
    - `data = setAtPath(data, p.path, p.beforeJson)`
 4. persist:
-   - `store.saveRecord({ recordId, schemaId, data })`
+   - `store.records.save(record)`
 
 To support redo, you need an explicit undo stack. Two common ways:
 
@@ -290,16 +290,16 @@ Draft groups let you collect evidence before you know what record it belongs to.
 
 ### Create draft group
 
-- `recordId: null` on group
-- `store.upsertEvidenceGroup(group)`
+- `owner: { kind: 'draft' }` on group
+- `store.evidenceGroups.create({ owner, title })`
 
 ### Attach draft to record
 
 When user clicks “Attach to record”:
 
 - update group:
-  - `group.recordId = recordId`
-  - `store.upsertEvidenceGroup(group)`
+  - `group.owner = { kind: 'record', recordId }`
+  - `store.evidenceGroups.create({ owner, title })`
 
 Now the evidence appears under that record.
 
@@ -309,7 +309,7 @@ Now the evidence appears under that record.
 
 ### Table page `/records`
 
-- `store.listRecords({ search, schemaId, ... })`
+- `store.records.list?.()`
 - render MUI DataGrid rows
 - click row → navigate to `/records/:recordId`
 

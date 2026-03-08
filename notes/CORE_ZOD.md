@@ -171,50 +171,28 @@ export type EvidenceAttachment = z.infer<typeof EvidenceAttachmentSchema>
 
 # Proposals
 
-Proposals are **ephemeral**. They can be regenerated anytime.
-
-## ProposalRun
-
-A run ties an evidence item to a model/config.
-
-```ts
-export const ProposalRunSchema = z.object({
-  id: Id,
-  evidenceItemId: Id,
-  createdAt: IsoDateTime,
-
-  model: z.string().min(1),
-  schemaId: z.string().min(1), // the domain schema used for inference
-})
-export type ProposalRun = z.infer<typeof ProposalRunSchema>
-```
+Proposals are **ephemeral**. They can be regenerated anytime. There is no `ProposalRun` entity — proposals are
+returned directly from the API and never persisted.
 
 ## FieldProposal
 
-A proposal suggests a value for a JSON path.
-
-Key fields:
-
-- `path`: JSON pointer-ish or dot-path (pick one and standardize)
-- `valueJson`: proposed value
-- `excerpt`: optional supporting snippet
-- `valid`: whether value passes domain validation
+A proposal suggests a value for a specific JSON pointer path. It is tied directly to an evidence item (no
+intermediate run object).
 
 ```ts
-export const FieldProposalSchema = z.object({
-  id: Id,
-  runId: Id,
-
-  path: z.string().min(1),
-  valueJson: JsonValueSchema,
-
-  confidence: Confidence,
-  valid: z.boolean().default(true),
-
-  excerpt: z.string().nullable().default(null),
+export const fieldProposalSchema = z.object({
+  id: z.string(),
+  evidenceItemId: evidenceItemIdSchema,
+  path: z.string(),
+  value: jsonValueSchema, // note: "value" not "valueJson"
+  confidence: z.enum(['High', 'Medium', 'Low']),
+  excerpt: z.string().optional(), // no runId, no valid flag
 })
-export type FieldProposal = z.infer<typeof FieldProposalSchema>
+export type FieldProposal = z.infer<typeof fieldProposalSchema>
 ```
+
+Note: `value` is used (not `valueJson`). There is no `valid` flag or `runId` — validation happens in the UI
+via JSON Schema.
 
 ---
 

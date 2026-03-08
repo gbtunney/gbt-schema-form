@@ -1,3 +1,22 @@
 import { vitest } from '@snailicide/build-config'
-import { defineConfig } from 'vitest/config'
-export default defineConfig(vitest.config())
+import { defineConfig, mergeConfig } from 'vitest/config'
+
+export default mergeConfig(
+    defineConfig(vitest.config()),
+    defineConfig({
+        test: {
+            coverage: {
+                exclude: [
+                    '**/node_modules/**',
+                    '**/dist/**',
+                    '**/types/**',
+                    '**/*.test.ts',
+                    '**/index.ts', // re-export barrels
+                ],
+                include: ['src/**/*.ts'],
+                provider: 'v8',
+                reporter: ['text', 'json', 'html'],
+            },
+        },
+    }),
+)
