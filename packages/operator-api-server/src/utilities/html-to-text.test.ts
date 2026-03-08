@@ -49,8 +49,8 @@ describe('htmlToText', () => {
                 <tr><td>Latitude 7440</td><td>DLAT-001</td></tr>
             </table>
         `)
-        expect(result).toContain('Name\tSerial')
-        expect(result).toContain('Latitude 7440\tDLAT-001')
+        expect(result).toContain('Name Serial')
+        expect(result).toContain('Latitude 7440 DLAT-001')
     })
 
     test('converts links to "text (url)" format', () => {
@@ -113,8 +113,8 @@ describe('htmlToText', () => {
         expect(result).toContain('# Equipment Inventory Guide')
         expect(result).toContain('## Specifications')
         expect(result).toContain('• Serial number on base label')
-        expect(result).toContain('Field\tValue')
-        expect(result).toContain('Weight\t1.4 kg')
+        expect(result).toContain('Field Value')
+        expect(result).toContain('Weight 1.4 kg')
         expect(result).not.toContain('window.analytics')
         expect(result).not.toContain('font-size')
         expect(result).not.toContain('© Dell')

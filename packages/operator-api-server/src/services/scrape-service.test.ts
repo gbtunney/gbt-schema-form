@@ -7,9 +7,10 @@ import { createScrapeService } from './scrape-service.js'
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function mockFetch(
-    html: string,
+    body: string,
     status = 200,
     contentType = 'text/html',
+    resolvedUrl = 'https://example.com/resolved',
 ): void {
     vi.stubGlobal(
         'fetch',
@@ -18,7 +19,8 @@ function mockFetch(
             ok: status >= 200 && status < 300,
             status,
             statusText: status === 200 ? 'OK' : 'Error',
-            text: () => Promise.resolve(html),
+            text: () => Promise.resolve(body),
+            url: resolvedUrl,
         }),
     )
 }
@@ -32,17 +34,35 @@ describe('createScrapeService', () => {
         vi.unstubAllGlobals()
     })
 
-    test('returns structured text from HTML page', async () => {
-        mockFetch('<h1>Title</h1><ul><li>Item</li></ul>')
-        const text = await scrape({ url: 'https://example.com' })
-        expect(text).toContain('# Title')
-        expect(text).toContain('• Item')
+    test('returns structured scrape output from HTML page', async () => {
+        mockFetch(
+            '<h1>Title</h1><ul><li>Item</li></ul>',
+            200,
+            'text/html',
+            'https://example.com/final',
+        )
+        const result = await scrape({ url: 'https://example.com' })
+
+        expect(result.text).toContain('# Title')
+        expect(result.text).toContain('• Item')
+        expect(result.raw).toBe('<h1>Title</h1><ul><li>Item</li></ul>')
+        expect(result.url).toBe('https://example.com/final')
+        expect(result.content_type).toBe('text/html')
     })
 
-    test('returns plain text directly without parsing', async () => {
-        mockFetch('raw text content', 200, 'text/plain')
-        const text = await scrape({ url: 'https://example.com/file.txt' })
-        expect(text).toBe('raw text content')
+    test('returns plain text directly without HTML parsing', async () => {
+        mockFetch(
+            'raw text content',
+            200,
+            'text/plain',
+            'https://example.com/file.txt',
+        )
+        const result = await scrape({ url: 'https://example.com/file.txt' })
+
+        expect(result.text).toBe('raw text content')
+        expect(result.raw).toBe('raw text content')
+        expect(result.url).toBe('https://example.com/file.txt')
+        expect(result.content_type).toBe('text/plain')
     })
 
     test('throws on 404', async () => {
