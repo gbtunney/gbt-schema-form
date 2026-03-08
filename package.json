@@ -23,7 +23,7 @@
         "build:all": "pnpm workspace build",
         "\n========== TEST >> ==========": "",
         "test": "pnpm nx:test",
-        "test:coverage": "pnpm -r --filter=./packages/* run test:coverage",
+        "test:coverage": "pnpm -r --if-present --filter=./packages/* run test:coverage",
         "nx:test": "pnpm exec nx run-many --target=test",
         "\n========== NX >> ==========": "",
         "nx:graph": "pnpm nx graph",
