@@ -56,7 +56,7 @@ export const proposalsFromEvidenceEndpoint = endpointsFactory.build({
 
     // Avoid JsonValue recursion in generated client types:
     input: proposalRequestSchema.extend({
-        recordData: z.unknown(),
+        recordData: jsonBoundarySchema,
     }),
 
     method: 'post',
