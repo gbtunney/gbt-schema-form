@@ -11,7 +11,8 @@
 // z.string() | z.number() | z.boolean() | z.null() covers all real
 // form field values. Nested object values are not expected from proposals.
 
-import { FieldProposal, fieldProposalSchema } from '@operator/core'
+import { fieldProposalSchema } from '@operator/core'
+import type { FieldProposal } from '@operator/core'
 import type { ProposalRequest } from '@operator/store'
 import OpenAI from 'openai'
 import { zodResponseFormat } from 'openai/helpers/zod'
