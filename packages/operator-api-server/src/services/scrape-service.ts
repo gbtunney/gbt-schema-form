@@ -109,7 +109,6 @@ content_type: contentType.includes('text/html')
 })  */
 
         const zodResult = scrapeOutputSchema.parse(unParsedResult)
-        console.log('RESULT', JSON.stringify(zodResult, undefined, 4))
         return zodResult
     }
 }
