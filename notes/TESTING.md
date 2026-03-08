@@ -10,17 +10,17 @@ Testing strategy for the operator system.
 
 Each package has `vitest` tests covering pure logic and in-memory behaviour:
 
-| Package | What's tested |
-|---------|--------------|
-| `@operator/core` | JSON pointer, patch apply/invert, equality, normalization |
-| `@operator/store` | Port schema validation |
-| `@operator/adapter-local` | All store methods — records, evidence groups/items, patches |
-| `@operator/api-server` | `htmlToText` conversion, scrape service, proposal service helpers |
-| `@operator/api-client` | `createProposalClient`, `createApi` — fetch mocked, no server needed |
+| Package                   | What's tested                                                        |
+| ------------------------- | -------------------------------------------------------------------- |
+| `@operator/core`          | JSON pointer, patch apply/invert, equality, normalization            |
+| `@operator/store`         | Port schema validation                                               |
+| `@operator/adapter-local` | All store methods — records, evidence groups/items, patches          |
+| `@operator/api-server`    | `htmlToText` conversion, scrape service, proposal service helpers    |
+| `@operator/api-client`    | `createProposalClient`, `createApi` — fetch mocked, no server needed |
 
 ```bash
-pnpm test              # all packages
-pnpm test:coverage     # with coverage report
+pnpm test          # all packages
+pnpm test:coverage # with coverage report
 ```
 
 Coverage reports: `packages/*/coverage/index.html`
@@ -29,7 +29,8 @@ Coverage reports: `packages/*/coverage/index.html`
 
 ### 2) Storybook — component + integration testing
 
-Stories use `@operator/adapter-local` and mock proposal clients. No server needed except for the two LiveApi stories.
+Stories use `@operator/adapter-local` and mock proposal clients. No server needed except for the two LiveApi
+stories.
 
 See [`STORYBOOK.md`](STORYBOOK.md) for the full guide. Key scenarios:
 
@@ -47,7 +48,8 @@ See [`STORYBOOK.md`](STORYBOOK.md) for the full guide. Key scenarios:
 pnpm --filter @operator/api-server test:integration
 ```
 
-Requires `OPENAI_API_KEY` in `packages/operator-api-server/.env`. Not run in regular CI — only via the `integration-tests.yml` workflow (manual trigger or PR touching server/client packages).
+Requires `OPENAI_API_KEY` in `packages/operator-api-server/.env`. Not run in regular CI — only via the
+`integration-tests.yml` workflow (manual trigger or PR touching server/client packages).
 
 ---
 
@@ -69,6 +71,7 @@ Playwright for multi-page navigation and full upload flows. Add when a real app 
 ## Coverage targets
 
 No hard thresholds enforced yet. Aim for:
+
 - `@operator/core` — high (pure functions, easy to test)
 - `@operator/adapter-local` — high (critical correctness path)
 - `@operator/api-server` services — high (especially `htmlToText`, proposal helpers)

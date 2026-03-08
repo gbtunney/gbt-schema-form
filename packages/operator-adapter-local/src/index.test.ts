@@ -2,14 +2,14 @@
 // Covers all store methods — groups, items, patches, records.
 // No mocking needed — pure in-memory operations.
 
-import { describe, expect, test, beforeEach } from 'vitest'
-import { createInMemoryStore } from './index.js'
 import type { OperatorStore } from '@operator/store'
+import { beforeEach, describe, expect, test } from 'vitest'
+import { createInMemoryStore } from './index.js'
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
 const recordOwner = { kind: 'record' as const, recordId: 'rec-001' }
-const draftOwner  = { kind: 'draft' as const }
+const draftOwner = { kind: 'draft' as const }
 
 const sampleRecord = {
     createdAt: '2025-01-01T00:00:00Z',
@@ -24,7 +24,9 @@ const sampleRecord = {
 describe('records', () => {
     let store: OperatorStore
 
-    beforeEach(() => { store = createInMemoryStore() })
+    beforeEach(() => {
+        store = createInMemoryStore()
+    })
 
     test('load returns null for unknown id', async () => {
         expect(await store.records.load('missing')).toBeNull()
@@ -78,7 +80,9 @@ describe('records', () => {
 describe('evidenceGroups', () => {
     let store: OperatorStore
 
-    beforeEach(() => { store = createInMemoryStore() })
+    beforeEach(() => {
+        store = createInMemoryStore()
+    })
 
     test('create returns group with generated id and timestamps', async () => {
         const group = await store.evidenceGroups.create({
@@ -106,8 +110,14 @@ describe('evidenceGroups', () => {
     })
 
     test('list returns only draft groups for draft owner', async () => {
-        await store.evidenceGroups.create({ owner: draftOwner, title: 'Draft group' })
-        await store.evidenceGroups.create({ owner: recordOwner, title: 'Record group' })
+        await store.evidenceGroups.create({
+            owner: draftOwner,
+            title: 'Draft group',
+        })
+        await store.evidenceGroups.create({
+            owner: recordOwner,
+            title: 'Record group',
+        })
 
         const drafts = await store.evidenceGroups.list(draftOwner)
         expect(drafts).toHaveLength(1)
@@ -149,11 +159,18 @@ describe('evidenceItems', () => {
     })
 
     test('list returns items for correct group only', async () => {
-        const other = await store.evidenceGroups.create({ owner: recordOwner, title: 'Other' })
+        const other = await store.evidenceGroups.create({
+            owner: recordOwner,
+            title: 'Other',
+        })
 
         await store.evidenceItems.create({ groupId, text: 'A', title: 'A' })
         await store.evidenceItems.create({ groupId, text: 'B', title: 'B' })
-        await store.evidenceItems.create({ groupId: other.id, text: 'C', title: 'C' })
+        await store.evidenceItems.create({
+            groupId: other.id,
+            text: 'C',
+            title: 'C',
+        })
 
         const items = await store.evidenceItems.list(groupId)
         expect(items).toHaveLength(2)
@@ -167,7 +184,11 @@ describe('evidenceItems', () => {
     })
 
     test('update patches selected flag', async () => {
-        const item = await store.evidenceItems.create({ groupId, text: 'x', title: 'x' })
+        const item = await store.evidenceItems.create({
+            groupId,
+            text: 'x',
+            title: 'x',
+        })
         const updated = await store.evidenceItems.update?.({
             id: item.id,
             patch: { selected: true },
@@ -177,7 +198,11 @@ describe('evidenceItems', () => {
     })
 
     test('update patches pinned flag', async () => {
-        const item = await store.evidenceItems.create({ groupId, text: 'x', title: 'x' })
+        const item = await store.evidenceItems.create({
+            groupId,
+            text: 'x',
+            title: 'x',
+        })
         const updated = await store.evidenceItems.update?.({
             id: item.id,
             patch: { pinned: true },
@@ -186,7 +211,11 @@ describe('evidenceItems', () => {
     })
 
     test('update preserves id, groupId, createdAt', async () => {
-        const item = await store.evidenceItems.create({ groupId, text: 'x', title: 'x' })
+        const item = await store.evidenceItems.create({
+            groupId,
+            text: 'x',
+            title: 'x',
+        })
         const updated = await store.evidenceItems.update?.({
             id: item.id,
             patch: { selected: true },
@@ -198,19 +227,27 @@ describe('evidenceItems', () => {
 
     test('update rejects for unknown id', async () => {
         await expect(
-            store.evidenceItems.update?.({ id: 'ghost', patch: { selected: true } }),
+            store.evidenceItems.update?.({
+                id: 'ghost',
+                patch: { selected: true },
+            }),
         ).rejects.toThrow('EvidenceItem not found')
     })
 })
-
 // ─── patches ──────────────────────────────────────────────────────────────────
 
 describe('patches', () => {
     let store: OperatorStore
 
-    beforeEach(() => { store = createInMemoryStore() })
+    beforeEach(() => {
+        store = createInMemoryStore()
+    })
 
-    const makePatch = (path: string, before: unknown, after: unknown) => ({
+    const makePatch = (
+        path: string,
+        before: unknown,
+        after: unknown,
+    ): import('@operator/core').AppliedPatch => ({
         afterJson: after as import('@operator/core').JsonValue,
         beforeJson: before as import('@operator/core').JsonValue,
         createdAt: new Date().toISOString(),

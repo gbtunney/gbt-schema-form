@@ -1,5 +1,5 @@
 import { vitest } from '@snailicide/build-config'
-import { mergeConfig, defineConfig } from 'vitest/config'
+import { defineConfig, mergeConfig } from 'vitest/config'
 
 export default mergeConfig(
     defineConfig(vitest.config()),

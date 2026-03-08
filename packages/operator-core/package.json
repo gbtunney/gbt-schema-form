@@ -2,7 +2,7 @@
     "name": "@operator/core",
     "version": "0.0.0",
     "private": true,
-    "description": "Core logic and types for the evidence\u2011driven schema operator.",
+    "description": "Core logic and types for the evidence‑driven schema operator.",
     "scripts": {
         "\n========== DEVELOPMENT >> ==========": "",
         "dev": "pnpm build:ts --watch",
