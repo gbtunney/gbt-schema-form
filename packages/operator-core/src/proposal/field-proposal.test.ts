@@ -131,4 +131,10 @@ describe('proposal/field-proposal fieldProposalSchema', () => {
         const result = fieldProposalSchema.safeParse(proposal)
         expect(result.success).toBe(true)
     })
+
+    test('accepts null excerpt', () => {
+        const proposal = { ...validProposal, excerpt: null }
+        const result = fieldProposalSchema.safeParse(proposal)
+        expect(result.success).toBe(true)
+    })
 })

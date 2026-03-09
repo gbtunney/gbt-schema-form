@@ -11,27 +11,40 @@
 // z.string() | z.number() | z.boolean() | z.null() covers all real
 // form field values. Nested object values are not expected from proposals.
 
-import { fieldProposalSchema } from '@operator/core'
 import type { FieldProposal } from '@operator/core'
 import type { ProposalRequest } from '@operator/store'
-import OpenAI from 'openai'
-import { zodResponseFormat } from 'openai/helpers/zod'
+import { zodTextFormat } from 'openai/helpers/zod'
 import { z } from 'zod'
 
-import { env } from '../config/env.js'
+import { createOpenAiClient } from './open-ai.js'
 
 // -------------------------------------------------------
 // Response schema — Zod, used directly with zodResponseFormat()
 //
 // Kept separate from core FieldProposalSchema because:
 //   - value must be a flat primitive union (no recursive z.json())
-//   - excerpt is required here (optional in core) for better LLM output
+//   - excerpt is required to be nullable for OpenAI Structured Outputs
 // -------------------------------------------------------
-//const testy = fieldProposalSchema
 
 const proposalResponseSchema = z.object({
     proposals: z
-        .array(fieldProposalSchema)
+        .array(
+            z.object({
+                confidence: z.enum(['High', 'Medium', 'Low']),
+                evidenceItemId: z.string(),
+                excerpt: z.string().nullable().optional(),
+                id: z.string(),
+                path: z.string(),
+                value: z
+                    .string()
+                    .or(z.number())
+                    .or(z.boolean())
+                    .or(z.null())
+                    .describe(
+                        'Field value as primitive (string, number, boolean, or null)',
+                    ),
+            }),
+        )
         .describe(
             'List of proposed field values. Empty array if evidence supports nothing.',
         ),
@@ -140,7 +153,7 @@ export type ProposalService = (
 ) => Promise<Array<FieldProposal>>
 
 export function createProposalService(): ProposalService {
-    const client = new OpenAI({ apiKey: env.openAiApiKey })
+    const client = createOpenAiClient()
 
     return async (request: ProposalRequest): Promise<Array<FieldProposal>> => {
         const response = await client.responses.parse({
@@ -149,10 +162,12 @@ export function createProposalService(): ProposalService {
                 { content: buildUserPrompt(request), role: 'user' },
             ],
             model: 'gpt-4o-mini',
-            response_format: zodResponseFormat(
-                proposalResponseSchema,
-                'field_proposals',
-            ),
+            text: {
+                format: zodTextFormat(
+                    proposalResponseSchema,
+                    'field_proposals',
+                ),
+            },
         })
 
         const parsed = response.output_parsed as
@@ -161,8 +176,9 @@ export function createProposalService(): ProposalService {
             | undefined
         if (!parsed) return []
 
-        ///NEEDS TO PARSE ACCORDING TP REAL SCHEMA IN HANDLER TOO
-
-        return parsed.proposals
+        return parsed.proposals.map((proposal) => ({
+            ...proposal,
+            excerpt: proposal.excerpt ?? undefined,
+        }))
     }
 }

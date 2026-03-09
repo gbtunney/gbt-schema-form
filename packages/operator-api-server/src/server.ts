@@ -5,7 +5,7 @@
 import type { Express } from 'express'
 import { createConfig, createServer, type ServerConfig } from 'express-zod-api'
 
-import { env, type Env } from './config/env.js'
+import { getEnv } from './config/env.js'
 import { routes } from './routes.js'
 import { createOcrService } from './services/ocr-service.js'
 
@@ -17,12 +17,15 @@ export type Services = {
     ocr: ReturnType<typeof createOcrService>
 }
 
-export const getConfig = (environment: Env = env): ServerConfig =>
-    createConfig({
+export const getConfig = (): ServerConfig => {
+    const env = getEnv()
+    console.log('THE ENV IS ', JSON.stringify(env, undefined, 4))
+    return createConfig({
         cors: true,
-        http: { listen: environment.port ?? 3000 },
+        http: { listen: env.PORT ?? 3000 },
         logger: { color: true, ctx: {}, depth: 2, level: 'info' },
     })
+}
 
 export const buildServer = async (): Promise<Express> => {
     const _server = await createServer(getConfig(), routes)

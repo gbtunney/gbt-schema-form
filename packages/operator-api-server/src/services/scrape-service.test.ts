@@ -2,8 +2,8 @@
 // Uses vi.stubGlobal to mock fetch — no network calls made.
 
 import { afterEach, describe, expect, test, vi } from 'vitest'
+import { getEnv } from './../config/env.js'
 import { createScrapeService } from './scrape-service.js'
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function mockFetch(
@@ -96,5 +96,25 @@ describe('createScrapeService', () => {
         expect(
             (call[1].headers as Record<string, string>)['User-Agent'],
         ).toContain('operator-scraper')
+    })
+
+    test('Scrape Test - wikipedia', async () => {
+        const envs = getEnv()
+        const result = await scrape({
+            url: 'https://en.wikipedia.org/wiki/Blue-tongued_skink',
+        })
+        expect(result.text).toContain('Blue-tongued skinks')
+
+        /** I am trying to understand mock fetch */
+        mockFetch(
+            '<h1>Title</h1><ul><li>Item</li></ul>',
+            200,
+            'text/html',
+            'https://example.com/final',
+        )
+        const result_fetch = await scrape({
+            url: 'https://en.wikipedia.org/wiki/Blue-tongued_skink',
+        })
+        expect(result_fetch.text).not.toContain('Blue-tongued skinks')
     })
 })
