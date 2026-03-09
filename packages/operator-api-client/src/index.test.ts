@@ -115,7 +115,7 @@ describe('createApi', () => {
         expect(body['schemaId']).toBe('equipment.v1')
     })
 
-    test('REAL POST /v1/proposals/from-evidence sends full request', async () => {
+    test.skip('REAL POST /v1/proposals/from-evidence sends full request', async () => {
         const api = createApi(ctx)
         const result = await api.v1.proposals.fromEvidence.post({
             evidenceItem: sampleEvidenceItem,

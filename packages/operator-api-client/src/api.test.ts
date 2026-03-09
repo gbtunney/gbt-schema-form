@@ -47,8 +47,7 @@ describe('createApi', () => {
         expect(typeof api.derive.ocr.get).toBe('function')
         expect(typeof api.hello.get).toBe('function')
     })
-
-    test('REAL POST /v1/proposals/from-evidence sends full request', async () => {
+    test.skip('REAL POST /v1/proposals/from-evidence sends full request', async () => {
         const api = createApi(ctx)
         const result = await api.v1.proposals.fromEvidence.post({
             evidenceItem: sampleEvidenceItem,

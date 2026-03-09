@@ -4,9 +4,7 @@
 // configuration object. Values are optional to support development where
 // certain integrations are mocked.
 
-import {
-    createEnv,
-} from '@t3-oss/env-core'
+import { createEnv } from '@t3-oss/env-core'
 import dotenv from 'dotenv'
 import { z } from 'zod'
 import path from 'node:path'
