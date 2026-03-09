@@ -6,7 +6,7 @@ import { jsonValueSchema } from '../json/json-value.js'
 export const fieldProposalSchema = z.object({
     confidence: z.enum(['High', 'Medium', 'Low']),
     evidenceItemId: evidenceItemIdSchema,
-    excerpt: z.string().optional(),
+    excerpt: z.string().nullable().optional(),
     id: z.string(),
     path: z.string(),
     value: jsonValueSchema,

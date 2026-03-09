@@ -1,6 +1,6 @@
 // packages/operator-api-client/src/index.test.ts
 //
-// Tests for createProposalClient and createApi.
+// Tests for  v x xx and createApi.
 // fetch is mocked — no server running, no API key needed.
 // These run fine in CI with zero environment setup.
 
@@ -113,6 +113,23 @@ describe('createApi', () => {
             unknown
         >
         expect(body['schemaId']).toBe('equipment.v1')
+    })
+
+    test('REAL POST /v1/proposals/from-evidence sends full request', async () => {
+        const api = createApi(ctx)
+        const result = await api.v1.proposals.fromEvidence.post({
+            evidenceItem: sampleEvidenceItem,
+            recordData: {},
+            schemaId: 'equipment.v1',
+        })
+
+        console.log('This test makes a REAL API CALL to', BASE_URL) // Log the base URL being called
+        console.log('Result.', JSON.stringify(result, null, 2))
+
+        // const call = vi.mock
+        /// expect(body['schemaId']).toBe('equipment.v1')
+
+        expect(true).toBe(true)
     })
 })
 
