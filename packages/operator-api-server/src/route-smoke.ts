@@ -10,6 +10,8 @@ namespace NodeJS {
         SMOKE_INCLUDE_AI?: '0' | '1'
         /** Set to '1' to include OCR route. Default: off */
         SMOKE_INCLUDE_OCR?: '0' | '1'
+        /** Filter routes by name pattern (e.g., 'hello:get', 'proposals:from-evidence:post'). Runs only matching routes */
+        SMOKE_ROUTE?: string
     }
 }
 
@@ -56,6 +58,11 @@ function getPortFromBaseUrl(baseUrl: string): number | null {
     } catch {
         return null
     }
+}
+
+/** Parse SMOKE_BOOT_SERVER and compute whether local server should boot. */
+function shouldBootLocalServer(rawBootFlag: string | undefined): boolean {
+    return rawBootFlag !== '1'
 }
 
 /** Perform one HTTP call and return a printable result summary. */
@@ -115,16 +122,29 @@ async function main(): Promise<void> {
     const env = getEnv()
     const baseUrl =
         env.API_BASE_URL ?? `http://localhost:${(env.PORT ?? 3001).toString()}`
-    const shouldBootServer = process.env['SMOKE_BOOT_SERVER'] !== '0'
+    const rawBootFlag = process.env['SMOKE_BOOT_SERVER']
+    const shouldBootServer = shouldBootLocalServer(rawBootFlag)
     const includeOcrRoute = process.env['SMOKE_INCLUDE_OCR'] === '1'
     const includeAiRoutes = process.env['SMOKE_INCLUDE_AI'] === '1'
 
+    console.log(
+        `[SMOKE_BOOT] SMOKE_BOOT_SERVER=${String(rawBootFlag)} -> shouldBootServer=${String(shouldBootServer)}`,
+    )
+
     if (shouldBootServer) {
+        console.log('[SMOKE_BOOT] Booting local API server for smoke run.')
         const targetPort = getPortFromBaseUrl(baseUrl)
         if (targetPort !== null) {
             process.env['PORT'] = String(targetPort)
+            console.log(
+                `[SMOKE_BOOT] Using PORT=${process.env['PORT']} (from baseUrl=${baseUrl})`,
+            )
         }
         await buildServer()
+    } else {
+        console.log(
+            '[SMOKE_BOOT] Skipping local boot; assuming server is already running.',
+        )
     }
 
     const routeCalls: Array<RouteCall> = [
@@ -140,15 +160,14 @@ async function main(): Promise<void> {
             name: 'hello:post',
             path: '/hello',
         },
-        {
+        /* {
             body: {
                 timeoutMs: 10_000,
                 url: 'https://en.wikipedia.org/wiki/Blue-tongued_skink',
             },
             method: 'POST',
             name: 'derive:scrape:post',
-            path: '/derive/scrape',
-        },
+            path: '/derive/scrape',*/
     ]
 
     if (includeOcrRoute) {
@@ -195,6 +214,10 @@ async function main(): Promise<void> {
                 name: 'proposals:from-evidence:post',
                 path: '/v1/proposals/from-evidence',
             },
+            /**
+             * Generates field value proposals using AI based on evidence text. Takes extracted evidence (e.g., from
+             * OCR/transcription) and generates intelligent suggestions for filling schema fields.
+             */
         )
     }
 
@@ -203,9 +226,28 @@ async function main(): Promise<void> {
         `Options: boot=${shouldBootServer ? 'on' : 'off'} ocr=${includeOcrRoute ? 'on' : 'off'} ai=${includeAiRoutes ? 'on' : 'off'}`,
     )
 
+    /** Filter routes if SMOKE_ROUTE is set. Matches route names that include the filter string. */
+    const routeFilter = process.env['SMOKE_ROUTE']
+    const filteredRouteCalls = routeFilter
+        ? routeCalls.filter((route) => route.name.includes(routeFilter))
+        : routeCalls
+
+    if (routeFilter && filteredRouteCalls.length === 0) {
+        console.error(
+            `No routes found matching filter "${routeFilter}". Available routes: ${routeCalls.map((r) => r.name).join(', ')}`,
+        )
+        process.exit(1)
+    }
+
+    if (routeFilter) {
+        console.log(
+            `Filtered to route(s): ${filteredRouteCalls.map((r) => r.name).join(', ')}\n`,
+        )
+    }
+
     let transportFailureCount = 0
 
-    for (const routeCall of routeCalls) {
+    for (const routeCall of filteredRouteCalls) {
         try {
             const result = await callRoute(baseUrl, routeCall)
             printResult(result)

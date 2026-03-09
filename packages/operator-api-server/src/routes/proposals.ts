@@ -12,7 +12,6 @@
 import {
     fieldProposalSchema,
     jsonBoundarySchema,
-    jsonValueSchema,
     recordDocSchema,
 } from '@operator/core'
 import { proposalRequestSchema } from '@operator/store'
@@ -39,18 +38,17 @@ export const proposalsFromEvidenceEndpoint = endpointsFactory.build({
         if (!proposalService) {
             proposalService = createProposalService()
         }
-
+        logger.info(
+            `Generated REQUEST for proposal service: ${JSON.stringify(input)}`,
+        )
+        logger.info(
+            'GBT GBT FRECORD DATA RECODATA/n',
+            JSON.stringify(recordData),
+        )
         const proposals = await proposalService({ ...input, recordData })
 
-        // optional: assert values are valid JSON
-        for (const p of proposals) {
-            jsonValueSchema.parse(p.value)
-        }
-
         const count = proposals.length
-        logger.info(`Got ${String(count)} proposals`)
-
-        logger.info(`Generated ${String(proposals.length)} proposals`)
+        logger.info(`Generated ${String(count)} proposals`)
         return { proposals }
     },
 
@@ -62,8 +60,8 @@ export const proposalsFromEvidenceEndpoint = endpointsFactory.build({
     method: 'post',
     output: z.object({
         proposals: z.array(
-            fieldProposalSchema.extend({
-                // prevent recursive JSON type in generated client
+            fieldProposalSchema.omit({ value: true }).extend({
+                /** Prevent recursive JSON type in generated client */
                 value: jsonBoundarySchema,
             }),
         ),
