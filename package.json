@@ -11,6 +11,7 @@
         "lint:staged": "pnpm exec lint-staged --relative --debug",
         "commit:direct": "git commit --no-verify -m",
         "lint:all": "pnpm fix && pnpm build",
+        "repo:status": "pnpm exec ./scripts/ensure-clean.ts",
         "\n========== INSPECT >>==========": "",
         "inspect:nx": "pnpm nx:graph",
         "inspect:lint": "pnpm exec eslint-config-inspector",
