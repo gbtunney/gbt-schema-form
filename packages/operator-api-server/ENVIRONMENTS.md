@@ -132,6 +132,12 @@ Or in the platform's build environment variables UI (set before build, not runti
 
 ---
 
+## Test use DOTENV env cascade
+
+```sh
+pnpm --filter @operator/api-server exec dotenv -e ../../.env -e .env -- env
+```
+
 ## Adapters: local vs Drizzle
 
 ### Right now: `operator-adapter-local`

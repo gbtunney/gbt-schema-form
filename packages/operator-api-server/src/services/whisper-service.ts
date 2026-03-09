@@ -13,8 +13,7 @@
 //
 // TODO: extract shared createDerivationEndpoint() factory once scrape/PDF land
 
-import OpenAI from 'openai'
-import { env } from '../config/env.js'
+import { createOpenAiClient } from './open-ai.js'
 
 export type WhisperInput = {
     /** Base64-encoded audio blob from MediaRecorder */
@@ -38,7 +37,7 @@ function extensionForMimeType(mimeType: string): string {
 }
 
 export function createWhisperService(): WhisperService {
-    const client = new OpenAI({ apiKey: env.openAiApiKey })
+    const client = createOpenAiClient()
 
     return async ({
         audioBase64,

@@ -14,11 +14,10 @@
 import { fieldProposalSchema } from '@operator/core'
 import type { FieldProposal } from '@operator/core'
 import type { ProposalRequest } from '@operator/store'
-import OpenAI from 'openai'
 import { zodResponseFormat } from 'openai/helpers/zod'
 import { z } from 'zod'
 
-import { env } from '../config/env.js'
+import { createOpenAiClient } from './open-ai.js'
 
 // -------------------------------------------------------
 // Response schema — Zod, used directly with zodResponseFormat()
@@ -140,7 +139,7 @@ export type ProposalService = (
 ) => Promise<Array<FieldProposal>>
 
 export function createProposalService(): ProposalService {
-    const client = new OpenAI({ apiKey: env.openAiApiKey })
+    const client = createOpenAiClient()
 
     return async (request: ProposalRequest): Promise<Array<FieldProposal>> => {
         const response = await client.responses.parse({
@@ -160,8 +159,6 @@ export function createProposalService(): ProposalService {
             | null
             | undefined
         if (!parsed) return []
-
-        ///NEEDS TO PARSE ACCORDING TP REAL SCHEMA IN HANDLER TOO
 
         return parsed.proposals
     }
