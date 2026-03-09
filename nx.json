@@ -3,16 +3,16 @@
         "default": {
             "runner": "nx/tasks-runners/default",
             "options": {
-                "cacheableOperations": ["build", "build:ts", "test"] //"build:self",
+                "cacheableOperations": ["build", "test"]
             }
         }
     },
     "targetDefaults": {
         "build": {
-            "dependsOn": ["build:ts", "^build"]
+            "dependsOn": ["^build"]
         },
         "test": {
-            "dependsOn": ["build:ts", "^test"]
+            "dependsOn": ["build", "^test"]
         },
         "docs:build": {
             "dependsOn": ["build", "test", "^docs:build"]
