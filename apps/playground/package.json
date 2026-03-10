@@ -6,10 +6,12 @@
     "scripts": {
         "\n========== DEVELOPMENT >> ==========": "",
         "dev": "pnpm build:ts && pnpm dev:vite",
+        "dev:start": "cross-var pnpm exec concurrently 'pnpm --filter $npm_package_name run dev' 'pnpm --filter @operator/api-server start'",
         "dev:vite": "pnpm exec vite --config ./vite.config.ts",
         "dev:ts": "pnpm build:ts --watch",
         "\n========== BUILD >> ==========": "",
         "build": "pnpm build:ts && pnpm build:vite",
+        "start": "cross-var pnpm exec concurrently  'pnpm --filter $npm_package_name run build:nx && pnpm --filter $npm_package_name run dev:vite' 'pnpm --filter @operator/api-server start'",
         "build:ts": "pnpm exec tsc --build",
         "build:nx": "cross-var nx run $npm_package_name:build",
         "build:vite": "pnpm exec vite build --config ./vite.config.ts",
@@ -49,6 +51,7 @@
         "@types/react": "^19.2.7",
         "@types/react-dom": "^19.2.3",
         "@vitejs/plugin-react": "^5.1.1",
+        "concurrently": "^9.2.1",
         "typescript": "~5.9.3",
         "typescript-eslint": "^8.48.0",
         "vite": "^7.3.1"

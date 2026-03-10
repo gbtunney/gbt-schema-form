@@ -185,6 +185,9 @@ importers:
             '@vitejs/plugin-react':
                 specifier: ^5.1.1
                 version: 5.1.4(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
+            concurrently:
+                specifier: ^9.2.1
+                version: 9.2.1
             typescript:
                 specifier: ~5.9.3
                 version: 5.9.3
@@ -5029,6 +5032,14 @@ packages:
             {
                 integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==,
             }
+
+    concurrently@9.2.1:
+        resolution:
+            {
+                integrity: sha512-fsfrO0MxV64Znoy8/l1vVIjjHa29SZyyqPgQBwhiDcaW8wJc2W3XWVOGx4M3oJBnv/zdUZIIp1gDeS98GzP8Ng==,
+            }
+        engines: { node: '>=18' }
+        hasBin: true
 
     content-disposition@0.5.4:
         resolution:
@@ -10265,6 +10276,13 @@ packages:
             }
         engines: { node: '>=8' }
 
+    shell-quote@1.8.3:
+        resolution:
+            {
+                integrity: sha512-ObmnIF4hXNg1BqhnHmgbDETF8dLPCggZWBjkQfhZpbszZnYur5DUljTcCHii5LC3J5E0yeO/1LIMyH+UvHQgyw==,
+            }
+        engines: { node: '>= 0.4' }
+
     shelljs@0.10.0:
         resolution:
             {
@@ -10738,6 +10756,13 @@ packages:
                 integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==,
             }
         engines: { node: '>=8' }
+
+    supports-color@8.1.1:
+        resolution:
+            {
+                integrity: sha512-MpUEN2OodtUzxvKQl72cUF7RQ5EiHsGvSsVG0ia9c5RbWGL2CI4C7EpPS8UTBIplnlzZiNuV56w+FuNxy3ty2Q==,
+            }
+        engines: { node: '>=10' }
 
     supports-preserve-symlinks-flag@1.0.0:
         resolution:
@@ -15217,6 +15242,15 @@ snapshots:
 
     concat-map@0.0.1: {}
 
+    concurrently@9.2.1:
+        dependencies:
+            chalk: 4.1.2
+            rxjs: 7.8.2
+            shell-quote: 1.8.3
+            supports-color: 8.1.1
+            tree-kill: 1.2.2
+            yargs: 17.7.2
+
     content-disposition@0.5.4:
         dependencies:
             safe-buffer: 5.2.1
@@ -15860,7 +15894,7 @@ snapshots:
             eslint: 9.39.4(jiti@2.6.1)
         optionalDependencies:
             '@typescript-eslint/eslint-plugin': 8.57.0(@typescript-eslint/parser@8.57.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
-            vitest: 4.0.18(@types/node@25.4.0)(@vitest/browser-playwright@4.0.18)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+            vitest: 4.0.18(@types/node@24.12.0)(@vitest/browser-playwright@4.0.18)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
         transitivePeerDependencies:
             - supports-color
             - typescript
@@ -18570,6 +18604,8 @@ snapshots:
 
     shebang-regex@3.0.0: {}
 
+    shell-quote@1.8.3: {}
+
     shelljs@0.10.0:
         dependencies:
             execa: 5.1.1
@@ -18894,6 +18930,10 @@ snapshots:
             has-flag: 3.0.0
 
     supports-color@7.2.0:
+        dependencies:
+            has-flag: 4.0.0
+
+    supports-color@8.1.1:
         dependencies:
             has-flag: 4.0.0
 
