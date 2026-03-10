@@ -8,10 +8,11 @@ import { commitlint, CommitlintUserConfig } from '@snailicide/build-config'
 const Configuration: CommitlintUserConfig = commitlint.configuration([
     'root',
     'core',
-    'store',
     'ui',
-    'api-client',
+    'playground',
     'api-server',
+    'api-client',
+    'store',
     'adapter-local',
     'adapter-drizzle',
     'notes',
