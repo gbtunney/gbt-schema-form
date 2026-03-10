@@ -25,7 +25,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { type ReactElement, useMemo, useState } from 'react'
 import { z } from 'zod'
 
-import { OperatorEditor } from '../components/OperatorEditor.tsx'
+import { OperatorEditor } from '../components/OperatorEditor.js'
 
 // ─── Equipment Schema ─────────────────────────────────────────────────────────
 // Defined in Zod so it can serve three purposes from one source of truth:

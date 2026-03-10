@@ -4,7 +4,6 @@ import react from '@vitejs/plugin-react'
 import { playwright } from '@vitest/browser-playwright'
 import { defineConfig } from 'vite'
 
-// https://vite.dev/config/
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 const dirname =
@@ -12,16 +11,41 @@ const dirname =
         ? __dirname
         : path.dirname(fileURLToPath(import.meta.url))
 
-// More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
+/**
+ * Vite config for library build and Storybook
+ *
+ * - Library mode: builds the component library
+ * - Test mode: runs Storybook tests with vitest
+ */
 export default defineConfig({
+    build: {
+        lib: {
+            entry: path.resolve(dirname, 'src/index.ts'),
+            fileName: 'index',
+            formats: ['es'],
+        },
+        outDir: 'dist',
+        rollupOptions: {
+            external: [
+                'react',
+                'react-dom',
+                'react/jsx-runtime',
+                '@operator/core',
+                '@operator/store',
+                '@operator/api-client',
+            ],
+            output: {
+                preserveModules: false,
+            },
+        },
+        sourcemap: true,
+    },
     plugins: [react()],
     test: {
         projects: [
             {
                 extends: true,
                 plugins: [
-                    // The plugin will run tests for the stories defined in your Storybook config
-                    // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
                     storybookTest({
                         configDir: path.join(dirname, '.storybook'),
                     }),

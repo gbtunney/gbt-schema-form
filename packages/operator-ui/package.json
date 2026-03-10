@@ -5,13 +5,13 @@
     "description": "React components and hooks for the operator user interface.",
     "scripts": {
         "\n========== DEVELOPMENT >> ==========": "",
-        "dev": "pnpm build:ts && pnpm dev:vite",
+        "dev": "pnpm build:ts --watch",
         "dev:storybook": "pnpm build:ts && pnpm exec storybook dev -p 6006",
         "dev:sb": "pnpm dev:storybook",
         "dev:ts": "pnpm build:ts --watch",
-        "dev:vite": "pnpm exec vite --config ./vite.config.ts",
+        "dev:vite": "pnpm exec vite build --watch --config ./vite.config.ts",
         "\n========== BUILD >> ==========": "",
-        "build": "pnpm build:ts && pnpm build:vite && pnpm build:storybook",
+        "build": "pnpm build:ts && pnpm build:vite",
         "build:sb": "pnpm build:storybook",
         "build:ts": "pnpm exec tsc --build",
         "build:nx": "cross-var nx run $npm_package_name:build",
@@ -82,6 +82,13 @@
         "vite": "^7.3.1"
     },
     "type": "module",
+    "exports": {
+        ".": {
+            "types": "./types/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.js"
+        }
+    },
     "author": {
         "name": "Gillian Tunney",
         "email": "gbtunney@mac.com"
@@ -103,5 +110,9 @@
     ],
     "keywords": [
         "boilerplate"
-    ]
+    ],
+    "peerDependencies": {
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0"
+    }
 }

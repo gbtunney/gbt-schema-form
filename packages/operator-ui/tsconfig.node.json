@@ -3,12 +3,12 @@
     "compilerOptions": {
         "rootDir": ".",
         "types": ["node"],
+        "module": "ESNext",
+        "moduleResolution": "bundler",
         "sourceMap": true,
         "esModuleInterop": true,
-        "lib": ["dom"],
         "declaration": true,
         "declarationMap": true
     },
-    "exclude": ["/node_modules", "scratch", "**/*.tsx"],
-    "include": ["./*.ts", "./.storybook/*.ts", "./*.mts", "./*.cts", "./*.json"]
+    "include": ["./*.ts", "./.storybook/*.ts", "./*.mts", "./*.cts"]
 }
