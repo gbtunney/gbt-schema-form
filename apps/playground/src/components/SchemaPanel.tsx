@@ -143,12 +143,16 @@ export function SchemaPanel({ onError, onSchemaChange }: Props): ReactElement {
             <div style={TABS}>
                 <button
                     style={tab(activeTab === 'zod')}
-                    onClick={() => { setActiveTab('zod'); }}>
+                    onClick={() => {
+                        setActiveTab('zod')
+                    }}>
                     Zod
                 </button>
                 <button
                     style={tab(activeTab === 'json')}
-                    onClick={() => { setActiveTab('json'); }}>
+                    onClick={() => {
+                        setActiveTab('json')
+                    }}>
                     JSON Schema
                 </button>
             </div>
@@ -160,7 +164,9 @@ export function SchemaPanel({ onError, onSchemaChange }: Props): ReactElement {
                         style={TEXTAREA}
                         spellCheck={false}
                         value={zodBody}
-                        onChange={(e) => { setZodBody(e.target.value); }}
+                        onChange={(e) => {
+                            setZodBody(e.target.value)
+                        }}
                     />
                     <button style={APPLY_BTN} onClick={applyZod}>
                         Apply schema
@@ -175,7 +181,9 @@ export function SchemaPanel({ onError, onSchemaChange }: Props): ReactElement {
                         style={TEXTAREA}
                         spellCheck={false}
                         value={jsonText}
-                        onChange={(e) => { setJsonText(e.target.value); }}
+                        onChange={(e) => {
+                            setJsonText(e.target.value)
+                        }}
                     />
                     <button style={APPLY_BTN} onClick={applyJson}>
                         Apply schema

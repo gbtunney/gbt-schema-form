@@ -75,7 +75,11 @@ const BADGE: React.CSSProperties = {
     padding: '1px 6px',
 }
 
-function PatchList({ patches }: { patches: Array<AppliedPatch> }): ReactElement {
+function PatchList({
+    patches,
+}: {
+    patches: Array<AppliedPatch>
+}): ReactElement {
     if (patches.length === 0) {
         return (
             <div
@@ -143,12 +147,16 @@ export function StatePanel({
             <div style={TABS}>
                 <button
                     style={tab(activeTab === 'formData')}
-                    onClick={() => { setActiveTab('formData'); }}>
+                    onClick={() => {
+                        setActiveTab('formData')
+                    }}>
                     formData
                 </button>
                 <button
                     style={tab(activeTab === 'patches')}
-                    onClick={() => { setActiveTab('patches'); }}>
+                    onClick={() => {
+                        setActiveTab('patches')
+                    }}>
                     patches
                     {patches.length > 0 && (
                         <span
@@ -163,7 +171,9 @@ export function StatePanel({
                 </button>
                 <button
                     style={tab(activeTab === 'proposals')}
-                    onClick={() => { setActiveTab('proposals'); }}>
+                    onClick={() => {
+                        setActiveTab('proposals')
+                    }}>
                     proposals
                 </button>
             </div>
