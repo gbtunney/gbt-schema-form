@@ -21,7 +21,6 @@
         "gruntfuggly.todo-tree",
         "imekachi.webstorm-darcula",
         "linbudu.pnpm-vscode-helper",
-        "jacano.vscode-pnpm",
         "alefragnani.bookmarks",
         "adrianwilczynski.terminal-commands",
         "keesschollaart.vscode-home-assistant",
@@ -29,6 +28,9 @@
         "github.copilot",
         "ms-vscode.vscode-speech",
         "alefragnani.project-manager",
-        "googlecloudtools.cloudcode"
+        "googlecloudtools.cloudcode",
+        "naumovs.color-highlight",
+        "christian-kohler.npm-intellisense",
+        "redhat.vscode-yaml"
     ]
 }

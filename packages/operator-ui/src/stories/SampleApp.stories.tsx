@@ -10,7 +10,7 @@ import {
     useState,
 } from 'react'
 
-import { OperatorEditor } from '../components/OperatorEditor.tsx'
+import { OperatorEditor } from '../components/OperatorEditor.js'
 
 const petSchema = {
     properties: {

@@ -1,13 +1,13 @@
 import type { EvidenceGroup, EvidenceItem, EvidenceOwner } from '@operator/core'
 import type { OperatorStore } from '@operator/store'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
-import { VoiceRecordButton } from './VoiceRecordButton.tsx'
+import { VoiceRecordButton } from './VoiceRecordButton.js'
 
 export type EvidencePaneProps = {
     owner: EvidenceOwner
     store: OperatorStore
     /** Pass to enable real Whisper transcription, e.g. "http://localhost:3001". Omit for mock mode. */
-    transcribeUrl?: string
+    transcribeUrl?: string | undefined
     onItemSelect?: (item: EvidenceItem) => void
 }
 

@@ -33,7 +33,7 @@ import type {
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
 import { z } from 'zod'
-import { OperatorEditor } from '../components/OperatorEditor.tsx'
+import { OperatorEditor } from '../components/OperatorEditor.js'
 
 type RecordData = z.infer<typeof recordDocSchema>['data']
 

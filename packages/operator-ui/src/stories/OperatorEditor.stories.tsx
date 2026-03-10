@@ -2,7 +2,7 @@ import { createInMemoryStore } from '@operator/adapter-local'
 import type { JsonSchema, SchemaResolver } from '@operator/store'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
-import { OperatorEditor } from '../components/OperatorEditor.tsx'
+import { OperatorEditor } from '../components/OperatorEditor.js'
 
 /** Sample JSON Schema for a patient intake form */
 const patientSchema = {

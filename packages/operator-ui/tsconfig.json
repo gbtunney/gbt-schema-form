@@ -1,7 +1,11 @@
 {
-    "files": [],
-    "references": [
-        { "path": "./tsconfig.app.json" },
-        { "path": "./tsconfig.node.json" }
-    ]
+    "extends": "@snailicide/build-config/tsconfig-base",
+    "compilerOptions": {
+        "rootDir": ".",
+        "types": ["node"]
+    },
+    "exclude": ["./node_modules"],
+    "files": ["package.json"],
+    "include": ["./*.ts", "./*.cts", "./*.mts"],
+    "references": [{ "path": "./src" }, { "path": "./tsconfig.node.json" }]
 }

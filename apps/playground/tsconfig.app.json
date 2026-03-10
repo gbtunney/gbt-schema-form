@@ -1,7 +1,6 @@
 {
     "extends": "@snailicide/build-config/tsconfig-base",
     "compilerOptions": {
-        //override
         "jsxFactory": null,
         "jsxFragmentFactory": null,
         "jsx": "react-jsx",

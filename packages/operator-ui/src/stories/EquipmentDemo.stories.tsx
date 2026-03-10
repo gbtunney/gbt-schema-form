@@ -22,9 +22,10 @@ import { createProposalClient } from '@operator/api-client'
 import type { FieldProposal } from '@operator/core'
 import type { ProposalClient, SchemaResolver } from '@operator/store'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { type ReactElement, useMemo, useState } from 'react'
 import { z } from 'zod'
 
-import { OperatorEditor } from '../components/OperatorEditor.tsx'
+import { OperatorEditor } from '../components/OperatorEditor.js'
 
 // ─── Equipment Schema ─────────────────────────────────────────────────────────
 // Defined in Zod so it can serve three purposes from one source of truth:
@@ -622,30 +623,131 @@ export const EmptyNewRecord: Story = {
     },
 }
 
+// ─── Live API story ───────────────────────────────────────────────────────────
+// Wraps OperatorEditor with a runtime URL bar so you can paste in a Codespace
+// forwarded URL (e.g. https://your-name-3001.app.github.dev) without restarting
+// Storybook or setting env vars.
+//
+// How to use:
+//   1. pnpm dev in packages/operator-api-server (port 3001)
+//   2. In Codespaces: open the Ports tab, make port 3001 public, copy the URL
+//   3. Open this story, paste the URL into the input, click Connect
+//   4. Add evidence text, click an item — real GPT-4o-mini proposals appear
+//
+// Locally: the default http://localhost:3001 will work without any changes.
+// Requires OPENAI_API_KEY in packages/operator-api-server/.env
+
+const DEFAULT_URL =
+    (import.meta.env['VITE_API_URL'] as string | undefined) ??
+    'http://localhost:3001'
+
+function LiveApiWrapper(): ReactElement {
+    const [inputValue, setInputValue] = useState(DEFAULT_URL)
+    const [activeUrl, setActiveUrl] = useState(DEFAULT_URL)
+    const [connected, setConnected] = useState(false)
+
+    const { proposalClient, store } = useMemo(() => {
+        return {
+            proposalClient: createProposalClient({ baseUrl: activeUrl }),
+            // Fresh store each time we connect so previous evidence doesn't linger
+            store: createInMemoryStore(),
+        }
+    }, [activeUrl])
+
+    function handleConnect(): void {
+        const trimmed = inputValue.trim().replace(/\/$/, '')
+        setActiveUrl(trimmed)
+        setConnected(true)
+    }
+
+    return (
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100vh',
+            }}>
+            {/* URL bar */}
+            <div
+                style={{
+                    alignItems: 'center',
+                    background: connected ? '#f0faf0' : '#fafafa',
+                    borderBottom: '1px solid #ddd',
+                    display: 'flex',
+                    gap: 8,
+                    padding: '8px 12px',
+                }}>
+                <span
+                    style={{
+                        color: '#666',
+                        fontSize: 12,
+                        whiteSpace: 'nowrap',
+                    }}>
+                    API URL
+                </span>
+                <input
+                    onChange={(e) => {
+                        setInputValue(e.target.value)
+                        setConnected(false)
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleConnect()
+                    }}
+                    placeholder="https://your-codespace-3001.app.github.dev"
+                    style={{
+                        border: '1px solid #ccc',
+                        borderRadius: 4,
+                        flex: 1,
+                        fontFamily: 'monospace',
+                        fontSize: 12,
+                        padding: '4px 8px',
+                    }}
+                    type="text"
+                    value={inputValue}
+                />
+                <button
+                    onClick={handleConnect}
+                    style={{
+                        background: connected ? '#2d7d2d' : '#0066cc',
+                        border: 'none',
+                        borderRadius: 4,
+                        color: '#fff',
+                        cursor: 'pointer',
+                        fontSize: 12,
+                        padding: '5px 12px',
+                        whiteSpace: 'nowrap',
+                    }}>
+                    {connected ? '✓ Connected' : 'Connect'}
+                </button>
+                {connected && (
+                    <span style={{ color: '#2d7d2d', fontSize: 11 }}>
+                        → {activeUrl}
+                    </span>
+                )}
+            </div>
+
+            {/* Editor */}
+            <div style={{ flex: 1, overflow: 'hidden' }}>
+                <OperatorEditor
+                    proposalClient={proposalClient}
+                    schemaId="equipment.v1"
+                    schemaResolver={mockSchemaResolver}
+                    store={store}
+                    transcribeUrl={activeUrl}
+                />
+            </div>
+        </div>
+    )
+}
+
 /**
- * Live API story — connects to a real running api-server via VITE_API_URL.
+ * Live API story — paste your API server URL into the input bar and click Connect.
  *
- * How to use:
+ * Works locally (http://localhost:3001) and in Codespaces (paste the forwarded port URL from the Ports tab — make sure
+ * port 3001 is set to Public).
  *
- * 1. Cd packages/operator-api-server && pnpm dev (starts on port 3001)
- * 2. Create .env in operator-ui: VITE_API_URL=http://localhost:3001
- * 3. Restart Storybook
- * 4. Open this story, expand an evidence group, add a text item
- * 5. Click the item — real Whisper/GPT-4o-mini proposals appear in ~2s
- *
- * Falls back to http://localhost:3001 if VITE_API_URL is not set.
- *
- * Requires OPENAI_API_KEY in operator-api-server/.env
+ * No env vars or Storybook restart needed.
  */
-export const LiveApi: Story = {
-    args: {
-        proposalClient: createProposalClient({
-            baseUrl: import.meta.env['VITE_API_URL'] ?? 'http://localhost:3001',
-        }),
-        schemaId: 'equipment.v1',
-        schemaResolver: mockSchemaResolver,
-        store: createInMemoryStore(),
-        transcribeUrl:
-            import.meta.env['VITE_API_URL'] ?? 'http://localhost:3001',
-    },
+export const LiveApi: StoryObj<typeof LiveApiWrapper> = {
+    render: () => <LiveApiWrapper />,
 }

@@ -10,7 +10,7 @@
 
 import { createInMemoryStore } from '@operator/adapter-local'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { VoiceRecordButton } from '../components/VoiceRecordButton.tsx'
+import { VoiceRecordButton } from '../components/VoiceRecordButton.js'
 
 const store = createInMemoryStore()
 

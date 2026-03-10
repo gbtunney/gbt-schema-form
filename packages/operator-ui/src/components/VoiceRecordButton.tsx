@@ -23,7 +23,7 @@ export type VoiceRecordButtonProps = {
     owner: EvidenceOwner
     store: OperatorStore
     /** Base URL of the api-server, e.g. "http://localhost:3001". Undefined = mock mode. */
-    transcribeUrl?: string
+    transcribeUrl?: string | undefined
     /** Called after the evidence item is created so the parent can refresh */
     onCreated?: () => void
 }

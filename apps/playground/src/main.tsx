@@ -12,13 +12,3 @@ createRoot(doc).render(
         <App />
     </StrictMode>,
 )
-/*
-import { Client } from '@operator/api'
-async function test() {
-    console.log('Hello world')
-    const client = new Client( optional custom implementation )
-    const hello = await client.provide('get /hello', {
-        name: 'y',
-        nickname: 'x',
-    })
-}*/

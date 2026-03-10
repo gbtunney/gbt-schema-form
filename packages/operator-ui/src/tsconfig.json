@@ -1,0 +1,16 @@
+{
+    "extends": "@snailicide/build-config/tsconfig-base",
+    "compilerOptions": {
+        "jsxFactory": null,
+        "jsxFragmentFactory": null,
+        "jsx": "react-jsx",
+        "outDir": "./../types",
+        "sourceMap": true,
+        "declaration": true,
+        "declarationDir": "./../types",
+        "declarationMap": true,
+        "lib": ["ESNext", "DOM"],
+        "types": ["vite/client"]
+    },
+    "include": ["**/*.ts", "**/*.tsx", "**/*.cts", "**/*.mts"]
+}

@@ -4,7 +4,7 @@ import type { JsonSchema, SchemaResolver } from '@operator/store'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
 
-import { OperatorEditor } from '../components/OperatorEditor.tsx'
+import { OperatorEditor } from '../components/OperatorEditor.js'
 
 /** Equipment JSON Schema */
 const equipmentSchema = {

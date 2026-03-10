@@ -13,9 +13,9 @@ import type {
 import type { RJSFSchema } from '@rjsf/utils'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
 
-import { EvidencePane } from './EvidencePane.tsx'
-import { FormPane } from './FormPane.tsx'
-import { ProposalsPane } from './ProposalsPane.tsx'
+import { EvidencePane } from './EvidencePane.js'
+import { FormPane } from './FormPane.js'
+import { ProposalsPane } from './ProposalsPane.js'
 import './operator-editor.css'
 
 export type OperatorEditorProps = {
@@ -26,7 +26,7 @@ export type OperatorEditorProps = {
     /** Optional AI proposal client. When provided, selecting an evidence item triggers proposal generation. */
     proposalClient?: ProposalClient
     /** Base URL of api-server for Whisper transcription, e.g. "http://localhost:3001". Omit for mock mode. */
-    transcribeUrl?: string
+    transcribeUrl?: string | undefined
 }
 
 /**
