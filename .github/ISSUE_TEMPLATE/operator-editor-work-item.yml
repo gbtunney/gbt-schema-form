@@ -1,0 +1,95 @@
+name: Operator Editor Work Item
+description: Create a feature, bug, or design issue for the Operator Editor system
+title: "<area>: <short summary>"
+labels: []
+assignees: []
+
+body:
+  - type: dropdown
+    id: issue_type
+    attributes:
+      label: Issue Type
+      description: What kind of issue is this?
+      options:
+        - Feature
+        - Bug
+        - UX Improvement
+        - Architecture
+        - Dev Environment
+        - Documentation
+    validations:
+      required: true
+
+  - type: dropdown
+    id: subsystem
+    attributes:
+      label: Subsystem
+      description: Which part of Operator Editor does this affect?
+      options:
+        - UI
+        - Evidence System
+        - Proposal System
+        - Patch / History
+        - Attachments
+        - Schema / Form
+        - API
+        - Dev Environment
+        - Storybook
+    validations:
+      required: true
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package (Monorepo)
+      description: Which package is primarily affected?
+      options:
+        - "@operator/ui"
+        - "@operator/store"
+        - "@operator/core"
+        - "@operator/api-server"
+        - "@operator/api-client"
+        - Not sure
+    validations:
+      required: false
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Short description of the issue or feature
+      placeholder: Explain the change or problem in 1–3 sentences.
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why is this needed?
+      description: What problem does this solve?
+      placeholder: Describe the motivation or user impact.
+
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Requirements / Tasks
+      description: List the implementation tasks
+      placeholder: |
+        - [ ] Task 1
+        - [ ] Task 2
+        - [ ] Task 3
+
+  - type: textarea
+    id: open_questions
+    attributes:
+      label: Open Questions
+      description: Things that still need design decisions
+      placeholder: |
+        - Question 1
+        - Question 2
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional Notes
+      description: Error logs, screenshots, architecture notes, etc.
