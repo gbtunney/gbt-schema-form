@@ -75,7 +75,7 @@ importers:
                 version: 9.1.7
             lint-staged:
                 specifier: ^16.2.7
-                version: 16.3.2
+                version: 16.3.3
             markdownlint-cli2:
                 specifier: ^0.20.0
                 version: 0.20.0
@@ -1650,10 +1650,10 @@ packages:
             }
         engines: { node: '>=18.18' }
 
-    '@iconify-json/simple-icons@1.2.72':
+    '@iconify-json/simple-icons@1.2.73':
         resolution:
             {
-                integrity: sha512-wkcixntHvaCoqPqerGrNFcHQ3Yx1ux4ZkhscCDK0DEHpP62XCH+cxq1HTsRjbUiQl/M9K8bj03HF6Wgn5iE2rQ==,
+                integrity: sha512-nQZTwul4c2zBqH/aLP4zMOiElj93T6HawbrP+sFQKpxmBdS5x1duCK3cAnkj6dntHz84EYkzaQRM83V2pj4qxA==,
             }
 
     '@iconify/types@2.0.0':
@@ -7811,10 +7811,10 @@ packages:
                 integrity: sha512-5aHCbzQRADcdP+ATqnDuhhJ/MRIqDkZX5pyjFHRRysS8vZ5AbqGEoFIb6pYHPZ+L/OC2Lc+xT8uHVVR5CAK/wQ==,
             }
 
-    lint-staged@16.3.2:
+    lint-staged@16.3.3:
         resolution:
             {
-                integrity: sha512-xKqhC2AeXLwiAHXguxBjuChoTTWFC6Pees0SHPwOpwlvI3BH7ZADFPddAdN3pgo3aiKgPUx/bxE78JfUnxQnlg==,
+                integrity: sha512-RLq2koZ5fGWrx7tcqx2tSTMQj4lRkfNJaebO/li/uunhCJbtZqwTuwPHpgIimAHHi/2nZIiGrkCHDCOeR1onxA==,
             }
         engines: { node: '>=20.17' }
         hasBin: true
@@ -12569,7 +12569,7 @@ snapshots:
 
     '@humanwhocodes/retry@0.4.3': {}
 
-    '@iconify-json/simple-icons@1.2.72':
+    '@iconify-json/simple-icons@1.2.73':
         dependencies:
             '@iconify/types': 2.0.0
 
@@ -16942,7 +16942,7 @@ snapshots:
         dependencies:
             uc.micro: 2.1.0
 
-    lint-staged@16.3.2:
+    lint-staged@16.3.3:
         dependencies:
             commander: 14.0.3
             listr2: 9.0.5
@@ -19349,7 +19349,7 @@ snapshots:
         dependencies:
             '@docsearch/css': 3.8.2
             '@docsearch/js': 3.8.2(@algolia/client-search@5.49.2)(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(search-insights@2.17.3)
-            '@iconify-json/simple-icons': 1.2.72
+            '@iconify-json/simple-icons': 1.2.73
             '@shikijs/core': 2.5.0
             '@shikijs/transformers': 2.5.0
             '@shikijs/types': 2.5.0
@@ -19398,7 +19398,7 @@ snapshots:
         dependencies:
             '@docsearch/css': 3.8.2
             '@docsearch/js': 3.8.2(@algolia/client-search@5.49.2)(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(search-insights@2.17.3)
-            '@iconify-json/simple-icons': 1.2.72
+            '@iconify-json/simple-icons': 1.2.73
             '@shikijs/core': 2.5.0
             '@shikijs/transformers': 2.5.0
             '@shikijs/types': 2.5.0
