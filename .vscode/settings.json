@@ -33,8 +33,13 @@
 
     "prettier.proseWrap": "never",
     "prettier.printWidth": 140,
-    "typescript.tsserver.maxTsServerMemory": 4096,
-    "typescript.disableAutomaticTypeAcquisition": true,
     "typescript.tsserver.experimental.enableProjectDiagnostics": false,
-    "typescript.preferences.includePackageJsonAutoImports": "off"
+    "typescript.preferences.includePackageJsonAutoImports": "off",
+
+    "terminal.integrated.profiles.linux": {
+        "zsh": {
+            "path": "/usr/bin/zsh"
+        }
+    },
+    "terminal.integrated.defaultProfile.linux": "zsh"
 }
