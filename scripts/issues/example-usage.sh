@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Creates labels and issues for the Operator Editor project on GitHub.
+# Creates labels and issues for the Operator Editor repository.
 # Usage: bash scripts/issues/example-usage.sh
 #
-# Requires: gh CLI authenticated with issues:write and projects:write scopes.
+# Requires: gh CLI authenticated with issues:write scope.
 
 set -euo pipefail
 
@@ -12,44 +12,62 @@ source "$(dirname "$0")/../lib/sh-logger.sh"
 source "$(dirname "$0")/lib-gh-issues.sh"
 
 REPO="$(gh repo view --json nameWithOwner --jq '.nameWithOwner')"
-PROJECT_OWNER="${REPO%%/*}"
-PROJECT_ID="8"
-ADD_TO_PROJECT="true"
-PROJECT_TITLE=""
 
 # ── 1. ensure labels exist ─────────────────────────────────────────────────────
+# Label system: type / scope / category / domain / utility
+# Colors per group — see docs/issue-and-project-workflow.md
 
 log "Creating labels"
-create_label "ui" "0075ca" "User interface"
-create_label "ux" "e4e669" "User experience"
-create_label "feature" "a2eeef" "New feature or request"
-create_label "bug" "d73a4a" "Something isn't working"
-create_label "architecture" "1d76db" "Architecture / design decision"
-create_label "schema" "5319e7" "JSON Schema / Zod schema"
-create_label "evidence" "f9d0c4" "Evidence pane or items"
-create_label "proposal" "fef2c0" "Proposal pane or system"
-create_label "history" "c2e0c6" "Patch history / undo-redo"
-create_label "attachments" "bfd4f2" "Evidence attachments"
-create_label "dev-env" "e4e4e4" "Developer environment / tooling"
-create_label "storybook" "ff0075" "Storybook stories"
-create_label "api" "0052cc" "API / server endpoints"
 
-# ── 2. find (or skip) the project ─────────────────────────────────────────────
+# type: kind of work
+create_label "type:bug"      "70cc53" "Something broken or incorrect"
+create_label "type:feature"  "70cc53" "New functionality"
+create_label "type:task"     "70cc53" "General development work"
+create_label "type:refactor" "70cc53" "Internal code restructuring"
+create_label "type:docs"     "70cc53" "Documentation work"
+create_label "type:chore"    "70cc53" "Maintenance or tooling work"
+create_label "type:idea"     "70cc53" "Future concept or rough improvement"
+
+# scope: where in the monorepo
+create_label "scope:root"            "6f42c1" "Workspace root scripts or config"
+create_label "scope:repo"            "6f42c1" "CI, build, or cross-package work"
+create_label "scope:playground"      "6f42c1" "Playground application"
+create_label "scope:adapter-drizzle" "6f42c1" "Drizzle adapter"
+create_label "scope:adapter-local"   "6f42c1" "Local adapter"
+create_label "scope:api-client"      "6f42c1" "API client or SDK"
+create_label "scope:api-server"      "6f42c1" "API server"
+create_label "scope:core"            "6f42c1" "Core logic"
+create_label "scope:store"           "6f42c1" "Data or state layer"
+create_label "scope:ui"              "6f42c1" "UI package"
+
+# category: cross-cutting technical area (optional)
+create_label "category:build"    "0e8a16" "Build system"
+create_label "category:ci"       "0e8a16" "Continuous integration"
+create_label "category:deps"     "0e8a16" "Dependency management"
+create_label "category:dx"       "0e8a16" "Developer experience"
+create_label "category:security" "0e8a16" "Security"
+create_label "category:perf"     "0e8a16" "Performance"
+
+# domain: product or feature area (optional)
+create_label "domain:ui"              "e99695" "General UI / layout"
+create_label "domain:evidence"        "e99695" "Evidence system"
+create_label "domain:proposals"       "e99695" "Proposal system"
+create_label "domain:patch-history"   "e99695" "Patch and history"
+create_label "domain:attachments"     "e99695" "Attachments"
+create_label "domain:schema-form"     "e99695" "Schema and form rendering"
+create_label "domain:api"             "e99695" "API layer"
+create_label "domain:dev-environment" "e99695" "Developer environment"
+create_label "domain:storybook"       "e99695" "Storybook"
+
+# utility: workflow and triage helpers (optional)
+create_label "utility:stub"         "fbca04" "Placeholder issue"
+create_label "utility:needs-triage" "fbca04" "Needs classification"
+create_label "utility:blocked"      "fbca04" "Work cannot proceed"
 
 log "Config"
-info "repo=${REPO}  project_id=${PROJECT_ID}  add_to_project=${ADD_TO_PROJECT}"
-if [[ "$ADD_TO_PROJECT" == "true" ]]; then
-    PROJECT_TITLE=$(gh project view "$PROJECT_ID" --owner "$PROJECT_OWNER" --format json \
-        --jq '.title' 2> /dev/null || true)
-    if [ -z "$PROJECT_TITLE" ]; then
-        PROJECT_TITLE="Project ${PROJECT_ID}"
-        warn "could not resolve project title for #${PROJECT_ID}"
-    else
-        info "using project '${PROJECT_TITLE}' (#${PROJECT_ID})"
-    fi
-fi
+info "repo=${REPO}"
 
-# ── 3. create issues ──────────────────────────────────────────────────────────
+# ── 2. create issues ──────────────────────────────────────────────────────────
 
 log "Creating issues"
 

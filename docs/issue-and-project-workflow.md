@@ -8,17 +8,16 @@ This document defines the **standard workflow for issues, labels, and project st
 
 - [Issue Title Format](#issue-title-format)
 - [Label System](#label-system)
-  - [Labels](#labels)
     - [Type](#type)
     - [Utility](#utility)
     - [Scope](#scope)
     - [Category (Optional)](#category-optional)
     - [Domain (Optional)](#domain-optional)
 - [Issue Template](#issue-template)
-  - [Issue Type](#issue-type)
-  - [Scope](#scope-1)
-  - [Category (Optional)](#category-optional-1)
-  - [Domain (Optional)](#domain-optional-1)
+  - [Field: Issue Type](#field-issue-type)
+  - [Field: Scope](#field-scope)
+  - [Field: Category](#field-category)
+  - [Field: Domain](#field-domain)
   - [Issue Body Structure](#issue-body-structure)
 - [GitHub Project](#github-project)
   - [Status Field](#status-field)
@@ -47,7 +46,7 @@ ui: evidence pane should support pinned items
 core: proposal dedupe logic incorrect
 api-server: proposal endpoint should validate schemaId
 repo: standardize issue label automation
-idea: explore lazy loading for evidence pane
+ui: explore lazy loading for evidence pane
 ```
 
 Scope corresponds to the monorepo package name or a repository-level scope.
@@ -69,8 +68,6 @@ Each label group uses a shared color in GitHub so labels are easier to scan:
 | `utility`  | `#fbca04` | Workflow and triage helpers          |
 
 ---
-
-## Labels
 
 ### Type
 
@@ -95,7 +92,7 @@ Utility labels help with workflow and triage rather than describing the work its
 | Label              | Meaning              | When to Use                                          |
 | ------------------ | -------------------- | ---------------------------------------------------- |
 | 📌 stub            | Placeholder issue    | Quick capture with incomplete description            |
-| 🔍 needs-triage    | Needs classification | Type, scope, or category is still unclear            |
+| 🏷️ needs-triage    | Needs classification | Type, scope, or category is still unclear            |
 | 🚧 blocked         | Work cannot proceed  | Waiting on a dependency, decision, or external work  |
 
 ---
@@ -111,11 +108,11 @@ Scope identifies **where the work lives in the monorepo**. In most cases this ma
 | 🛝 playground       | `@operator/playground`      | Playground application                                     |
 | 🗄️ adapter-drizzle  | `@operator/adapter-drizzle` | Drizzle adapter changes                                    |
 | 💾 adapter-local    | `@operator/adapter-local`   | Local adapter changes                                      |
-| 📡 api-client       | `@operator/api-client`      | API client or SDK work                                     |
+| � api-client       | `@operator/api-client`      | API client or SDK work                                     |
 | 🖥️ api-server       | `@operator/api-server`      | API server work                                            |
 | ⚙️ core             | `@operator/core`            | Core logic                                                 |
 | 🗃️ store            | `@operator/store`           | Data or state layer                                        |
-| 🖼️ ui               | `@operator/ui`              | UI, components, or interaction work                        |
+| 🧩 ui               | `@operator/ui`              | UI, components, or interaction work                        |
 
 ---
 
@@ -136,17 +133,17 @@ Category describes the **cross-cutting technical area** the issue concerns, rega
 
 ### Domain (Optional)
 
-Domain describes the **product or feature area** the issue concerns. This maps to the original subsystem selector and is distinct from scope (package) and category (technical area).
+Domain describes the **product or feature area** the issue concerns. It is distinct from `scope` (which package owns the code) and `category` (which technical layer). An issue can have both `scope:ui` and `domain:evidence` — they answer different questions.
 
 | Label                  | Meaning                        | When to Use                              |
 | ---------------------- | ------------------------------ | ---------------------------------------- |
-| 🖼️ ui                  | General UI / layout            | Styling, layout, or generic UI work      |
-| 🔍 evidence            | Evidence system                | Evidence pane, items, or attachments     |
+| 🎨 ui                  | General UI / layout            | Styling, layout, or generic UI work      |
+| 🔬 evidence            | Evidence system                | Evidence pane, items, or attachments     |
 | 📋 proposals           | Proposal system                | Proposal pane, ranking, or submission    |
 | 🕓 patch-history       | Patch and history              | Undo/redo, patch log, or history view    |
 | 📎 attachments         | Attachments                    | File or media attachments to evidence    |
 | 📐 schema-form         | Schema and form rendering      | JSON Schema, Zod, or form field logic    |
-| 📡 api                 | API layer                      | Endpoints, request handling, or clients  |
+| 🌐 api                 | API layer                      | Endpoints, request handling, or clients  |
 | 🧪 dev-environment     | Developer environment          | Local setup, tooling, or dev config      |
 | 📖 storybook           | Storybook                      | Stories, addon config, or visual testing |
 
@@ -156,7 +153,7 @@ Domain describes the **product or feature area** the issue concerns. This maps t
 
 The following describes how **GitHub issue template fields map to the label system above**.
 
-### Issue Type
+### Field: Issue Type
 
 Dropdown maps to a `type:*` label (lowercase slug of the selected option):
 
@@ -170,7 +167,7 @@ Chore        → type:chore
 Idea         → type:idea
 ```
 
-### Scope
+### Field: Scope
 
 Dropdown maps to a `scope:*` label (must match Scope labels above):
 
@@ -187,9 +184,9 @@ store
 ui
 ```
 
-### Category (Optional)
+### Field: Category
 
-Dropdown maps to a `category:*` label:
+Dropdown maps to a `category:*` label (optional):
 
 ```txt
 build
@@ -200,9 +197,9 @@ security
 perf
 ```
 
-### Domain (Optional)
+### Field: Domain
 
-Dropdown maps to a `domain:*` label. These correspond to the original subsystem selector:
+Dropdown maps to a `domain:*` label (optional). These correspond to the original subsystem selector:
 
 ```txt
 UI                → domain:ui

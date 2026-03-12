@@ -1,11 +1,24 @@
 #!/usr/bin/env bash
-# Add a single issue to the repo using the Operator Editor Work Item template.
-# Usage: bash scripts/issues/create.sh --title "UI: My issue" --type Feature --subsystem UI \
-#          --package "@operator/ui" --summary "Short desc" \
-#          [--why "..."] [--requirements "- [ ] task"] [--questions "..."] [--notes "..."]
+# Add a single issue to the repo.
+# Usage: bash scripts/issues/create.sh \
+#          --title "ui: my issue" \
+#          --type feature \
+#          --scope ui \
+#          --summary "Short desc" \
+#          [--category build] \
+#          [--domain evidence] \
+#          [--requirements "- [ ] task"] \
+#          [--questions "..."] \
+#          [--notes "..."]
+#
+# type   : bug | feature | task | refactor | docs | chore | idea
+# scope  : root | repo | playground | adapter-drizzle | adapter-local |
+#          api-client | api-server | core | store | ui
+# category (optional): build | ci | deps | dx | security | perf
+# domain   (optional): ui | evidence | proposals | patch-history |
+#                      attachments | schema-form | api | dev-environment | storybook
 #
 # Requires: gh CLI authenticated with issues:write scope.
-# Optional: set ADD_TO_PROJECT=false to skip project add (default: true).
 
 set -euo pipefail
 
@@ -15,60 +28,30 @@ source "$(dirname "$0")/../lib/sh-logger.sh"
 source "$(dirname "$0")/lib-gh-issues.sh"
 
 REPO="$(gh repo view --json nameWithOwner --jq '.nameWithOwner')"
-PROJECT_OWNER="${REPO%%/*}"
-PROJECT_ID="8"
-ADD_TO_PROJECT="${ADD_TO_PROJECT:-true}"
 
 # ── arg parsing ───────────────────────────────────────────────────────────────
 
 TITLE=""
-ISSUE_TYPE=""
-SUBSYSTEM=""
-PACKAGE="Not sure"
+TYPE=""
+SCOPE=""
+CATEGORY=""
+DOMAIN=""
 SUMMARY=""
-WHY=""
 REQUIREMENTS=""
 QUESTIONS=""
 NOTES=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --title)
-            TITLE="$2"
-            shift 2
-            ;;
-        --type)
-            ISSUE_TYPE="$2"
-            shift 2
-            ;;
-        --subsystem)
-            SUBSYSTEM="$2"
-            shift 2
-            ;;
-        --package)
-            PACKAGE="$2"
-            shift 2
-            ;;
-        --summary)
-            SUMMARY="$2"
-            shift 2
-            ;;
-        --why)
-            WHY="$2"
-            shift 2
-            ;;
-        --requirements)
-            REQUIREMENTS="$2"
-            shift 2
-            ;;
-        --questions)
-            QUESTIONS="$2"
-            shift 2
-            ;;
-        --notes)
-            NOTES="$2"
-            shift 2
-            ;;
+        --title)        TITLE="$2";        shift 2 ;;
+        --type)         TYPE="$2";         shift 2 ;;
+        --scope)        SCOPE="$2";        shift 2 ;;
+        --category)     CATEGORY="$2";     shift 2 ;;
+        --domain)       DOMAIN="$2";       shift 2 ;;
+        --summary)      SUMMARY="$2";      shift 2 ;;
+        --requirements) REQUIREMENTS="$2"; shift 2 ;;
+        --questions)    QUESTIONS="$2";    shift 2 ;;
+        --notes)        NOTES="$2";        shift 2 ;;
         *)
             err "Unknown arg: $1"
             exit 1
@@ -76,80 +59,56 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-if [[ -z "$TITLE" || -z "$ISSUE_TYPE" || -z "$SUBSYSTEM" || -z "$SUMMARY" ]]; then
-    err "--title, --type, --subsystem, and --summary are required."
+if [[ -z "$TITLE" || -z "$TYPE" || -z "$SCOPE" || -z "$SUMMARY" ]]; then
+    err "--title, --type, --scope, and --summary are required."
     echo ""
     echo "Usage: bash scripts/issues/create.sh \\"
-    echo "  --title \"UI: My issue\" \\"
-    echo "  --type Feature \\"
-    echo "  --subsystem UI \\"
+    echo "  --title \"ui: my issue\" \\"
+    echo "  --type feature \\"
+    echo "  --scope ui \\"
     echo "  --summary \"Short description\" \\"
-    echo "  [--package \"@operator/ui\"] \\"
-    echo "  [--why \"...\"] \\"
+    echo "  [--category build] \\"
+    echo "  [--domain evidence] \\"
     echo "  [--requirements \"- [ ] task\"] \\"
     echo "  [--questions \"...\"] \\"
     echo "  [--notes \"...\"]"
     exit 1
 fi
 
-# ── derive label from type ────────────────────────────────────────────────────
+# ── validate type and scope ───────────────────────────────────────────────────
 
-label_for_type() {
-    case "$1" in
-        Feature) echo "feature" ;;
-        Bug) echo "bug" ;;
-        "UX Improvement") echo "ux" ;;
-        Architecture) echo "architecture" ;;
-        "Dev Environment") echo "dev-env" ;;
-        Documentation) echo "documentation" ;;
-        *) echo "" ;;
-    esac
+valid_types="bug feature task refactor docs chore idea"
+valid_scopes="root repo playground adapter-drizzle adapter-local api-client api-server core store ui"
+valid_categories="build ci deps dx security perf"
+valid_domains="ui evidence proposals patch-history attachments schema-form api dev-environment storybook"
+
+validate_value() {
+    local field="$1" value="$2" allowed="$3"
+    if ! echo "$allowed" | grep -qw "$value"; then
+        err "Invalid --${field} '${value}'. Allowed: ${allowed}"
+        exit 1
+    fi
 }
 
-label_for_subsystem() {
-    case "$1" in
-        UI) echo "ui" ;;
-        "Evidence System") echo "evidence" ;;
-        "Proposal System") echo "proposal" ;;
-        "Patch / History") echo "history" ;;
-        Attachments) echo "attachments" ;;
-        "Schema / Form") echo "schema" ;;
-        API) echo "api" ;;
-        "Dev Environment") echo "dev-env" ;;
-        Storybook) echo "storybook" ;;
-        *) echo "" ;;
-    esac
-}
+validate_value "type" "$TYPE" "$valid_types"
+validate_value "scope" "$SCOPE" "$valid_scopes"
+[[ -n "$CATEGORY" ]] && validate_value "category" "$CATEGORY" "$valid_categories"
+[[ -n "$DOMAIN"   ]] && validate_value "domain"   "$DOMAIN"   "$valid_domains"
 
-TYPE_LABEL="$(label_for_type "$ISSUE_TYPE")"
-SUBSYSTEM_LABEL="$(label_for_subsystem "$SUBSYSTEM")"
+# ── build label list ──────────────────────────────────────────────────────────
 
-LABELS=""
-[[ -n "$TYPE_LABEL" ]] && LABELS="$TYPE_LABEL"
-[[ -n "$SUBSYSTEM_LABEL" && "$SUBSYSTEM_LABEL" != "$TYPE_LABEL" ]] && LABELS="${LABELS:+$LABELS,}$SUBSYSTEM_LABEL"
+LABELS="type:${TYPE},scope:${SCOPE}"
+[[ -n "$CATEGORY" ]] && LABELS="${LABELS},category:${CATEGORY}"
+[[ -n "$DOMAIN"   ]] && LABELS="${LABELS},domain:${DOMAIN}"
 
 # ── build body ────────────────────────────────────────────────────────────────
 
-BODY="## Issue Type
-${ISSUE_TYPE}
-
-## Subsystem
-${SUBSYSTEM}
-
-## Package (Monorepo)
-${PACKAGE}
-
-## Summary
+BODY="## Summary
 ${SUMMARY}"
-
-[[ -n "$WHY" ]] && BODY="${BODY}
-
-## Why is this needed?
-${WHY}"
 
 [[ -n "$REQUIREMENTS" ]] && BODY="${BODY}
 
-## Requirements / Tasks
+## Requirements
 ${REQUIREMENTS}"
 
 [[ -n "$QUESTIONS" ]] && BODY="${BODY}
@@ -159,24 +118,16 @@ ${QUESTIONS}"
 
 [[ -n "$NOTES" ]] && BODY="${BODY}
 
-## Additional Notes
+## Notes
 ${NOTES}"
 
 # ── create issue ──────────────────────────────────────────────────────────────
 
 log "Creating issue"
-step "${TITLE}"
-info "repo=${REPO}  labels=${LABELS:-none}"
+info "repo=${REPO}"
+info "labels=${LABELS}"
 
-if [[ -n "$LABELS" ]]; then
-    ISSUE_URL=$(create_issue "$TITLE" "$LABELS" "$BODY")
-else
-    ISSUE_URL=$(gh issue create \
-        --repo "$REPO" \
-        --title "$TITLE" \
-        --body "$BODY")
-fi
-
+ISSUE_URL=$(create_issue "$TITLE" "$LABELS" "$BODY")
 ISSUE_NUMBER="${ISSUE_URL##*/}"
 
 success "issue created"
@@ -184,11 +135,4 @@ info "title=${TITLE}"
 info "number=#${ISSUE_NUMBER}"
 info "url=${ISSUE_URL}"
 
-# ── optionally add to project ─────────────────────────────────────────────────
 
-if [[ "$ADD_TO_PROJECT" == "true" ]]; then
-    add_to_project "$ISSUE_URL" "$PROJECT_ID"
-    success "added to project #${PROJECT_ID}"
-else
-    info "skipping project add (ADD_TO_PROJECT=false)"
-fi
