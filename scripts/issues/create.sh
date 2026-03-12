@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Add a single issue to the repo.
-# Usage: bash scripts/issues/create.sh \
+# Usage: pnpm exec scripts/issues/create.sh \
 #          --title "ui: my issue" \
 #          --type feature \
 #          --scope ui \
@@ -62,7 +62,7 @@ done
 if [[ -z "$TITLE" || -z "$TYPE" || -z "$SCOPE" || -z "$SUMMARY" ]]; then
     err "--title, --type, --scope, and --summary are required."
     echo ""
-    echo "Usage: bash scripts/issues/create.sh \\"
+    echo "Usage: pnpm exec scripts/issues/create.sh \\"
     echo "  --title \"ui: my issue\" \\"
     echo "  --type feature \\"
     echo "  --scope ui \\"
