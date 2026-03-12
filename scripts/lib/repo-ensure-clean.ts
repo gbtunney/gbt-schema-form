@@ -1,13 +1,18 @@
-#!/usr/bin/env tsx
+import { execCommand, getExecCommandOutput } from './shell-utilities.js'
 
-import { execCommand } from '../workspace-utils.js'
-
-const out: string = execCommand('git status --porcelain') ?? ''
-if (out.length > 0) {
-    console.error('Repo is dirty after running release verification steps.')
-    console.error(out)
-    console.error('\nFix locally, commit generated outputs, and push.')
-    process.exit(1)
+const isRepoClean = (): boolean => {
+    const _resultObj = getExecCommandOutput('git status --porcelain')
+    return _resultObj.success && _resultObj.result === ''
 }
 
-export {}
+//todo: return other repo stats
+if (!isRepoClean()) {
+    const _resultObj = getExecCommandOutput('git status --porcelain')
+
+    if (!_resultObj.success) {
+        console.error('Repo is dirty after running release verification steps.')
+        console.error(_resultObj.result)
+        console.error('\nFix locally, commit generated outputs, and push.')
+        process.exit(1)
+    }
+}
