@@ -12,8 +12,8 @@
 #          [--notes "..."]
 #
 # type   : bug | feature | task | refactor | docs | chore | idea
-# scope  : root | repo | playground | adapter-drizzle | adapter-local |
-#          api-client | api-server | core | store | ui
+# scope  : root | repo | scripts | playground | adapter-drizzle |
+#          adapter-local | api-client | api-server | core | store | ui
 # category (optional): build | ci | deps | dx | security | perf
 # domain   (optional): ui | evidence | proposals | patch-history |
 #                      attachments | schema-form | api | dev-environment | storybook
@@ -78,7 +78,7 @@ fi
 # ── validate type and scope ───────────────────────────────────────────────────
 
 valid_types="bug feature task refactor docs chore idea"
-valid_scopes="root repo playground adapter-drizzle adapter-local api-client api-server core store ui"
+valid_scopes="root repo scripts playground adapter-drizzle adapter-local api-client api-server core store ui"
 valid_categories="build ci deps dx security perf"
 valid_domains="ui evidence proposals patch-history attachments schema-form api dev-environment storybook"
 

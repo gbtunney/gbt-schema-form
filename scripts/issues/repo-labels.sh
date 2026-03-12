@@ -32,6 +32,7 @@ create_repo_labels() {
 	# scope: where in the monorepo
 	create_label "scope:root"            "6f42c1" "Workspace root scripts or config"
 	create_label "scope:repo"            "6f42c1" "CI, build, or cross-package work"
+	create_label "scope:scripts"         "6f42c1" "Generic tooling, utility scripts, or temporary helpers"
 	create_label "scope:playground"      "6f42c1" "Playground application"
 	create_label "scope:adapter-drizzle" "6f42c1" "Drizzle adapter"
 	create_label "scope:adapter-local"   "6f42c1" "Local adapter"

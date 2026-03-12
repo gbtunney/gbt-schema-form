@@ -105,10 +105,11 @@ Scope identifies **where the work lives in the monorepo**. In most cases this ma
 | -------------------- | --------------------------- | ---------------------------------------------------------- |
 | 🗂️ root             | `@gbt/root`                 | Workspace root scripts or config                           |
 | 🔀 repo             | cross-cutting               | CI, build, repo policy, or work spanning multiple packages |
+| 🧰 scripts          | `scripts/`                  | Generic tooling, utility scripts, or temporary helpers     |
 | 🛝 playground       | `@operator/playground`      | Playground application                                     |
 | 🗄️ adapter-drizzle  | `@operator/adapter-drizzle` | Drizzle adapter changes                                    |
 | 💾 adapter-local    | `@operator/adapter-local`   | Local adapter changes                                      |
-| � api-client       | `@operator/api-client`      | API client or SDK work                                     |
+| 🔌 api-client       | `@operator/api-client`      | API client or SDK work                                     |
 | 🖥️ api-server       | `@operator/api-server`      | API server work                                            |
 | ⚙️ core             | `@operator/core`            | Core logic                                                 |
 | 🗃️ store            | `@operator/store`           | Data or state layer                                        |
@@ -174,6 +175,7 @@ Dropdown maps to a `scope:*` label (must match Scope labels above):
 ```txt
 root
 repo
+scripts
 playground
 adapter-drizzle
 adapter-local

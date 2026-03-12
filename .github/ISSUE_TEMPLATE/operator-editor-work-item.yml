@@ -29,6 +29,7 @@ body:
           options:
               - root
               - repo
+              - scripts
               - playground
               - adapter-drizzle
               - adapter-local
