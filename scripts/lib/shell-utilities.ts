@@ -39,7 +39,12 @@ export const getExecCommandOutput = (
             result = `ERROR: Cli Output returned empty string.\n cmd: ${command}`
         }
     } catch (error: unknown) {
-        result = `ERROR: ${String((error as Error).message)}`
+        result = `ERROR: ${(error as Error).message}`
     }
-    return { success, result }
+    return { result, success }
+}
+
+/** Escapes a CLI argument for shell-safe inclusion in a command string. */
+export const quoteShellArgument = (value: string): string => {
+    return `'${value.replace(/'/g, `'"'"'`)}'`
 }

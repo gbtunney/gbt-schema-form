@@ -1,4 +1,4 @@
-import { execCommand, getExecCommandOutput } from './shell-utilities.js'
+import { getExecCommandOutput } from './shell-utilities.js'
 
 const isRepoClean = (): boolean => {
     const _resultObj = getExecCommandOutput('git status --porcelain')

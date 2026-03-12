@@ -1,4 +1,3 @@
-import { execSync } from 'child_process'
 import { execCommand, getExecCommandOutput } from './lib/shell-utilities.js'
 //todo: move to sh utils
 
@@ -11,15 +10,15 @@ export type WorkspacePackage = {
 }
 
 export function getWorkspacePackagesList(
-    filter: ((pkg: WorkspacePackage) => boolean) | undefined = undefined,
-): WorkspacePackage[] {
+    filter?: (pkg: WorkspacePackage) => boolean,
+): Array<WorkspacePackage> {
     const out = getExecCommandOutput('pnpm list -r --depth -1 --json')
 
     if (!out.success) {
         return []
     }
 
-    const pkgList = JSON.parse(out.result) as WorkspacePackage[]
+    const pkgList = JSON.parse(out.result) as Array<WorkspacePackage>
 
     return filter ? pkgList.filter(filter) : pkgList
 }
@@ -34,11 +33,13 @@ export function workspacePackagesToArray(
     input:
         | ReadonlyMap<string, WorkspacePackage>
         | Record<string, WorkspacePackage>,
-): WorkspacePackage[] {
+): Array<WorkspacePackage> {
     if (input instanceof Map) {
-        return Array.from(input.values())
+        return Array.from<WorkspacePackage>(input.values())
     }
-    return Object.values(input)
+    return Object.values<WorkspacePackage>(
+        input as Record<string, WorkspacePackage>,
+    )
 }
 
 /** Map<packageName, packagePath> */
@@ -58,7 +59,7 @@ export function getWorkspacePackagesObject<R>(
     mapValue: (pkg: WorkspacePackage, name: string, index: number) => R,
 ): Record<string, R>
 export function getWorkspacePackagesObject<R>(
-    filter?: ((pkg: WorkspacePackage) => boolean) | undefined,
+    filter?: (pkg: WorkspacePackage) => boolean,
     mapValue?: (pkg: WorkspacePackage, name: string, index: number) => R,
 ) {
     const pkgs = getWorkspacePackagesList(filter)
@@ -81,21 +82,21 @@ export function getWorkspaceRoot(): string {
 
 type KeyMode = 'include' | 'exclude'
 
-// Overloads give precise return types based on `mode`
+/** Overloads give precise return types based on `mode` */
 function setPackageKeys<Key extends keyof WorkspacePackage>(
     pkg: WorkspacePackage,
     mode: 'include',
-    keys: readonly Key[],
+    keys: ReadonlyArray<Key>,
 ): Pick<WorkspacePackage, Key>
 function setPackageKeys<Key extends keyof WorkspacePackage>(
     pkg: WorkspacePackage,
     mode: 'exclude',
-    keys: readonly Key[],
+    keys: ReadonlyArray<Key>,
 ): Omit<WorkspacePackage, Key>
 function setPackageKeys<Key extends keyof WorkspacePackage>(
     pkg: WorkspacePackage,
     mode: KeyMode,
-    keys: readonly Key[],
+    keys: ReadonlyArray<Key>,
 ) {
     if (mode === 'include') {
         return Object.fromEntries(keys.map((key) => [key, pkg[key]])) as Pick<
@@ -104,27 +105,56 @@ function setPackageKeys<Key extends keyof WorkspacePackage>(
         >
     }
 
-    const clone = { ...pkg }
-    for (const key of keys) {
-        delete clone[key]
-    }
-    return clone as Omit<WorkspacePackage, Key>
+    return Object.fromEntries(
+        (Object.keys(pkg) as Array<keyof WorkspacePackage>)
+            .filter(
+                (key) =>
+                    !(keys as ReadonlyArray<keyof WorkspacePackage>).includes(
+                        key,
+                    ),
+            )
+            .map((key) => [key, pkg[key]]),
+    ) as Omit<WorkspacePackage, Key>
 }
 
 function setAllPackageKeys<Key extends keyof WorkspacePackage>(
-    pkgs: readonly WorkspacePackage[],
+    pkgs: ReadonlyArray<WorkspacePackage>,
     mode: 'include',
-    keys: readonly Key[],
+    keys: ReadonlyArray<Key>,
 ): Array<Pick<WorkspacePackage, Key>>
 function setAllPackageKeys<Key extends keyof WorkspacePackage>(
-    pkgs: readonly WorkspacePackage[],
+    pkgs: ReadonlyArray<WorkspacePackage>,
     mode: 'exclude',
-    keys: readonly Key[],
+    keys: ReadonlyArray<Key>,
 ): Array<Omit<WorkspacePackage, Key>>
 function setAllPackageKeys<Key extends keyof WorkspacePackage>(
-    pkgs: readonly WorkspacePackage[],
+    pkgs: ReadonlyArray<WorkspacePackage>,
     mode: KeyMode,
-    keys: readonly Key[],
+    keys: ReadonlyArray<Key>,
 ) {
-    return pkgs.map((pkg) => setPackageKeys(pkg, mode as any, keys))
+    if (mode === 'include') {
+        return pkgs.map((pkg) => setPackageKeys(pkg, mode, keys))
+    }
+    return pkgs.map((pkg) => setPackageKeys(pkg, mode, keys))
+}
+
+function setAllPackageKeysExcluding<Key extends keyof WorkspacePackage>(
+    pkgs: ReadonlyArray<WorkspacePackage>,
+    mode: 'include',
+    keys: ReadonlyArray<Key>,
+): Array<Pick<WorkspacePackage, Key>>
+function setAllPackageKeysExcluding<Key extends keyof WorkspacePackage>(
+    pkgs: ReadonlyArray<WorkspacePackage>,
+    mode: 'exclude',
+    keys: ReadonlyArray<Key>,
+): Array<Omit<WorkspacePackage, Key>>
+function setAllPackageKeysExcluding<Key extends keyof WorkspacePackage>(
+    pkgs: ReadonlyArray<WorkspacePackage>,
+    mode: KeyMode,
+    keys: ReadonlyArray<Key>,
+) {
+    if (mode === 'include') {
+        return pkgs.map((pkg) => setPackageKeys(pkg, mode, keys))
+    }
+    return pkgs.map((pkg) => setPackageKeys(pkg, mode, keys))
 }

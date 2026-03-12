@@ -54,7 +54,7 @@ const runPrettierCheck = (): {
             encoding: 'utf8',
             stdio: ['ignore', 'pipe', 'pipe'],
         })
-        return { success: true, output: output.trim(), exitCode: 0 }
+        return { exitCode: 0, output: output.trim(), success: true }
     } catch (error: unknown) {
         const commandError = error as {
             status?: number
@@ -68,14 +68,14 @@ const runPrettierCheck = (): {
         const output = [stdoutText, stderrText]
             .filter((value) => value.length > 0)
             .join('\n')
-        const exitCode = Number(commandError.status ?? 1)
+        const exitCode = commandError.status ?? 1
         const fallbackMessage =
             commandError.message ?? 'Prettier check failed to execute.'
 
         return {
-            success: false,
-            output: output.length > 0 ? output : fallbackMessage,
             exitCode,
+            output: output.length > 0 ? output : fallbackMessage,
+            success: false,
         }
     }
 }
