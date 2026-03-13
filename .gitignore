@@ -148,6 +148,8 @@ dist
 *.d.cts.map
 *.map
 
+#Husky
+.husky/_
 # Allowed javascript source files
 !eslint.config.js
 

@@ -9,29 +9,46 @@ import url from 'node:url'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 const FLAT_CONFIG = await EsLint.flatConfig(__dirname)
-
+/** TODO: something is amiss here - check naming-convention Type regexp- its not complaining so im scared */
 export default [
     ...FLAT_CONFIG,
     {
         ignores: [
             '**/.history/**',
             '**/scratch/**',
-            '**/scripts/**',
             '**/*.map',
             '**/.venv/**',
             '**/venv/**',
             '**/__pycache__/**',
             '**/*.py', // ignore Python files
-            //TODO:REMOVE
+
+            /** TODO: this should be fixed in new v of build-config */
+            '**/*.{js,cjs,mjs}',
+            '**/*.d.*',
+
             '**/storybook-static/**',
             './packages/operator-api-client/src/generated/**',
         ],
-    }, // Fix: Remove 'project' setting when 'projectService' is enabled
+    }, 
     {
         languageOptions: {
             parserOptions: {
                 project: null,
             },
+        },
+    },
+    {
+        files: ['**/*'],
+        rules: {
+            'import/no-default-export': 'off',
+            '@typescript-eslint/naming-convention': [
+                'error',
+                {
+                    selector: 'typeParameter',
+                    format: ['PascalCase'],
+                    custom: { regex: '^.{2,}$', match: true },
+                },
+            ],
         },
     },
     ...tsEslint.config({
@@ -40,7 +57,6 @@ export default [
         rules: {},
     }),
     ...tsEslint.config({
-        // extends: [tsEslint.configs.disableTypeChecked],
         files: ['**/*.stories.ts', '**/*.stories.tsx'],
         rules: {
             ...storybook.configs['flat/recommended'].rules,
