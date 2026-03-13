@@ -1,7 +1,8 @@
 ```bash
 #!/usr/bin/env bash
 # Shared logging helpers. Source this file in other scripts:
-# bug issue #80 
+
+/* TODO: take screencap (#80) */
 CYAN='\033[0;36m'
 YELLOW='\033[1;33m'
 GREEN='\033[0;32m'
