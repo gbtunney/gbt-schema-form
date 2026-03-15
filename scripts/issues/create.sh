@@ -43,15 +43,42 @@ NOTES=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --title)        TITLE="$2";        shift 2 ;;
-        --type)         TYPE="$2";         shift 2 ;;
-        --scope)        SCOPE="$2";        shift 2 ;;
-        --category)     CATEGORY="$2";     shift 2 ;;
-        --domain)       DOMAIN="$2";       shift 2 ;;
-        --summary)      SUMMARY="$2";      shift 2 ;;
-        --requirements) REQUIREMENTS="$2"; shift 2 ;;
-        --questions)    QUESTIONS="$2";    shift 2 ;;
-        --notes)        NOTES="$2";        shift 2 ;;
+        --title)
+            TITLE="$2"
+            shift 2
+            ;;
+        --type)
+            TYPE="$2"
+            shift 2
+            ;;
+        --scope)
+            SCOPE="$2"
+            shift 2
+            ;;
+        --category)
+            CATEGORY="$2"
+            shift 2
+            ;;
+        --domain)
+            DOMAIN="$2"
+            shift 2
+            ;;
+        --summary)
+            SUMMARY="$2"
+            shift 2
+            ;;
+        --requirements)
+            REQUIREMENTS="$2"
+            shift 2
+            ;;
+        --questions)
+            QUESTIONS="$2"
+            shift 2
+            ;;
+        --notes)
+            NOTES="$2"
+            shift 2
+            ;;
         *)
             err "Unknown arg: $1"
             exit 1
@@ -93,13 +120,13 @@ validate_value() {
 validate_value "type" "$TYPE" "$valid_types"
 validate_value "scope" "$SCOPE" "$valid_scopes"
 [[ -n "$CATEGORY" ]] && validate_value "category" "$CATEGORY" "$valid_categories"
-[[ -n "$DOMAIN"   ]] && validate_value "domain"   "$DOMAIN"   "$valid_domains"
+[[ -n "$DOMAIN" ]] && validate_value "domain" "$DOMAIN" "$valid_domains"
 
 # ── build label list ──────────────────────────────────────────────────────────
 
 LABELS="type:${TYPE},scope:${SCOPE}"
 [[ -n "$CATEGORY" ]] && LABELS="${LABELS},category:${CATEGORY}"
-[[ -n "$DOMAIN"   ]] && LABELS="${LABELS},domain:${DOMAIN}"
+[[ -n "$DOMAIN" ]] && LABELS="${LABELS},domain:${DOMAIN}"
 
 # ── build body ────────────────────────────────────────────────────────────────
 
@@ -134,5 +161,3 @@ success "issue created"
 info "title=${TITLE}"
 info "number=#${ISSUE_NUMBER}"
 info "url=${ISSUE_URL}"
-
-

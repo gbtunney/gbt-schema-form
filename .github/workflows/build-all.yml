@@ -45,4 +45,4 @@ jobs:
 
             - name: Build and test all projects
               run: |
-                  pnpm exec nx run-many -t build,test --all
+                  pnpm test

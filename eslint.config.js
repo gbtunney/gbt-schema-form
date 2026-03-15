@@ -29,7 +29,7 @@ export default [
             '**/storybook-static/**',
             './packages/operator-api-client/src/generated/**',
         ],
-    }, 
+    },
     {
         languageOptions: {
             parserOptions: {
