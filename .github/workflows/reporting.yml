@@ -1,6 +1,6 @@
 name: Reporting
 
-'on':
+on:
     workflow_dispatch:
         inputs:
             mode:
@@ -169,8 +169,8 @@ jobs:
                   run_with_report "Report prettier" "pnpm report:prettier"
                   do_mode "Report prettier" "$?"
 
-                  run_with_report "Workspace status" "pnpm exec ./scripts/report/workspace-status.sh"
-                  do_mode "Workspace status" "$?"
+                  run_with_report "Report workspace" "pnpm report:workspace"
+                  do_mode "Report workspace" "$?"
 
                   if [ "$nx_cache_reset" = "true" ]; then
                     run_with_report "NX cache reset" "pnpm nx:reset"
