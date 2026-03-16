@@ -1,0 +1,258 @@
+name: Reporting
+
+'on':
+    workflow_dispatch:
+        inputs:
+            mode:
+                description: Failure mode
+                required: true
+                default: report
+                type: choice
+                options:
+                    - report
+                    - abort_on_error
+            check_mode:
+                description: Check routine mode
+                required: true
+                default: check
+                type: choice
+                options:
+                    - fix
+                    - check
+                    - skip
+            run_install:
+                description: Run install diagnostics
+                required: true
+                default: true
+                type: boolean
+            require_lockfile:
+                description: Treat frozen lockfile install as required
+                required: true
+                default: false
+                type: boolean
+            require_clean_repo:
+                description: Fail if repository becomes dirty
+                required: true
+                default: false
+                type: boolean
+            run_build:
+                description: Run pnpm build
+                required: true
+                default: false
+                type: boolean
+            run_test:
+                description: Run pnpm test
+                required: true
+                default: false
+                type: boolean
+            run_docs_build:
+                description: Run docs build routine
+                required: true
+                default: false
+                type: boolean
+            nx_cache_reset:
+                description: Run nx cache reset before routines
+                required: true
+                default: false
+                type: boolean
+            pnpm_store_reset:
+                description: Run pnpm store prune before routines
+                required: true
+                default: false
+                type: boolean
+
+permissions:
+    contents: read
+
+env:
+    HUSKY: 0
+
+jobs:
+    reporting:
+        runs-on: ubuntu-latest
+
+        if: github.ref != 'refs/heads/main'
+
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - uses: pnpm/action-setup@v4
+              with:
+                  run_install: false
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: pnpm
+
+            - name: Run reporting routine
+              shell: bash
+              env:
+                  INPUT_MODE: ${{ inputs.mode }}
+                  INPUT_CHECK_MODE: ${{ inputs.check_mode }}
+                  INPUT_RUN_INSTALL: ${{ inputs.run_install }}
+                  INPUT_REQUIRE_LOCKFILE: ${{ inputs.require_lockfile }}
+                  INPUT_REQUIRE_CLEAN_REPO: ${{ inputs.require_clean_repo }}
+                  INPUT_RUN_BUILD: ${{ inputs.run_build }}
+                  INPUT_RUN_TEST: ${{ inputs.run_test }}
+                  INPUT_RUN_DOCS_BUILD: ${{ inputs.run_docs_build }}
+                  INPUT_NX_CACHE_RESET: ${{ inputs.nx_cache_reset }}
+                  INPUT_PNPM_STORE_RESET: ${{ inputs.pnpm_store_reset }}
+              run: |
+                  set +e
+
+                  mode="${INPUT_MODE}"
+                  check_mode="${INPUT_CHECK_MODE}"
+                  run_install="${INPUT_RUN_INSTALL}"
+                  require_lockfile="${INPUT_REQUIRE_LOCKFILE}"
+                  require_clean_repo="${INPUT_REQUIRE_CLEAN_REPO}"
+                  run_build="${INPUT_RUN_BUILD}"
+                  run_test="${INPUT_RUN_TEST}"
+                  run_docs_build="${INPUT_RUN_DOCS_BUILD}"
+                  nx_cache_reset="${INPUT_NX_CACHE_RESET}"
+                  pnpm_store_reset="${INPUT_PNPM_STORE_RESET}"
+
+                  install_failures=0
+
+                  print_input_summary() {
+                    echo "=== Input Summary ==="
+                    echo "mode=${mode}"
+                    echo "check_mode=${check_mode}"
+                    echo "run_install=${run_install}"
+                    echo "require_lockfile=${require_lockfile}"
+                    echo "require_clean_repo=${require_clean_repo}"
+                    echo "run_build=${run_build}"
+                    echo "run_test=${run_test}"
+                    echo "run_docs_build=${run_docs_build}"
+                    echo "nx_cache_reset=${nx_cache_reset}"
+                    echo "pnpm_store_reset=${pnpm_store_reset}"
+                  }
+
+                  run_with_report() {
+                    local label="$1"
+                    local command="$2"
+
+                    echo ""
+                    echo "=== ${label} ==="
+                    echo "${command}"
+                    bash -lc "${command}"
+                    local exit_code="$?"
+
+                    if [ "$exit_code" -eq 0 ]; then
+                      echo "::notice title=${label}::success"
+                    else
+                      echo "::warning title=${label}::failed with exit code ${exit_code}"
+                    fi
+
+                    return "$exit_code"
+                  }
+
+                  do_mode() {
+                    local label="$1"
+                    local exit_code="$2"
+                    if [ "$exit_code" -ne 0 ] && [ "$mode" = "abort_on_error" ]; then
+                      echo "::error title=${label}::aborting because mode=abort_on_error"
+                      exit "$exit_code"
+                    fi
+                  }
+
+                  print_input_summary
+
+                  run_with_report "Report env" "pnpm report:env"
+                  do_mode "Report env" "$?"
+
+                  run_with_report "Report repo" "pnpm report:repo"
+                  do_mode "Report repo" "$?"
+
+                  run_with_report "Report prettier" "pnpm report:prettier"
+                  do_mode "Report prettier" "$?"
+
+                  run_with_report "Workspace status" "pnpm exec ./scripts/report/workspace-status.sh"
+                  do_mode "Workspace status" "$?"
+
+                  if [ "$nx_cache_reset" = "true" ]; then
+                    run_with_report "NX cache reset" "pnpm nx:reset"
+                    do_mode "NX cache reset" "$?"
+
+                    run_with_report "Uninstall cleanup" "pnpm run uninstall"
+                    do_mode "Uninstall cleanup" "$?"
+                  fi
+
+                  if [ "$pnpm_store_reset" = "true" ]; then
+                    run_with_report "PNPM store prune" "pnpm store prune"
+                    do_mode "PNPM store prune" "$?"
+                  fi
+
+                  if [ "$run_install" = "true" ]; then
+                    run_with_report "Install attempt 1 (frozen lockfile)" "pnpm install --frozen-lockfile"
+                    install_1_exit="$?"
+                    if [ "$install_1_exit" -ne 0 ]; then
+                      install_failures=$((install_failures + 1))
+                    fi
+                    if [ "$require_lockfile" = "true" ]; then
+                      do_mode "Install attempt 1 (frozen lockfile)" "$install_1_exit"
+                    fi
+
+                    run_with_report "Install attempt 2 (no frozen lockfile)" "pnpm install --no-frozen-lockfile"
+                    install_2_exit="$?"
+                    if [ "$install_2_exit" -ne 0 ]; then
+                      install_failures=$((install_failures + 1))
+                    fi
+                    if [ "$require_lockfile" != "true" ]; then
+                      do_mode "Install attempt 2 (no frozen lockfile)" "$install_2_exit"
+                    fi
+
+                    run_with_report "Install attempt 3 (delete lockfile and retry)" "rm -f pnpm-lock.yaml && pnpm install --no-frozen-lockfile"
+                    install_3_exit="$?"
+                    if [ "$install_3_exit" -ne 0 ]; then
+                      install_failures=$((install_failures + 1))
+                    fi
+                    do_mode "Install attempt 3 (delete lockfile and retry)" "$install_3_exit"
+
+                    if [ "$install_failures" -gt 0 ]; then
+                      echo "::error::At least one install attempt failed. Aborting workflow."
+                      exit 1
+                    fi
+                  else
+                    echo "::notice::Install diagnostics skipped (run_install=false)."
+                  fi
+
+                  if [ "$check_mode" = "fix" ]; then
+                    run_with_report "Check routine (fix)" "pnpm fix"
+                    do_mode "Check routine (fix)" "$?"
+                  elif [ "$check_mode" = "check" ]; then
+                    run_with_report "Check routine (check)" "pnpm check"
+                    do_mode "Check routine (check)" "$?"
+                  else
+                    echo "::notice::Check routine skipped (check_mode=skip)."
+                  fi
+
+                  if [ "$run_build" = "true" ]; then
+                    run_with_report "Build" "pnpm build"
+                    do_mode "Build" "$?"
+                  fi
+
+                  if [ "$run_test" = "true" ]; then
+                    run_with_report "Test" "pnpm test"
+                    do_mode "Test" "$?"
+                  fi
+
+                  if [ "$run_docs_build" = "true" ]; then
+                    run_with_report "Docs build" "pnpm -r --if-present run docs:build"
+                    do_mode "Docs build" "$?"
+                  fi
+
+                  if [ "$require_clean_repo" = "true" ]; then
+                    echo ""
+                    echo "=== Require clean repo ==="
+                    if [ -n "$(git status --porcelain)" ]; then
+                      echo "::warning title=Require clean repo::repository is dirty"
+                      do_mode "Require clean repo" 1
+                      exit 1
+                    fi
+                    echo "::notice title=Require clean repo::clean"
+                  fi
+
+                  echo "::notice::Reporting workflow completed."
