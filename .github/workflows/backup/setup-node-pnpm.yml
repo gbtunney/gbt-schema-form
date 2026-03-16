@@ -1,0 +1,99 @@
+name: setup-node-pnpm
+
+on:
+    workflow_call:
+        inputs:
+            install:
+                type: boolean
+                default: true
+            build:
+                type: boolean
+                default: true
+            fix:
+                type: boolean
+                default: false
+            test:
+                type: boolean
+                default: false
+            check:
+                type: boolean
+                default: false
+            LOG_DIRTY_FILES:
+                type: boolean
+                default: true
+            LOG_IGNORED:
+                type: boolean
+                default: true
+            DEBUG:
+                type: boolean
+                default: false
+            includes:
+                type: string
+                default: 'node_modules,dist,docs,storybook-static,types'
+            node_version:
+                type: string
+                default: '24.11.1'
+
+        outputs:
+            dirty:
+                value: ${{ jobs.check.outputs.dirty }}
+            dirty_files:
+                value: ${{ jobs.check.outputs.dirty_files }}
+
+jobs:
+    check:
+        runs-on: ubuntu-latest
+        outputs:
+            dirty: ${{ steps.collect.outputs.is_dirty }}
+            dirty_files: ${{ steps.collect.outputs.dirty_files }}
+        steps:
+            - name: 🛎️ Checkout repository
+              uses: actions/checkout@v4
+
+            - name: 🧰 Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ inputs.node_version }}
+
+            - name: 📦 Install pnpm
+              run: npm install -g pnpm
+
+            - name: 📥 Install dependencies
+              if: ${{ inputs.install }}
+              run: |
+                  pnpm install --frozen-lockfile
+                  node -v
+                  pnpm -v
+
+            - name: 🛠️ Build packages
+              if: ${{ inputs.build }}
+              run: pnpm build
+
+            - name: 🔧 Auto-fix code
+              if: ${{ inputs.fix }}
+              run: pnpm fix
+
+            - name: 🧪 Run tests
+              if: ${{ inputs.test }}
+              run: pnpm test
+
+            - name: ✅ Lint and check
+              if: ${{ inputs.check }}
+              run: pnpm check
+
+            - name: 🔍 Check for dirty files and set outputs
+              id: collect
+              run: |
+                  dirty_files=$(git status --porcelain | awk '{print $2}')
+                  if [[ -z "$dirty_files" ]]; then
+                    echo "is_dirty=false" >> $GITHUB_OUTPUT
+                    echo "dirty_files=" >> $GITHUB_OUTPUT
+                    echo "✅ No dirty files."
+                  else
+                    echo "is_dirty=true" >> $GITHUB_OUTPUT
+                    echo "dirty_files=$dirty_files" >> $GITHUB_OUTPUT
+                    if [[ "${{ inputs.LOG_DIRTY_FILES }}" == "true" ]]; then
+                      echo "🚨 Dirty files detected:"
+                      echo "$dirty_files" | sed 's/^/ - /'
+                    fi
+                  fi

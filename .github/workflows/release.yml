@@ -1,0 +1,57 @@
+name: Changesets
+
+on:
+    push:
+        branches:
+            - main
+
+permissions:
+    contents: write
+    pull-requests: write
+
+env:
+    HUSKY: 0
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+
+        steps:
+            # 🌸 setup
+            - name: 🌸 Checkout Repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: 📦 Setup pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 10
+                  run_install: false
+
+            - name: 🟢 Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: '.nvmrc'
+                  cache: pnpm
+                  registry-url: https://registry.npmjs.org
+
+            - name: 📥 Install Dependencies
+              run: pnpm install --frozen-lockfile
+
+            # 🚀 release
+            - name: 🚀 Create Release PR or Publish
+              uses: changesets/action@v1
+              with:
+                  commit: 'chore(release): version packages'
+                  title: 'chore(release): version packages'
+                  version: 'pnpm changeset version && pnpm install && NX_SKIP_NX_CACHE=true pnpm docs:build'
+                  publish: 'pnpm -r publish'
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+            - name: 🏷️ Push Tags
+              run: |
+                  pnpm changeset tag
+                  git push --tags

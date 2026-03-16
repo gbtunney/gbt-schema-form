@@ -1,0 +1,56 @@
+name: 🐌 Snailicide Release
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on:
+    push:
+        branches:
+            - 'main'
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+    release:
+        name: 'Changeset 🚀'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            pull-requests: write
+            repository-projects: write
+        env:
+            HUSKY: 0
+        steps:
+            - name: Checkout Repo 🛎️
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js environment 🛎️
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 'lts/*'
+
+            - name: Install pnpm 🔧
+              env:
+                  HUSKY: 0
+              run: |
+                  npm install -g pnpm
+                  pnpm install
+
+            - name: Build, Lint and Unit Tests 🚨
+              run: |
+                  pnpm run build && pnpm run fix && pnpm run check && pnpm test
+            - run: |
+                  git status
+                  git branch
+
+            - name: Create Release Pull Request
+              uses: changesets/action@v1
+              with:
+                  commit: 'release(root): this commit was created by changesets'
+              env:
+                  HUSKY: 0
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Tag Versions 🏷️
+              # You can do something when a publish should happen.
+              run: |
+                  pnpm changeset tag
+                  git push origin --tags
+
+            - run: echo "🍏 This job's status is ${{ job.status }}."

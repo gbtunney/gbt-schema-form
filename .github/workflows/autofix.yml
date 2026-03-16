@@ -1,0 +1,116 @@
+name: Autofix
+
+on:
+    workflow_dispatch:
+        inputs:
+            mode:
+                description: What to run
+                required: true
+                default: fix
+                type: choice
+                options:
+                    - fix
+                    - docs
+                    - both
+
+permissions:
+    contents: write
+
+env:
+    HUSKY: 0
+
+jobs:
+    autofix:
+        runs-on: ubuntu-latest
+
+        if: github.ref != 'refs/heads/main'
+
+        steps:
+            # 🌸 setup
+            - name: 🌸 Checkout Repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: 📦 Setup pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  run_install: false
+
+            - name: 🟢 Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: '.nvmrc'
+                  cache: pnpm
+
+            - name: 📥 Install Dependencies
+              run: pnpm install --frozen-lockfile
+
+            # ✨ run autofix or docs
+            - name: ✨ Run Autofix Routine
+              run: |
+                  if [ "${{ inputs.mode }}" = "fix" ]; then
+                    if ! pnpm fix; then
+                      echo "::warning::pnpm fix failed (report-only mode)"
+                    fi
+                  fi
+
+                  if [ "${{ inputs.mode }}" = "docs" ]; then
+                    NX_SKIP_NX_CACHE=true pnpm docs:build
+                  fi
+
+                  if [ "${{ inputs.mode }}" = "both" ]; then
+                    if ! pnpm fix; then
+                      echo "::warning::pnpm fix failed (report-only mode)"
+                    fi
+                    NX_SKIP_NX_CACHE=true pnpm docs:build
+                  fi
+
+            # 🏷️ detect scopes for commit message
+            - name: 🏷️ Detect Scopes
+              id: scopes
+              shell: bash
+              run: |
+                  files="$(git diff --name-only)"
+
+                  scopes=()
+
+                  if echo "$files" | grep -q '^packages/operator-core/'; then scopes+=("core"); fi
+                  if echo "$files" | grep -q '^packages/operator-ui/'; then scopes+=("ui"); fi
+                  if echo "$files" | grep -q '^packages/operator-api-server/'; then scopes+=("api-server"); fi
+                  if echo "$files" | grep -q '^packages/operator-api-client/'; then scopes+=("api-client"); fi
+                  if echo "$files" | grep -q '^packages/operator-store/'; then scopes+=("store"); fi
+
+                  if echo "$files" | grep -Eq '^(\.github/|pnpm-lock\.yaml$|nx\.json$|package\.json$|tsconfig)'; then
+                    scopes+=("repo")
+                  fi
+
+                  scope="$(printf "%s\n" "${scopes[@]}" | sort -u | paste -sd, -)"
+
+                  if [ -z "$scope" ]; then
+                    scope="repo"
+                  fi
+
+                  echo "value=$scope" >> "$GITHUB_OUTPUT"
+
+            # 🚀 commit and push if anything changed
+            - name: 🚀 Commit Fixes
+              run: |
+                  if [ -n "$(git status --porcelain)" ]; then
+                    git config user.name "github-actions[bot]"
+                    git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+                    git add -A
+
+                    if [ "${{ inputs.mode }}" = "docs" ]; then
+                      git commit -m "docs(${{ steps.scopes.outputs.value }}): rebuild docs [skip ci]"
+                    elif [ "${{ inputs.mode }}" = "both" ]; then
+                      git commit -m "style(${{ steps.scopes.outputs.value }}): autofix + docs [skip ci]"
+                    else
+                      git commit -m "style(${{ steps.scopes.outputs.value }}): autofix [skip ci]"
+                    fi
+
+                    git push
+                  else
+                    echo "Nothing to commit"
+                  fi
