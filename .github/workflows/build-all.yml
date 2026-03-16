@@ -14,35 +14,53 @@ env:
     HUSKY: 0
 
 jobs:
+    reporting:
+        uses: ./.github/workflows/reporting.yml
+        with:
+            mode: report
+            check_mode: skip
+            run_install: false
+            require_lockfile: false
+            require_clean_repo: false
+            run_build: false
+            run_test: false
+            run_docs_build: false
+            nx_cache_reset: false
+            pnpm_store_reset: false
+
     build-all:
+        needs: reporting
         runs-on: ubuntu-latest
 
         steps:
-            - uses: actions/checkout@v4
+            # 🌸 setup
+            - name: 🌸 Checkout Repository
+              uses: actions/checkout@v4
               with:
                   fetch-depth: 0
 
-            - uses: pnpm/action-setup@v4
+            - name: 📦 Setup pnpm
+              uses: pnpm/action-setup@v4
               with:
                   run_install: false
 
-            - uses: actions/setup-node@v4
+            - name: 🟢 Setup Node.js
+              uses: actions/setup-node@v4
               with:
                   node-version-file: '.nvmrc'
                   cache: pnpm
 
-            - run: pnpm install
+            - name: 📥 Install Dependencies
+              run: pnpm install
 
-            - name: Report Status #prior to fixing
-              run: |
-                  pnpm report
-
-            - name: Fix report (non-blocking)
+            # 🩺 report and fix
+            - name: ✨ Run Fix Routine
               run: |
                   if ! pnpm fix; then
                     echo "::warning::pnpm fix failed (report-only mode)"
                   fi
 
-            - name: Build and test all projects
+            # 🧪 verify
+            - name: 🧪 Build and Test All Projects
               run: |
                   pnpm test
