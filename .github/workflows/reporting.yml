@@ -1,0 +1,195 @@
+name: Reporting
+
+on:
+    workflow_call:
+        inputs:
+            mode:
+                required: false
+                default: report
+                type: string
+            check_mode:
+                required: false
+                default: check
+                type: string
+            run_install:
+                required: false
+                default: true
+                type: boolean
+            require_lockfile:
+                required: false
+                default: false
+                type: boolean
+            require_clean_repo:
+                required: false
+                default: false
+                type: boolean
+            run_build:
+                required: false
+                default: false
+                type: boolean
+            run_test:
+                required: false
+                default: false
+                type: boolean
+            run_docs_build:
+                required: false
+                default: false
+                type: boolean
+            nx_cache_reset:
+                required: false
+                default: false
+                type: boolean
+            pnpm_store_reset:
+                required: false
+                default: false
+                type: boolean
+
+permissions:
+    contents: read
+
+env:
+    HUSKY: 0
+
+jobs:
+    reporting:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - uses: pnpm/action-setup@v4
+              with:
+                  run_install: false
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: pnpm
+
+            - name: 🌸 Input Summary
+              shell: bash
+              run: |
+                  echo "mode=${{ inputs.mode }}"
+                  echo "check_mode=${{ inputs.check_mode }}"
+                  echo "run_install=${{ inputs.run_install }}"
+                  echo "require_lockfile=${{ inputs.require_lockfile }}"
+                  echo "require_clean_repo=${{ inputs.require_clean_repo }}"
+                  echo "run_build=${{ inputs.run_build }}"
+                  echo "run_test=${{ inputs.run_test }}"
+                  echo "run_docs_build=${{ inputs.run_docs_build }}"
+                  echo "nx_cache_reset=${{ inputs.nx_cache_reset }}"
+                  echo "pnpm_store_reset=${{ inputs.pnpm_store_reset }}"
+
+            - name: 🩺 Report Environment
+              if: ${{ always() }}
+              continue-on-error: ${{ inputs.mode == 'report' }}
+              run: pnpm report:env
+
+            - name: 🗂️ Report Repository
+              if: ${{ always() }}
+              continue-on-error: ${{ inputs.mode == 'report' }}
+              run: pnpm report:repo
+
+            - name: 🎀 Report Prettier
+              if: ${{ always() }}
+              continue-on-error: ${{ inputs.mode == 'report' }}
+              run: pnpm report:prettier
+
+            - name: 📚 Report Workspace
+              if: ${{ always() }}
+              continue-on-error: ${{ inputs.mode == 'report' }}
+              run: pnpm report:workspace
+
+            - name: 🧹 Reset Nx Cache
+              if: ${{ inputs.nx_cache_reset }}
+              continue-on-error: ${{ inputs.mode == 'report' }}
+              run: pnpm nx:reset
+
+            - name: 🗑️ Run Uninstall Cleanup
+              if: ${{ inputs.nx_cache_reset }}
+              continue-on-error: ${{ inputs.mode == 'report' }}
+              run: pnpm run uninstall
+
+            - name: 🧺 Prune pnpm Store
+              if: ${{ inputs.pnpm_store_reset }}
+              continue-on-error: ${{ inputs.mode == 'report' }}
+              run: pnpm store prune
+
+            - name: 📦 Install Attempt 1 Frozen Lockfile
+              id: install_frozen
+              if: ${{ inputs.run_install }}
+              continue-on-error: true
+              run: pnpm install --frozen-lockfile
+
+            - name: 🚧 Abort on Required Frozen Lockfile Failure
+              if: ${{ inputs.run_install && inputs.require_lockfile && inputs.mode == 'abort_on_error' && steps.install_frozen.outcome == 'failure' }}
+              run: exit 1
+
+            - name: 📦 Install Attempt 2 Relaxed Lockfile
+              id: install_relaxed
+              if: ${{ inputs.run_install }}
+              continue-on-error: true
+              run: pnpm install --no-frozen-lockfile
+
+            - name: 🚧 Abort on Required Relaxed Install Failure
+              if: ${{ inputs.run_install && !inputs.require_lockfile && inputs.mode == 'abort_on_error' && steps.install_relaxed.outcome == 'failure' }}
+              run: exit 1
+
+            - name: 📦 Install Attempt 3 Delete Lockfile and Retry
+              id: install_reset_lockfile
+              if: ${{ inputs.run_install }}
+              continue-on-error: true
+              run: |
+                  rm -f pnpm-lock.yaml
+                  pnpm install --no-frozen-lockfile
+
+            - name: 🚨 Validate Install Attempts
+              if: ${{ inputs.run_install && (steps.install_frozen.outcome == 'failure' || steps.install_relaxed.outcome == 'failure' || steps.install_reset_lockfile.outcome == 'failure') }}
+              run: |
+                  echo "At least one install attempt failed."
+                  exit 1
+
+            - name: ✨ Run Fix Routine
+              if: ${{ inputs.check_mode == 'fix' }}
+              continue-on-error: ${{ inputs.mode == 'report' }}
+              run: pnpm fix
+
+            - name: ✅ Run Check Routine
+              if: ${{ inputs.check_mode == 'check' }}
+              continue-on-error: ${{ inputs.mode == 'report' }}
+              run: pnpm check
+
+            - name: ⏭️ Skip Check Routine
+              if: ${{ inputs.check_mode == 'skip' }}
+              run: echo "check_mode=skip"
+
+            - name: 🏗️ Run Build
+              if: ${{ inputs.run_build }}
+              continue-on-error: ${{ inputs.mode == 'report' }}
+              run: pnpm build
+
+            - name: 🧪 Run Test
+              if: ${{ inputs.run_test }}
+              continue-on-error: ${{ inputs.mode == 'report' }}
+              run: pnpm test
+
+            - name: 📘 Run Docs Build
+              if: ${{ inputs.run_docs_build }}
+              continue-on-error: ${{ inputs.mode == 'report' }}
+              run: pnpm -r --if-present run docs:build
+
+            - name: 🧼 Require Clean Repo
+              if: ${{ inputs.require_clean_repo }}
+              continue-on-error: ${{ inputs.mode == 'report' }}
+              shell: bash
+              run: |
+                  if [ -n "$(git status --porcelain)" ]; then
+                    echo "repository is dirty"
+                    exit 1
+                  fi
+
+            - name: 🌈 Done
+              if: ${{ always() }}
+              run: echo "Reporting workflow completed."
