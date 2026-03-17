@@ -1,31 +1,25 @@
 ---
-name: Operator Editor work item
-description: Create a feature, bug, or UX issue for the Operator Editor project
-title: "<area>: <short summary>"
+name: Operator Editor Work Item
+description: Create a feature, bug, or design issue for the Operator Editor system
+title: '<scope>: <short summary>'
 labels: []
 assignees: []
 ---
 
 ## Summary
 
-Describe the problem or feature.
-
-## Area
-
-UI / Evidence / Proposal / History / Attachments / Schema / Dev Env
-
-## Why
-
-Why this matters.
+Short description of the problem or feature.
 
 ## Requirements
 
-- [ ] Requirement
-
-## Open Questions
-
-- 
+- [ ] Required work item
+- [ ] Required work item
 
 ## Notes
 
-Additional context.
+Extra context, links, screenshots, blockers, or references.
+
+## Optional Links
+
+- Related to #123
+- Blocked by #456

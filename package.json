@@ -10,12 +10,21 @@
         "commit:before": "pnpm build:self && pnpm run lint:staged",
         "lint:staged": "pnpm exec lint-staged --relative --debug",
         "commit:direct": "git commit --no-verify -m",
-        "lint:all": "pnpm fix && pnpm build",
-        "repo:status": "pnpm exec ./scripts/ensure-clean.ts",
         "\n========== INSPECT >>==========": "",
         "inspect:nx": "pnpm nx:graph",
         "inspect:lint": "pnpm exec eslint-config-inspector",
         "inspect:vitest": "pnpm exec vitest --ui",
+        "inspect:project": "cross-var  pnpm exec gh project view $npm_package_config_project_id --owner gbtunney --web",
+        "\n========== REPORT >>==========": "",
+        "report": "pnpm report:all",
+        "report:all": "pnpm report:env && pnpm report:repo && pnpm report:workspace && pnpm report:prettier",
+        "report:env": "pnpm exec ./scripts/report/env-diagnostics.sh",
+        "report:repo": "pnpm exec scripts/report/repo-status.sh",
+        "report:workspace": "pnpm exec ./scripts/report/workspace-status.sh",
+        "report:prettier": "pnpm exec tsx ./scripts/report/prettier-status.ts",
+        "report:eslint": "pnpm pnpm lint",
+        "report:md": "pnpm exec echo 'todo'",
+        "report:coverage": "pnpm -r --if-present --filter=./packages/* run test:coverage",
         "\n========== BUILD >> ==========": "",
         "build": "pnpm build:self && pnpm nx:build",
         "build:self": "pnpm exec tsc --build",
@@ -27,8 +36,8 @@
         "nx:test:ts": "pnpm exec nx run-many -t build:ts",
         "\n========== TEST >> ==========": "",
         "test": "pnpm nx:test",
-        "test:coverage": "pnpm -r --if-present --filter=./packages/* run test:coverage",
         "nx:test": "pnpm exec nx run-many --target=test",
+        "test:logger": "pnpm exec bash ./scripts/lib/sh-logger.test.sh",
         "\n========== NX >> ==========": "",
         "nx:graph": "pnpm nx graph",
         "nx:affected": "nx affected --target=build",
@@ -51,7 +60,7 @@
         "registry:start": "pnpm exec verdaccio",
         "\n========== CODE STYLE >> ==========": "",
         "prettier": "cross-var prettier {*,**/*}.{xml,ts,js,cts,cjs,mts,mjs,tsx,jsx,sh,html,json,yaml,yml,graphql,md} ./.husky/* --ignore-path ./.gitignore --no-error-on-unmatched-pattern --config ./prettier.config.js",
-        "lint": "cross-var eslint -c $npm_package_config_eslint_config --debug",
+        "lint": "cross-var eslint -c $npm_package_config_eslint_config",
         "lint:md": "pnpm exec markdownlint-cli2 '{./*,./**/*}.md' '#**/{.history,node_modules,.changeset,docs}/**' '#api/gbt-tuya-device/**/*' '#packages/cli-template/templates/**/*'",
         "\n========== CHECK >> ==========": "",
         "check": "pnpm build:self && pnpm check:self",
@@ -68,7 +77,8 @@
         "clean:all": "pnpm workspace  clean"
     },
     "dependencies": {
-        "@gbt/root": "link:"
+        "@gbt/root": "link:",
+        "@nx/devkit": "^22.5.4"
     },
     "devDependencies": {
         "@changesets/cli": "^2.29.8",
@@ -135,6 +145,7 @@
         "boilerplate"
     ],
     "config": {
+        "project_id": 8,
         "prettier": {
             "extensions": "ts,js,cjs,mjs,cts,mts,sh,html,json,yaml,yml,graphql,md",
             "path": "*,**/*",
